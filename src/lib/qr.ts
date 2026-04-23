@@ -4,8 +4,7 @@ import QRCode from "qrcode";
  * Generate a QR code data URI from a deposit ID.
  * The QR encodes: `wastewise:deposit:{id}`
  */
-export async function generateQRDataURL(depositId: string): Promise<string> {
-  const payload = `wastewise:deposit:${depositId}`;
+export async function generateQRDataURL(payload: string): Promise<string> {
   return QRCode.toDataURL(payload, {
     width: 300,
     margin: 2,

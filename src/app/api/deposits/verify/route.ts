@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (findError || !deposit) {
+    console.error("API /deposits/verify Error:", findError, "Deposit found:", !!deposit);
     return Response.json(
       { error: "Deposit not found for this QR code" },
       { status: 404 }

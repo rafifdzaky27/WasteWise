@@ -30,7 +30,10 @@ export async function GET() {
       .select("*, profiles!waste_deposits_user_id_fkey(full_name, email)")
       .order("created_at", { ascending: false });
 
-    if (error) return Response.json({ error: error.message }, { status: 500 });
+    if (error) {
+      console.error("API /deposits GET Error:", error);
+      return Response.json({ error: error.message }, { status: 500 });
+    }
     return Response.json(data);
   }
 
