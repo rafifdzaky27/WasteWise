@@ -21,10 +21,14 @@ export default function RewardsPage() {
       const { data: profile } = await supabase.from("profiles").select("total_points").eq("id", user.id).single();
       if (profile) setPoints(profile.total_points);
     }
-    const txRes = await fetch("/api/points");
+    const [txRes, vRes] = await Promise.all([
+      fetch("/api/points"),
+      fetch("/api/vouchers")
+    ]);
+    
     if (txRes.ok) setTransactions(await txRes.json());
-    const vRes = await fetch("/api/vouchers");
     if (vRes.ok) setVouchers(await vRes.json());
+    
     setLoading(false);
   }
 
