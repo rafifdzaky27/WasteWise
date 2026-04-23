@@ -45,7 +45,7 @@ export default function Navbar() {
 
       {/* CTA */}
       <Link
-        href="#"
+        href="/register"
         className="hidden sm:block bg-primary-dark text-white text-sm font-medium px-5 py-2.5 rounded-full shadow-lg hover:bg-primary-darker hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
       >
         Join the Movement

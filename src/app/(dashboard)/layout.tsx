@@ -5,6 +5,8 @@ import Image from "next/image";
 import logo from "../../assets/images/wastewise_logo.png";
 import MobileNav from "../../components/dashboard/MobileNav";
 
+import UserProfile from "../../components/dashboard/UserProfile";
+
 export default async function DashboardLayout({
   children,
 }: {
@@ -43,7 +45,7 @@ export default async function DashboardLayout({
   return (
     <div className="flex min-h-screen bg-background">
       {/* Sidebar */}
-      <aside className="hidden md:flex md:w-64 flex-col border-r border-stone-border bg-white/60 backdrop-blur-lg">
+      <aside className="hidden md:flex md:w-64 flex-col border-r border-stone-border bg-white/60 backdrop-blur-lg sticky top-0 h-screen overflow-y-auto z-40">
         {/* Logo */}
         <div className="flex items-center gap-2 px-6 py-5 border-b border-stone-border">
           <Image src={logo} alt="WasteWise Logo" width={32} height={32} className="w-8 h-8 object-contain drop-shadow-sm" />
@@ -86,19 +88,7 @@ export default async function DashboardLayout({
 
         {/* User Info */}
         <div className="px-4 py-4 border-t border-stone-border">
-          <div className="flex items-center gap-3 px-2">
-            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary">
-              {profile?.full_name?.charAt(0)?.toUpperCase() || "U"}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
-                {profile?.full_name || "User"}
-              </p>
-              <p className="text-xs text-muted capitalize">
-                {profile?.role || "warga"}
-              </p>
-            </div>
-          </div>
+          <UserProfile fullName={profile?.full_name || ""} role={profile?.role || ""} />
         </div>
       </aside>
 

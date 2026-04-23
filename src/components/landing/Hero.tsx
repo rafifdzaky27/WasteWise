@@ -6,7 +6,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="relative w-full overflow-hidden rounded-b-[48px] mx-auto max-w-[1120px]"
+      className="relative w-full overflow-hidden rounded-b-[48px]"
       style={{ minHeight: "660px" }}
     >
       {/* Background Image */}
@@ -48,13 +48,13 @@ export default function Hero() {
         {/* CTAs */}
         <div className="flex flex-wrap items-center justify-center gap-4 mt-10 animate-fade-in-up animate-delay-300">
           <Link
-            href="#"
+            href="/dashboard"
             className="flex items-center gap-2 bg-white/60 border border-stone-border text-foreground text-base font-medium px-8 py-4 rounded-full shadow-md hover:bg-white/80 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
           >
             Explore Impact
           </Link>
           <Link
-            href="#"
+            href="/register"
             className="flex items-center gap-2 text-primary-darker text-base font-medium px-8 py-4 rounded-full hover:bg-white/30 transition-all duration-300"
           >
             Get Started

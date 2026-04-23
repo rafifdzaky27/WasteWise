@@ -164,7 +164,7 @@ create policy "Users can view own profile" on public.profiles
 
 create policy "Admins can view all profiles" on public.profiles
   for select using (
-    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin')
   );
 
 create policy "Users can update own profile" on public.profiles
@@ -176,7 +176,7 @@ create policy "Users can view own deposits" on public.waste_deposits
 
 create policy "Admins can view all deposits" on public.waste_deposits
   for select using (
-    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin')
   );
 
 create policy "Users can insert deposits" on public.waste_deposits
@@ -184,7 +184,7 @@ create policy "Users can insert deposits" on public.waste_deposits
 
 create policy "Admins can update deposits" on public.waste_deposits
   for update using (
-    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin')
   );
 
 -- Points: own records
@@ -203,7 +203,7 @@ create policy "Users can insert vouchers" on public.voucher_redemptions
 
 create policy "Admins can update vouchers" on public.voucher_redemptions
   for update using (
-    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin')
   );
 
 -- BioBin, sensors, harvests: public read
@@ -225,7 +225,7 @@ create policy "Anyone can view active products" on public.products
 
 create policy "Admins can manage products" on public.products
   for all using (
-    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin')
   );
 
 -- Orders: own records
@@ -251,7 +251,7 @@ create policy "Anyone can view impact log" on public.impact_log
 
 create policy "Admins can manage impact log" on public.impact_log
   for all using (
-    exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin')
   );
 
 -- =============================================================
