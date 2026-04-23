@@ -1,0 +1,142 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import Image from "next/image";
+
+const products = [
+  {
+    name: "Premium Eco-Zip 2kg Compost",
+    price: "Rp 15k",
+    description: "Rich organic nutrients for your home garden.",
+    image: "/product-compost.png",
+    badge: "BEST SELLER",
+  },
+  {
+    name: "Liquid Nutrient Mix",
+    price: "Rp 25k",
+    description: "Concentrated plant booster for potted plants.",
+    image: "/product-liquid.png",
+    badge: null,
+  },
+  {
+    name: "Heirloom Seed Kit",
+    price: "Rp 45k",
+    description: "Complete bundle of seasonal heirloom seeds.",
+    image: "/product-seeds.png",
+    badge: null,
+  },
+  {
+    name: "Waste-Briquettes",
+    price: "Rp 10k",
+    description: "Eco-friendly cooking fuel made from upcycled waste.",
+    image: "/product-briquettes.png",
+    badge: null,
+  },
+];
+
+export default function Marketplace() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) entry.target.classList.add("visible");
+        });
+      },
+      { threshold: 0.1 }
+    );
+    const reveals = sectionRef.current?.querySelectorAll(".reveal");
+    reveals?.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section
+      id="marketplace"
+      ref={sectionRef}
+      className="w-full max-w-[1152px] mx-auto px-6 pt-32 pb-16"
+    >
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-16 gap-6 reveal">
+        <div>
+          <h2 className="text-4xl sm:text-5xl font-medium tracking-tight text-foreground">
+            Sustainable{" "}
+            <span className="font-serif italic text-primary">Marketplace</span>
+          </h2>
+          <p className="mt-4 text-base text-muted max-w-md">
+            Redeem your reward points for high-quality organic resources
+            produced right here in the village.
+          </p>
+        </div>
+        <button className="flex items-center gap-1 text-base font-medium text-primary hover:gap-2 transition-all duration-300 shrink-0">
+          View all resources
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M6 3L11 8L6 13"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+
+      {/* Product Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {products.map((product, i) => (
+          <div
+            key={product.name}
+            className={`reveal animate-delay-${(i + 1) * 100} group bg-white border border-stone-light rounded-[32px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 overflow-hidden`}
+          >
+            {/* Image */}
+            <div className="relative m-4 rounded-2xl overflow-hidden aspect-[4/5]">
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              />
+              {product.badge && (
+                <span className="absolute top-3 left-3 bg-primary-dark text-white text-[10px] font-bold tracking-wider px-3 py-1 rounded-full">
+                  {product.badge}
+                </span>
+              )}
+            </div>
+
+            {/* Info */}
+            <div className="px-6 pb-6">
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <h3 className="text-lg font-semibold text-foreground leading-snug">
+                  {product.name}
+                </h3>
+                <span className="text-base font-medium text-primary whitespace-nowrap">
+                  {product.price}
+                </span>
+              </div>
+              <p className="text-sm text-muted leading-relaxed mb-5">
+                {product.description}
+              </p>
+              <button className="w-full flex items-center justify-center gap-2 bg-primary-dark text-white text-base font-medium py-3.5 rounded-2xl hover:bg-primary-darker transition-colors duration-300">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M7 18C5.9 18 5.01 18.9 5.01 20S5.9 22 7 22 9 21.1 9 20 8.1 18 7 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.59 17.3 11.97L20.88 5.48C20.96 5.34 21 5.17 21 5C21 4.45 20.55 4 20 4H5.21L4.27 2H1Z"
+                    fill="white"
+                  />
+                </svg>
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
