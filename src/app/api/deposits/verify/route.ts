@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   // Find deposit by QR code
   const { data: deposit, error: findError } = await supabase
     .from("waste_deposits")
-    .select("*, profiles(full_name, email)")
+    .select("*, profiles!waste_deposits_user_id_fkey(full_name, email)")
     .eq("qr_code", qr_code)
     .single();
 
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     .from("waste_deposits")
     .update({ verified_by: user.id })
     .eq("id", deposit.id)
-    .select("*, profiles(full_name, email)")
+    .select("*, profiles!waste_deposits_user_id_fkey(full_name, email)")
     .single();
 
   if (updateError) {

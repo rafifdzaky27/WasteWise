@@ -27,7 +27,7 @@ export async function GET() {
     // Admin sees all deposits with user info
     const { data, error } = await supabase
       .from("waste_deposits")
-      .select("*, profiles(full_name, email)")
+      .select("*, profiles!waste_deposits_user_id_fkey(full_name, email)")
       .order("created_at", { ascending: false });
 
     if (error) return Response.json({ error: error.message }, { status: 500 });
