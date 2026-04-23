@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
-import type { UserRole } from "@/lib/types";
+import { createClient } from "../../../lib/supabase/client";
+import type { UserRole } from "../../../lib/types";
 
 export default function RegisterPage() {
   const router = useRouter();
