@@ -23,8 +23,7 @@ export default function QRDisplay({
   useEffect(() => {
     async function generate() {
       const { generateQRDataURL } = await import("../../lib/qr");
-      // Use the full qr_code string (which contains the deposit reference)
-      const dataUrl = await generateQRDataURL(depositId);
+      const dataUrl = await generateQRDataURL(qrCode);
       setQrDataUrl(dataUrl);
     }
     generate();
