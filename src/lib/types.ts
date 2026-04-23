@@ -131,3 +131,38 @@ export interface ImpactLog {
   landfill_reduction_pct: number;
   active_participants: number;
 }
+
+/* ─── Phase 2 Constants ──────────────────────────────────────── */
+
+export const POINT_RATES: Record<WasteType, number> = {
+  organic: 10,
+  recyclable: 15,
+};
+
+export interface VoucherOption {
+  type: VoucherType;
+  label: string;
+  description: string;
+  cost: number;
+}
+
+export const VOUCHER_OPTIONS: VoucherOption[] = [
+  {
+    type: "lpg",
+    label: "Voucher LPG 3kg",
+    description: "Tukarkan poin Anda dengan voucher LPG 3kg untuk memasak.",
+    cost: 500,
+  },
+  {
+    type: "marketplace",
+    label: "Kredit Marketplace",
+    description: "Gunakan sebagai kredit belanja di marketplace WasteWise.",
+    cost: 200,
+  },
+];
+
+/* ─── Joined Types (for admin views) ─────────────────────────── */
+
+export interface DepositWithProfile extends WasteDeposit {
+  profiles: Pick<UserProfile, "full_name" | "email">;
+}

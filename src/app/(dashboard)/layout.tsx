@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../assets/images/wastewise_logo.png";
+import MobileNav from "../../components/dashboard/MobileNav";
 
 export default async function DashboardLayout({
   children,
@@ -25,12 +26,18 @@ export default async function DashboardLayout({
     .eq("id", user.id)
     .single();
 
+  const isAdmin = profile?.role === "admin";
+
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: "📊" },
-    { href: "/dashboard", label: "Deposit", icon: "♻️" },
-    { href: "/dashboard", label: "Rewards", icon: "🎁" },
-    { href: "/dashboard", label: "BioBin", icon: "🌡️" },
-    { href: "/dashboard", label: "Orders", icon: "📦" },
+    { href: "/deposit", label: "Deposit", icon: "♻️" },
+    { href: "/rewards", label: "Rewards", icon: "🎁" },
+    { href: "/biobin", label: "BioBin", icon: "🌡️" },
+    { href: "/orders", label: "Orders", icon: "📦" },
+  ];
+
+  const adminItems = [
+    { href: "/admin/deposits", label: "Verify Deposits", icon: "✅" },
   ];
 
   return (
@@ -57,6 +64,24 @@ export default async function DashboardLayout({
               {item.label}
             </Link>
           ))}
+
+          {isAdmin && (
+            <>
+              <div className="pt-4 pb-2 px-4">
+                <p className="text-[10px] font-bold text-muted uppercase tracking-widest">Admin</p>
+              </div>
+              {adminItems.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-muted hover:text-foreground hover:bg-accent-green transition-all duration-200"
+                >
+                  <span className="text-base">{item.icon}</span>
+                  {item.label}
+                </Link>
+              ))}
+            </>
+          )}
         </nav>
 
         {/* User Info */}
@@ -93,8 +118,11 @@ export default async function DashboardLayout({
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 p-4 md:p-8">{children}</main>
+        <main className="flex-1 p-4 md:p-8 pb-20 md:pb-8">{children}</main>
       </div>
+
+      {/* Mobile Bottom Nav */}
+      <MobileNav />
     </div>
   );
 }
