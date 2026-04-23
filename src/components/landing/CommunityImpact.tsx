@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import communityImpactImg from "../../assets/images/community-impact.png";
 
 function AnimatedCounter({
   end,
@@ -113,7 +114,7 @@ export default function CommunityImpact() {
         <div className="flex-1 p-6 md:p-10 reveal animate-delay-200">
           <div className="relative w-full max-w-[463px] aspect-square rounded-3xl overflow-hidden shadow-xl">
             <Image
-              src="/community-impact.png"
+              src={communityImpactImg}
               alt="Community garden composting"
               fill
               className="object-cover"

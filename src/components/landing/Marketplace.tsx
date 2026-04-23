@@ -2,34 +2,38 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import productCompost from "../../assets/images/product-compost.png";
+import productLiquid from "../../assets/images/product-liquid.png";
+import productSeeds from "../../assets/images/product-seeds.png";
+import productBriquettes from "../../assets/images/product-briquettes.png";
 
 const products = [
   {
     name: "Premium Eco-Zip 2kg Compost",
     price: "Rp 15k",
     description: "Rich organic nutrients for your home garden.",
-    image: "/product-compost.png",
+    image: productCompost,
     badge: "BEST SELLER",
   },
   {
     name: "Liquid Nutrient Mix",
     price: "Rp 25k",
     description: "Concentrated plant booster for potted plants.",
-    image: "/product-liquid.png",
+    image: productLiquid,
     badge: null,
   },
   {
     name: "Heirloom Seed Kit",
     price: "Rp 45k",
     description: "Complete bundle of seasonal heirloom seeds.",
-    image: "/product-seeds.png",
+    image: productSeeds,
     badge: null,
   },
   {
     name: "Waste-Briquettes",
     price: "Rp 10k",
     description: "Eco-friendly cooking fuel made from upcycled waste.",
-    image: "/product-briquettes.png",
+    image: productBriquettes,
     badge: null,
   },
 ];

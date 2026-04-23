@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import heroBg from "../../assets/images/hero-bg.png";
 
 export default function Hero() {
   return (
@@ -10,7 +11,7 @@ export default function Hero() {
     >
       {/* Background Image */}
       <Image
-        src="/hero-bg.png"
+        src={heroBg}
         alt="Green seedling growing from soil"
         fill
         priority
