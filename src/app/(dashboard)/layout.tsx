@@ -6,6 +6,7 @@ import logo from "../../assets/images/wastewise_logo.png";
 import MobileNav from "../../components/dashboard/MobileNav";
 
 import UserProfile from "../../components/dashboard/UserProfile";
+import MobileHeaderLogout from "../../components/dashboard/MobileHeaderLogout";
 
 export default async function DashboardLayout({
   children,
@@ -102,9 +103,12 @@ export default async function DashboardLayout({
               WasteWise
             </span>
           </div>
-          <span className="text-xs font-medium text-muted capitalize px-2 py-1 rounded-full bg-accent-green">
-            {profile?.role || "warga"}
-          </span>
+          <div className="flex items-center">
+            <span className="text-xs font-medium text-muted capitalize px-2 py-1 rounded-full bg-accent-green">
+              {profile?.role || "warga"}
+            </span>
+            <MobileHeaderLogout />
+          </div>
         </header>
 
         {/* Page Content */}

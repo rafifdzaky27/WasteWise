@@ -71,5 +71,28 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: updateError.message }, { status: 500 });
   }
 
+  // Insert point transaction
+  await supabase.from("point_transactions").insert({
+    user_id: deposit.user_id,
+    amount: deposit.points_earned,
+    type: "earned",
+    reference_id: deposit.id,
+    description: `Deposit ${deposit.weight_kg}kg ${deposit.waste_type} waste`,
+  });
+
+  // Update total_points on profile
+  const { data: currentProfile } = await supabase
+    .from("profiles")
+    .select("total_points")
+    .eq("id", deposit.user_id)
+    .single();
+
+  await supabase
+    .from("profiles")
+    .update({
+      total_points: (currentProfile?.total_points || 0) + deposit.points_earned,
+    })
+    .eq("id", deposit.user_id);
+
   return Response.json(updated);
 }

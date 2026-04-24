@@ -108,28 +108,7 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: depositError.message }, { status: 500 });
   }
 
-  // Insert point transaction
-  await supabase.from("point_transactions").insert({
-    user_id: user.id,
-    amount: points_earned,
-    type: "earned",
-    reference_id: deposit.id,
-    description: `Deposit ${weight_kg}kg ${waste_type} waste`,
-  });
-
-  // Update total_points on profile
-  const { data: currentProfile } = await supabase
-    .from("profiles")
-    .select("total_points")
-    .eq("id", user.id)
-    .single();
-
-  await supabase
-    .from("profiles")
-    .update({
-      total_points: (currentProfile?.total_points || 0) + points_earned,
-    })
-    .eq("id", user.id);
+  // Points will be awarded upon admin verification
 
   return Response.json(deposit, { status: 201 });
 }

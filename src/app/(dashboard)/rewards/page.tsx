@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "../../../lib/supabase/client";
+
 import type { PointTransaction, VoucherRedemption } from "../../../lib/types";
 import { VOUCHER_OPTIONS } from "../../../lib/types";
 
@@ -15,20 +15,13 @@ export default function RewardsPage() {
   const [success, setSuccess] = useState("");
 
   async function fetchData() {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { data: profile } = await supabase.from("profiles").select("total_points").eq("id", user.id).single();
-      if (profile) setPoints(profile.total_points);
+    const res = await fetch("/api/rewards");
+    if (res.ok) {
+      const data = await res.json();
+      setPoints(data.total_points);
+      setTransactions(data.transactions);
+      setVouchers(data.vouchers);
     }
-    const [txRes, vRes] = await Promise.all([
-      fetch("/api/points"),
-      fetch("/api/vouchers")
-    ]);
-    
-    if (txRes.ok) setTransactions(await txRes.json());
-    if (vRes.ok) setVouchers(await vRes.json());
-    
     setLoading(false);
   }
 
