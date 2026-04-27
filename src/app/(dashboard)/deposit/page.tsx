@@ -37,7 +37,7 @@ export default function DepositPage() {
 
     const weight = parseFloat(weightKg);
     if (isNaN(weight) || weight <= 0) {
-      setError("Please enter a valid weight");
+      setError("Masukkan berat yang valid");
       setSubmitting(false);
       return;
     }
@@ -50,13 +50,13 @@ export default function DepositPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Failed to create deposit");
+      setError(data.error || "Gagal membuat setoran");
       setSubmitting(false);
       return;
     }
 
     const deposit = await res.json();
-    setSuccess(`Deposit created! You earned ${deposit.points_earned} points ⭐`);
+    setSuccess(`Setoran berhasil! Anda mendapatkan ${deposit.points_earned} poin ⭐`);
     setWeightKg("");
     setShowQR(deposit);
     fetchDeposits();
@@ -89,11 +89,11 @@ export default function DepositPage() {
       {/* Page Header */}
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-          Waste{" "}
-          <span className="font-serif italic text-primary">Deposit</span>
+          Setor{" "}
+          <span className="font-serif italic text-primary">Sampah</span>
         </h1>
         <p className="text-muted text-sm mt-1">
-          Submit your waste and earn reward points.
+          Setorkan sampah Anda dan dapatkan poin reward.
         </p>
       </div>
 
@@ -103,7 +103,7 @@ export default function DepositPage() {
           <div className="bg-background rounded-3xl p-6 max-w-sm w-full animate-fade-in-up shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-foreground">
-                Your QR Receipt
+                QR Setoran Anda
               </h2>
               <button
                 onClick={() => setShowQR(null)}
@@ -128,20 +128,20 @@ export default function DepositPage() {
         <div className="lg:col-span-2">
           {/* Points Card */}
           <div className="bg-gradient-to-br from-primary-dark to-primary rounded-2xl p-5 text-white mb-4 shadow-lg">
-            <p className="text-sm opacity-80">Your Points</p>
+            <p className="text-sm opacity-80">Poin Anda</p>
             <p className="text-3xl font-bold mt-1">{totalPoints} ⭐</p>
           </div>
 
           <div className="bg-white border border-stone-border rounded-2xl p-5 shadow-sm">
             <h2 className="text-lg font-semibold text-foreground mb-4">
-              New Deposit
+              Setor Baru
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Waste Type Selector */}
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Waste Type
+                  Jenis Sampah
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {(["organic", "recyclable"] as WasteType[]).map((type) => (
@@ -159,10 +159,10 @@ export default function DepositPage() {
                         {type === "organic" ? "🌿" : "♻️"}
                       </span>
                       <span className="text-sm font-medium capitalize">
-                        {type}
+                        {type === "organic" ? "Organik" : "Daur Ulang"}
                       </span>
                       <span className="text-[10px] text-muted">
-                        {type === "organic" ? "10 pts/kg" : "15 pts/kg"}
+                        {type === "organic" ? "10 poin/kg" : "15 poin/kg"}
                       </span>
                     </button>
                   ))}
@@ -175,7 +175,7 @@ export default function DepositPage() {
                   htmlFor="weight"
                   className="block text-sm font-medium text-foreground mb-1.5"
                 >
-                  Weight (kg)
+                  Berat (kg)
                 </label>
                 <div className="relative">
                   <input
@@ -186,7 +186,7 @@ export default function DepositPage() {
                     max="500"
                     value={weightKg}
                     onChange={(e) => setWeightKg(e.target.value)}
-                    placeholder="e.g. 2.5"
+                    placeholder="cth. 2.5"
                     required
                     className="w-full px-4 py-3 pr-12 rounded-xl border border-stone-border bg-white text-foreground placeholder:text-muted-light focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                   />
@@ -200,7 +200,7 @@ export default function DepositPage() {
               {weightKg && parseFloat(weightKg) > 0 && (
                 <div className="bg-accent-green border border-accent-green-border rounded-xl p-3 text-center">
                   <p className="text-xs text-muted mb-1">
-                    Estimated Points
+                    Estimasi Poin
                   </p>
                   <p className="text-2xl font-bold text-primary">
                     +
@@ -251,10 +251,10 @@ export default function DepositPage() {
                         className="opacity-75"
                       />
                     </svg>
-                    Creating Deposit...
+                    Membuat Setoran...
                   </span>
                 ) : (
-                  "Submit Deposit"
+                  "Kirim Setoran"
                 )}
               </button>
             </form>
@@ -265,10 +265,10 @@ export default function DepositPage() {
         <div className="lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground">
-              Deposit History
+              Riwayat Setoran
             </h2>
             <span className="text-xs font-medium text-muted bg-stone-light px-2.5 py-1 rounded-full">
-              {deposits.length} records
+              {deposits.length} data
             </span>
           </div>
 
@@ -295,11 +295,11 @@ export default function DepositPage() {
                 ♻️
               </div>
               <h3 className="font-semibold text-foreground mb-1">
-                No deposits yet
+                Belum ada setoran
               </h3>
               <p className="text-sm text-muted">
-                Submit your first waste deposit using the form to start earning
-                points!
+                Kirim setoran sampah pertama Anda menggunakan formulir di samping
+                untuk mulai mengumpulkan poin!
               </p>
             </div>
           ) : (

@@ -16,8 +16,8 @@ export default function Footer() {
             </span>
           </div>
           <p className="text-sm text-muted leading-relaxed">
-            A circular economy waste management for local communities. Powered
-            by the collective wisdom of BUMDes.
+            Platform pengelolaan sampah ekonomi sirkular untuk komunitas lokal.
+            Digerakkan oleh kearifan kolektif BUMDes.
           </p>
         </div>
 
@@ -28,7 +28,7 @@ export default function Footer() {
               Platform
             </h4>
             <ul className="space-y-3">
-              {["How it Works", "Marketplace", "Impact Map"].map((link) => (
+              {["Cara Kerja", "Pasar", "Peta Dampak"].map((link) => (
                 <li key={link}>
                   <Link
                     href="#"
@@ -42,10 +42,10 @@ export default function Footer() {
           </div>
           <div>
             <h4 className="text-sm font-semibold text-foreground uppercase tracking-tight mb-4">
-              Company
+              Perusahaan
             </h4>
             <ul className="space-y-3">
-              {["About BUMDes", "Contact Us", "Privacy Policy"].map((link) => (
+              {["Tentang BUMDes", "Hubungi Kami", "Kebijakan Privasi"].map((link) => (
                 <li key={link}>
                   <Link
                     href="#"
@@ -63,14 +63,14 @@ export default function Footer() {
       {/* Bottom */}
       <div className="flex flex-col sm:flex-row items-center justify-between py-5 border-t border-stone-light">
         <p className="text-xs text-muted-light">
-          © 2026 WasteWise. All rights reserved.
+          © 2026 WasteWise. Hak cipta dilindungi.
         </p>
         <div className="flex gap-4 mt-2 sm:mt-0">
           <Link href="#" className="text-xs text-muted-light hover:text-primary transition-colors">
-            Terms of Service
+            Syarat Layanan
           </Link>
           <Link href="#" className="text-xs text-muted-light hover:text-primary transition-colors">
-            Cookie Policy
+            Kebijakan Cookie
           </Link>
         </div>
       </div>

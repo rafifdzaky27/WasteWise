@@ -12,7 +12,7 @@ export default function Hero() {
       {/* Background Image */}
       <Image
         src={heroBg}
-        alt="Green seedling growing from soil"
+        alt="Tunas hijau tumbuh dari tanah"
         fill
         priority
         className="object-cover"
@@ -26,38 +26,38 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-40 pb-24 min-h-[660px]">
         {/* Tag */}
         <p className="text-xs font-semibold tracking-[2.4px] uppercase text-primary mb-6 animate-fade-in">
-          Eco-Tech Intelligence
+          Inovasi Teknologi Hijau
         </p>
 
         {/* Heading */}
         <h1 className="animate-fade-in-up">
-          <span className="block text-5xl sm:text-7xl md:text-8xl font-medium text-primary-darker tracking-tight leading-tight">
-            Turning Trash into
+          <span className="block text-5xl sm:text-6xl md:text-7xl font-medium text-primary-darker tracking-tight leading-tight">
+            Empowering Smart Villages
           </span>
-          <span className="block text-5xl sm:text-7xl md:text-8xl font-serif italic text-primary tracking-tight leading-tight">
-            Treasures.
+          <span className="block text-5xl sm:text-6xl md:text-7xl font-serif italic text-primary tracking-tight leading-tight">
+            through Digital Waste Innovation.
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="mt-8 text-lg sm:text-xl text-stone-dark max-w-xl leading-relaxed animate-fade-in-up animate-delay-200">
-          A circular economy platform empowering local communities through
-          intelligent waste management and community rewards.
+          Platform ekonomi sirkular yang memberdayakan komunitas lokal melalui
+          pengelolaan sampah cerdas dan sistem reward berbasis komunitas.
         </p>
 
         {/* CTAs */}
         <div className="flex flex-wrap items-center justify-center gap-4 mt-10 animate-fade-in-up animate-delay-300">
           <Link
-            href="/dashboard"
+            href="/impact"
             className="flex items-center gap-2 bg-white/60 border border-stone-border text-foreground text-base font-medium px-8 py-4 rounded-full shadow-md hover:bg-white/80 hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5"
           >
-            Explore Impact
+            Lihat Dampak
           </Link>
           <Link
             href="/register"
             className="flex items-center gap-2 text-primary-darker text-base font-medium px-8 py-4 rounded-full hover:bg-white/30 transition-all duration-300"
           >
-            Get Started
+            Mulai Sekarang
             <svg
               width="16"
               height="16"

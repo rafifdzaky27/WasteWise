@@ -32,15 +32,15 @@ export default async function DashboardLayout({
   const isAdmin = profile?.role === "admin";
 
   const navItems = [
-    { href: "/dashboard", label: "Dashboard", icon: "📊" },
-    { href: "/deposit", label: "Deposit", icon: "♻️" },
-    { href: "/rewards", label: "Rewards", icon: "🎁" },
+    { href: "/dashboard", label: "Beranda", icon: "📊" },
+    { href: "/deposit", label: "Setor Sampah", icon: "♻️" },
+    { href: "/rewards", label: "Hadiah", icon: "🎁" },
     { href: "/biobin", label: "BioBin", icon: "🌡️" },
-    { href: "/orders", label: "Orders", icon: "📦" },
+    { href: "/orders", label: "Pesanan", icon: "📦" },
   ];
 
   const adminItems = [
-    { href: "/admin/deposits", label: "Verify Deposits", icon: "✅" },
+    { href: "/admin/deposits", label: "Verifikasi Setoran", icon: "✅" },
   ];
 
   return (

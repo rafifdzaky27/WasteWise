@@ -48,13 +48,13 @@ export default function UserProfile({ fullName, role }: UserProfileProps) {
             onClick={() => { setIsOpen(false); /* Add edit profile logic later */ }}
             className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-stone-50 rounded-lg transition-colors"
           >
-            Edit Profile
+            Ubah Profil
           </button>
           <button
             onClick={handleLogout}
             className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium mt-1"
           >
-            Log out
+            Keluar
           </button>
         </div>
       )}

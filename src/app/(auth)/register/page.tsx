@@ -51,10 +51,10 @@ export default function RegisterPage() {
   return (
     <>
       <h1 className="text-2xl font-bold text-foreground text-center mb-2">
-        Join WasteWise
+        Bergabung dengan WasteWise
       </h1>
       <p className="text-sm text-muted text-center mb-8">
-        Create your account and start making an impact
+        Buat akun Anda dan mulai berkontribusi
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -69,7 +69,7 @@ export default function RegisterPage() {
             htmlFor="fullName"
             className="block text-sm font-medium text-foreground mb-1.5"
           >
-            Full Name
+            Nama Lengkap
           </label>
           <input
             id="fullName"
@@ -105,14 +105,14 @@ export default function RegisterPage() {
             htmlFor="password"
             className="block text-sm font-medium text-foreground mb-1.5"
           >
-            Password
+            Kata Sandi
           </label>
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Min. 6 characters"
+            placeholder="Min. 6 karakter"
             required
             minLength={6}
             className="w-full px-4 py-3 rounded-xl border border-stone-border bg-white text-foreground placeholder:text-muted-light focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
@@ -122,7 +122,7 @@ export default function RegisterPage() {
         {/* Role selector */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">
-            I am a...
+            Saya adalah...
           </label>
           <div className="grid grid-cols-3 gap-2">
             {roles.map((r) => (
@@ -174,21 +174,21 @@ export default function RegisterPage() {
                   className="opacity-75"
                 />
               </svg>
-              Creating account...
+              Membuat akun...
             </span>
           ) : (
-            "Create Account"
+            "Buat Akun"
           )}
         </button>
       </form>
 
       <p className="text-sm text-muted text-center mt-6">
-        Already have an account?{" "}
+        Sudah punya akun?{" "}
         <Link
           href="/login"
           className="text-primary font-medium hover:underline"
         >
-          Sign in
+          Masuk
         </Link>
       </p>
     </>

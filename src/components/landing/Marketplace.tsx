@@ -9,30 +9,30 @@ import productBriquettes from "../../assets/images/product-briquettes.png";
 
 const products = [
   {
-    name: "Premium Eco-Zip 2kg Compost",
-    price: "Rp 15k",
-    description: "Rich organic nutrients for your home garden.",
+    name: "Kompos Premium Eco-Zip 2kg",
+    price: "Rp 15rb",
+    description: "Nutrisi organik kaya untuk kebun rumah Anda.",
     image: productCompost,
-    badge: "BEST SELLER",
+    badge: "TERLARIS",
   },
   {
-    name: "Liquid Nutrient Mix",
-    price: "Rp 25k",
-    description: "Concentrated plant booster for potted plants.",
+    name: "Campuran Nutrisi Cair",
+    price: "Rp 25rb",
+    description: "Penguat tanaman terkonsentrasi untuk tanaman pot.",
     image: productLiquid,
     badge: null,
   },
   {
-    name: "Heirloom Seed Kit",
-    price: "Rp 45k",
-    description: "Complete bundle of seasonal heirloom seeds.",
+    name: "Paket Benih Unggul",
+    price: "Rp 45rb",
+    description: "Paket lengkap benih unggulan musiman.",
     image: productSeeds,
     badge: null,
   },
   {
-    name: "Waste-Briquettes",
-    price: "Rp 10k",
-    description: "Eco-friendly cooking fuel made from upcycled waste.",
+    name: "Briket Sampah",
+    price: "Rp 10rb",
+    description: "Bahan bakar masak ramah lingkungan dari limbah daur ulang.",
     image: productBriquettes,
     badge: null,
   },
@@ -65,16 +65,16 @@ export default function Marketplace() {
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-16 gap-6 reveal">
         <div>
           <h2 className="text-4xl sm:text-5xl font-medium tracking-tight text-foreground">
-            Sustainable{" "}
-            <span className="font-serif italic text-primary">Marketplace</span>
+            Pasar{" "}
+            <span className="font-serif italic text-primary">Berkelanjutan</span>
           </h2>
           <p className="mt-4 text-base text-muted max-w-md">
-            Redeem your reward points for high-quality organic resources
-            produced right here in the village.
+            Tukarkan poin reward Anda dengan sumber daya organik berkualitas
+            tinggi yang diproduksi langsung di desa.
           </p>
         </div>
         <button className="flex items-center gap-1 text-base font-medium text-primary hover:gap-2 transition-all duration-300 shrink-0">
-          View all resources
+          Lihat semua produk
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
               d="M6 3L11 8L6 13"
