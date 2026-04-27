@@ -31,11 +31,11 @@ export default function Hero() {
 
         {/* Heading */}
         <h1 className="animate-fade-in-up">
-          <span className="block text-5xl sm:text-7xl md:text-8xl font-medium text-primary-darker tracking-tight leading-tight">
-            Mengubah Sampah
+          <span className="block text-5xl sm:text-6xl md:text-7xl font-medium text-primary-darker tracking-tight leading-tight">
+            Empowering Smart Villages
           </span>
-          <span className="block text-5xl sm:text-7xl md:text-8xl font-serif italic text-primary tracking-tight leading-tight">
-            Menjadi Berkah.
+          <span className="block text-5xl sm:text-6xl md:text-7xl font-serif italic text-primary tracking-tight leading-tight">
+            through Digital Waste Innovation.
           </span>
         </h1>
 
