@@ -28,7 +28,7 @@ export default function AuthLayout({
           </span>
         </Link>
 
-        {/* Card */}
+        {/* Card a */}
         <div className="bg-white/70 border border-white/40 rounded-3xl shadow-xl p-8 backdrop-blur-xl">
           {children}
         </div>
