@@ -16,7 +16,7 @@ export default function BioBinPage() {
   const { readings, latestReading, isConnected, error, isLoading } =
     useSensorData(selectedId);
 
-  // Fetch list of BioBin units
+  // Fetch list of BioBin units a
   useEffect(() => {
     async function fetchBiobins() {
       const supabase = createClient();
