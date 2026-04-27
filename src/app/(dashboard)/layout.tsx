@@ -33,10 +33,18 @@ export default async function DashboardLayout({
 
   const navItems = [
     { href: "/dashboard", label: "Beranda", icon: "📊" },
-    { href: "/deposit", label: "Setor Sampah", icon: "♻️" },
-    { href: "/rewards", label: "Hadiah", icon: "🎁" },
-    { href: "/biobin", label: "BioBin", icon: "🌡️" },
-    { href: "/orders", label: "Pesanan", icon: "📦" },
+    ...(profile?.role !== "petani"
+      ? [
+          { href: "/deposit", label: "Setor Sampah", icon: "♻️" },
+          { href: "/rewards", label: "Hadiah", icon: "🎁" },
+        ]
+      : []),
+    ...(profile?.role === "admin"
+      ? [{ href: "/biobin", label: "BioCompose", icon: "🌡️" }]
+      : []),
+    ...(profile?.role === "petani"
+      ? [{ href: "/orders", label: "Pesanan", icon: "📦" }]
+      : []),
   ];
 
   const adminItems = [

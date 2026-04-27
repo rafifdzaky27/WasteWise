@@ -68,11 +68,11 @@ export default function ImpactChart({ data }: ImpactChartProps) {
                 boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
                 fontSize: "12px",
               }}
-              formatter={(value: number, name: string) => [
-                `${value.toFixed(1)} kg`,
+              formatter={(value: any, name: any) => [
+                `${Number(value).toFixed(1)} kg`,
                 name === "organic" ? "Organik" : "Daur Ulang",
               ]}
-              labelFormatter={(label: string) => `Tanggal: ${label}`}
+              labelFormatter={(label: any) => `Tanggal: ${label}`}
             />
             <Legend
               formatter={(value: string) =>

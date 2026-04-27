@@ -44,7 +44,7 @@ export default function RegisterPage() {
 
   const roles: { value: UserRole; label: string; desc: string }[] = [
     { value: "warga", label: "🏘️ Warga", desc: "Setor sampah & dapatkan reward" },
-    { value: "pembeli", label: "🛒 Pembeli", desc: "Beli produk daur ulang" },
+    { value: "petani", label: "👨‍🌾 Petani", desc: "Beli produk daur ulang" },
     { value: "admin", label: "🏛️ Admin BUMDes", desc: "Kelola operasional" },
   ];
 

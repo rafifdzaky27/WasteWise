@@ -9,7 +9,7 @@ create table public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text not null,
   full_name text not null default '',
-  role text not null default 'warga' check (role in ('warga', 'admin', 'pembeli')),
+  role text not null default 'warga' check (role in ('warga', 'admin', 'petani')),
   total_points integer not null default 0,
   created_at timestamptz not null default now()
 );

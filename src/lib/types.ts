@@ -1,6 +1,6 @@
 /* ─── User Roles ──────────────────────────────────────────────── */
 
-export type UserRole = "warga" | "admin" | "pembeli";
+export type UserRole = "warga" | "admin" | "petani";
 
 export interface UserProfile {
   id: string;
@@ -152,12 +152,6 @@ export const VOUCHER_OPTIONS: VoucherOption[] = [
     label: "Voucher LPG 3kg",
     description: "Tukarkan poin Anda dengan voucher LPG 3kg untuk memasak.",
     cost: 500,
-  },
-  {
-    type: "marketplace",
-    label: "Kredit Marketplace",
-    description: "Gunakan sebagai kredit belanja di marketplace WasteWise.",
-    cost: 200,
   },
 ];
 

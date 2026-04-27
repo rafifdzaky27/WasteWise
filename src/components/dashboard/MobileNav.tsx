@@ -3,16 +3,48 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navItems = [
-  { href: "/dashboard", label: "Beranda", icon: "📊" },
-  { href: "/deposit", label: "Setor", icon: "♻️" },
-  { href: "/rewards", label: "Hadiah", icon: "🎁" },
-  { href: "/biobin", label: "BioBin", icon: "🌡️" },
-  { href: "/orders", label: "Pesanan", icon: "📦" },
-];
+import { createClient } from "../../lib/supabase/client";
+import { useEffect, useState } from "react";
+
+
 
 export default function MobileNav() {
   const pathname = usePathname();
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchRole() {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        if (profile) setRole(profile.role);
+      }
+    }
+    fetchRole();
+  }, []);
+
+  const navItems = [
+    { href: "/dashboard", label: "Beranda", icon: "📊" },
+    ...(role !== "petani"
+      ? [
+          { href: "/deposit", label: "Setor", icon: "♻️" },
+          { href: "/rewards", label: "Hadiah", icon: "🎁" },
+        ]
+      : []),
+    ...(role === "admin"
+      ? [{ href: "/biobin", label: "BioCompose", icon: "🌡️" }]
+      : []),
+    ...(role === "petani"
+      ? [{ href: "/orders", label: "Pesanan", icon: "📦" }]
+      : []),
+  ];
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-t border-stone-border shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">

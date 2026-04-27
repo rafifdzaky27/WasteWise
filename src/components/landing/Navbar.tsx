@@ -32,7 +32,7 @@ export default function Navbar() {
 
       {/* Nav Links */}
       <div className="hidden md:flex items-center gap-8">
-        {[{label:"Fitur",href:"/#features"},{label:"Dampak",href:"/impact"},{label:"Pasar",href:"/#marketplace"},{label:"Vitalitas",href:"/#vitality"}].map((item) => (
+        {[{label:"Tentang",href:"/#about"},{label:"Reward",href:"/#features"},{label:"Dampak",href:"/impact"},{label:"Pasar",href:"/#marketplace"},{label:"Vitalitas",href:"/#vitality"}].map((item) => (
           <Link
             key={item.label}
             href={item.href}
@@ -44,12 +44,20 @@ export default function Navbar() {
       </div>
 
       {/* CTA */}
-      <Link
-        href="/register"
-        className="hidden sm:block bg-primary-dark text-white text-sm font-medium px-5 py-2.5 rounded-full shadow-lg hover:bg-primary-darker hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-      >
-        Bergabung Sekarang
-      </Link>
+      <div className="hidden sm:flex items-center gap-3">
+        <Link
+          href="/login"
+          className="text-sm font-medium text-stone-dark hover:text-primary transition-colors duration-200"
+        >
+          Masuk
+        </Link>
+        <Link
+          href="/register"
+          className="bg-primary-dark text-white text-sm font-medium px-5 py-2.5 rounded-full shadow-lg hover:bg-primary-darker hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+        >
+          Daftar
+        </Link>
+      </div>
     </nav>
   );
 }

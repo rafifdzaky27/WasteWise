@@ -55,10 +55,10 @@ export default function HarvestPrediction({
     return (
       <div className="glass-card rounded-2xl border border-stone-border p-6">
         <h3 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-          🌾 Prediksi Panen
+          🌱 Prediksi Compose
         </h3>
         <p className="text-sm text-muted">
-          Belum ada data sensor yang cukup untuk memprediksi waktu panen.
+          Belum ada data sensor yang cukup untuk memprediksi waktu compose.
         </p>
       </div>
     );
@@ -74,11 +74,11 @@ export default function HarvestPrediction({
     <div className="glass-card rounded-2xl border border-stone-border p-6 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          🌾 Prediksi Panen
+          🌱 Prediksi Compose
         </h3>
         {prediction.status === "ready" ? (
           <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-accent-green text-green-status-text">
-            ✅ Siap Panen!
+            ✅ Siap Compose!
           </span>
         ) : (
           <span className="px-3 py-1 rounded-full text-[11px] font-semibold bg-yellow-bg text-amber-700">
@@ -133,7 +133,7 @@ export default function HarvestPrediction({
 
       {prediction.predicted_harvest_date && (
         <p className="text-xs text-muted mt-3 text-center">
-          📅 Estimasi panen:{" "}
+          📅 Estimasi compose:{" "}
           <span className="font-medium text-foreground">
             {new Date(prediction.predicted_harvest_date).toLocaleDateString(
               "id-ID",

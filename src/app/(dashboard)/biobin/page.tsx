@@ -66,14 +66,14 @@ export default function BioBinPage() {
           🌡️
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
-          BioBin IoT Dashboard
+          BioCompose IoT Dashboard
         </h1>
         <p className="text-muted max-w-md mb-6">
-          Belum ada unit BioBin yang terdaftar. Hubungi admin untuk menambahkan
-          unit BioBin ke sistem.
+          Belum ada unit BioCompose yang terdaftar. Hubungi admin untuk menambahkan
+          unit BioCompose ke sistem.
         </p>
         <div className="px-4 py-2 rounded-xl bg-yellow-bg border border-yellow-border text-sm text-amber-700">
-          💡 Tip: Admin dapat menambahkan unit BioBin melalui Supabase Dashboard
+          💡 Tip: Admin dapat menambahkan unit BioCompose melalui Supabase Dashboard
         </div>
       </div>
     );
@@ -84,7 +84,7 @@ export default function BioBinPage() {
       {/* Header */}
       <div className="mb-8 animate-fade-in">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
-          🌡️ BioBin IoT Dashboard
+          🌡️ BioCompose IoT Dashboard
         </h1>
         <p className="text-sm text-muted">
           Monitoring suhu, kelembapan, dan gas secara real-time untuk
@@ -92,7 +92,7 @@ export default function BioBinPage() {
         </p>
       </div>
 
-      {/* BioBin Selector (if multiple units) */}
+      {/* BioCompose Selector (if multiple units) */}
       {biobins.length > 1 && (
         <div className="flex gap-3 mb-6 overflow-x-auto pb-2 animate-fade-in animate-delay-100">
           {biobins.map((b) => (
@@ -120,7 +120,7 @@ export default function BioBinPage() {
         </div>
       )}
 
-      {/* BioBin Status Card */}
+      {/* BioCompose Status Card */}
       {selectedBiobin && (
         <div className="mb-6 animate-fade-in animate-delay-200">
           <BioBinStatus
