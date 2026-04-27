@@ -74,15 +74,15 @@ export default function CommunityImpact() {
         {/* Left Content */}
         <div className="flex-1 p-10 md:p-16 reveal">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-medium text-foreground tracking-tight leading-tight">
-            Preserving our
+            Menjaga
           </h2>
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif italic text-primary tracking-tight leading-tight">
-            Community footprint
+            Jejak Komunitas Kita
           </h2>
 
           <p className="mt-6 text-lg text-[#57534d] max-w-md leading-relaxed">
-            Live analytics of our collective effort to reduce landfill
-            dependency and restore soil health in our region.
+            Analitik langsung dari upaya kolektif kita untuk mengurangi
+            ketergantungan pada TPA dan memulihkan kesehatan tanah di wilayah kita.
           </p>
 
           {/* Stats */}
@@ -92,9 +92,9 @@ export default function CommunityImpact() {
                 <AnimatedCounter end={58} suffix="%" />
               </p>
               <p className="mt-2 text-xs font-semibold text-muted uppercase tracking-widest leading-4">
-                Landfill
+                Pengurangan
                 <br />
-                Reduction
+                TPA
               </p>
             </div>
             <div>
@@ -102,9 +102,9 @@ export default function CommunityImpact() {
                 <AnimatedCounter end={540} suffix="kg" />
               </p>
               <p className="mt-2 text-xs font-semibold text-muted uppercase tracking-widest leading-4">
-                Compost
+                Kompos
                 <br />
-                Produced
+                Dihasilkan
               </p>
             </div>
           </div>
@@ -128,7 +128,7 @@ export default function CommunityImpact() {
               <div className="flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-green-dot animate-pulse-dot" />
                 <span className="text-sm font-medium text-white">
-                  Real-time Impact Tracker
+                  Pelacak Dampak Real-time
                 </span>
               </div>
               <svg

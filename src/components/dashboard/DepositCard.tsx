@@ -61,7 +61,7 @@ export default function DepositCard({
                 : "bg-yellow-bg text-amber-700"
             }`}
           >
-            {verified ? "Verified" : "Pending"}
+            {verified ? "Terverifikasi" : "Menunggu"}
           </span>
         </div>
       </div>

@@ -36,10 +36,10 @@ export default function LoginPage() {
   return (
     <>
       <h1 className="text-2xl font-bold text-foreground text-center mb-2">
-        Welcome back
+        Selamat Datang Kembali
       </h1>
       <p className="text-sm text-muted text-center mb-8">
-        Sign in to manage your waste deposits and rewards
+        Masuk untuk mengelola setoran sampah dan reward Anda
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -72,7 +72,7 @@ export default function LoginPage() {
             htmlFor="password"
             className="block text-sm font-medium text-foreground mb-1.5"
           >
-            Password
+            Kata Sandi
           </label>
           <input
             id="password"
@@ -111,21 +111,21 @@ export default function LoginPage() {
                   className="opacity-75"
                 />
               </svg>
-              Signing in...
+              Memproses...
             </span>
           ) : (
-            "Sign In"
+            "Masuk"
           )}
         </button>
       </form>
 
       <p className="text-sm text-muted text-center mt-6">
-        Don&apos;t have an account?{" "}
+        Belum punya akun?{" "}
         <Link
           href="/register"
           className="text-primary font-medium hover:underline"
         >
-          Create one
+          Daftar di sini
         </Link>
       </p>
     </>

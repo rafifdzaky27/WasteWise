@@ -5,7 +5,7 @@ import { useEffect, useRef } from "react";
 const metrics = [
   {
     value: "54°C",
-    label: "Temperature",
+    label: "Suhu",
     iconBg: "bg-accent-green",
     iconBorder: "border-accent-green-border",
     icon: (
@@ -16,7 +16,7 @@ const metrics = [
   },
   {
     value: "62%",
-    label: "Moisture",
+    label: "Kelembapan",
     iconBg: "bg-blue-bg",
     iconBorder: "border-blue-border",
     icon: (
@@ -26,8 +26,8 @@ const metrics = [
     ),
   },
   {
-    value: "Healthy",
-    label: "Condition",
+    value: "Sehat",
+    label: "Kondisi",
     iconBg: "bg-yellow-bg",
     iconBorder: "border-yellow-border",
     icon: (
@@ -37,8 +37,8 @@ const metrics = [
     ),
   },
   {
-    value: "4 Days",
-    label: "Until Harvest",
+    value: "4 Hari",
+    label: "Menuju Panen",
     iconBg: "bg-purple-bg",
     iconBorder: "border-purple-border",
     icon: (
@@ -80,8 +80,8 @@ export default function BioBinVitality() {
             <span className="font-serif italic text-[#096]">Vitality</span>
           </h2>
           <p className="mt-4 text-base text-muted max-w-md mx-auto">
-            Monitoring the health of our village&apos;s organic digestion system
-            in real-time.
+            Memantau kesehatan sistem pencernaan organik desa kita
+            secara real-time.
           </p>
         </div>
 
@@ -112,7 +112,7 @@ export default function BioBinVitality() {
           <div className="inline-flex items-center gap-3 bg-accent-green border border-accent-green-border rounded-full px-6 py-2">
             <span className="w-2 h-2 rounded-full bg-green-status animate-pulse-dot" />
             <span className="text-xs font-semibold text-green-status-text uppercase tracking-widest">
-              System Status: Optimal Composting
+              Status Sistem: Pengomposan Optimal
             </span>
           </div>
         </div>

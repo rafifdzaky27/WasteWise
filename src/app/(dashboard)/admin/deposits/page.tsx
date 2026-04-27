@@ -32,14 +32,14 @@ export default function AdminDepositsPage() {
       body: JSON.stringify({ qr_code: decodedText }),
     });
     const data = await res.json();
-    if (!res.ok) { setError(data.error || "Verification failed"); return; }
+    if (!res.ok) { setError(data.error || "Verifikasi gagal"); return; }
     setScannedDeposit(data);
-    setSuccess("Deposit found! Review details below.");
+    setSuccess("Setoran ditemukan! Tinjau detail di bawah.");
   }
 
   async function confirmVerify() {
     if (!scannedDeposit) return;
-    setSuccess(`Deposit verified successfully! ${scannedDeposit.profiles?.full_name} earned ${scannedDeposit.points_earned} points ⭐`);
+    setSuccess(`Setoran berhasil diverifikasi! ${scannedDeposit.profiles?.full_name} mendapatkan ${scannedDeposit.points_earned} poin ⭐`);
     setScannedDeposit(null);
     fetchDeposits();
   }
@@ -53,8 +53,8 @@ export default function AdminDepositsPage() {
   return (
     <div className="max-w-5xl mx-auto pb-20 md:pb-0">
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Deposit <span className="font-serif italic text-primary">Verification</span></h1>
-        <p className="text-muted text-sm mt-1">Scan warga QR codes to verify waste deposits.</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Verifikasi <span className="font-serif italic text-primary">Setoran</span></h1>
+        <p className="text-muted text-sm mt-1">Pindai QR code warga untuk memverifikasi setoran sampah.</p>
       </div>
 
       {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">{error}</div>}
@@ -66,31 +66,31 @@ export default function AdminDepositsPage() {
           {scanning ? (
             <div className="bg-white border border-stone-border rounded-2xl p-4 shadow-sm">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold text-foreground">Scanning...</h2>
-                <button onClick={() => setScanning(false)} className="text-xs text-muted hover:text-foreground">Cancel</button>
+                <h2 className="text-lg font-semibold text-foreground">Memindai...</h2>
+                <button onClick={() => setScanning(false)} className="text-xs text-muted hover:text-foreground">Batal</button>
               </div>
               <QRScanner onScan={handleScan} onError={(e) => setError(e)} />
             </div>
           ) : scannedDeposit ? (
             <div className="bg-white border border-stone-border rounded-2xl p-5 shadow-sm">
-              <h2 className="text-lg font-semibold text-foreground mb-4">Deposit Details</h2>
+              <h2 className="text-lg font-semibold text-foreground mb-4">Detail Setoran</h2>
               <div className="space-y-3">
                 <div className="flex justify-between text-sm"><span className="text-muted">Warga</span><span className="font-medium text-foreground">{scannedDeposit.profiles?.full_name}</span></div>
                 <div className="flex justify-between text-sm"><span className="text-muted">Email</span><span className="font-medium text-foreground">{scannedDeposit.profiles?.email}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-muted">Type</span><span className="font-medium text-foreground capitalize flex items-center gap-1">{scannedDeposit.waste_type === "organic" ? "🌿" : "♻️"} {scannedDeposit.waste_type}</span></div>
-                <div className="flex justify-between text-sm"><span className="text-muted">Weight</span><span className="font-medium text-foreground">{scannedDeposit.weight_kg} kg</span></div>
-                <div className="flex justify-between text-sm"><span className="text-muted">Points</span><span className="font-bold text-primary">+{scannedDeposit.points_earned} ⭐</span></div>
-                <div className="flex justify-between text-sm"><span className="text-muted">Status</span><span className="text-green-status-text font-bold">✓ Verified</span></div>
+                <div className="flex justify-between text-sm"><span className="text-muted">Jenis</span><span className="font-medium text-foreground capitalize flex items-center gap-1">{scannedDeposit.waste_type === "organic" ? "🌿" : "♻️"} {scannedDeposit.waste_type === "organic" ? "Organik" : "Daur Ulang"}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-muted">Berat</span><span className="font-medium text-foreground">{scannedDeposit.weight_kg} kg</span></div>
+                <div className="flex justify-between text-sm"><span className="text-muted">Poin</span><span className="font-bold text-primary">+{scannedDeposit.points_earned} ⭐</span></div>
+                <div className="flex justify-between text-sm"><span className="text-muted">Status</span><span className="text-green-status-text font-bold">✓ Terverifikasi</span></div>
               </div>
-              <button onClick={confirmVerify} className="w-full mt-4 bg-primary-dark text-white font-medium py-3 rounded-xl hover:bg-primary-darker transition-colors shadow-lg">Done</button>
+              <button onClick={confirmVerify} className="w-full mt-4 bg-primary-dark text-white font-medium py-3 rounded-xl hover:bg-primary-darker transition-colors shadow-lg">Selesai</button>
             </div>
           ) : (
             <div className="bg-white border border-stone-border rounded-2xl p-6 shadow-sm text-center">
               <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center text-3xl mb-4">📷</div>
-              <h2 className="text-lg font-semibold text-foreground mb-2">Scan QR Code</h2>
-              <p className="text-sm text-muted mb-4">Point your camera at a warga&apos;s deposit QR code to verify their waste submission.</p>
+              <h2 className="text-lg font-semibold text-foreground mb-2">Pindai QR Code</h2>
+              <p className="text-sm text-muted mb-4">Arahkan kamera Anda ke QR code setoran warga untuk memverifikasi pengajuan sampah mereka.</p>
               <button onClick={() => { setScanning(true); setError(""); setSuccess(""); }} className="bg-primary-dark text-white text-sm font-medium px-6 py-3 rounded-xl hover:bg-primary-darker transition-colors shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                Open Scanner
+                Buka Pemindai
               </button>
             </div>
           )}
@@ -99,11 +99,11 @@ export default function AdminDepositsPage() {
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-yellow-bg border border-yellow-border rounded-2xl p-4 text-center">
               <p className="text-2xl font-bold text-foreground">{deposits.filter(d => !d.verified_by).length}</p>
-              <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mt-1">Pending</p>
+              <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mt-1">Menunggu</p>
             </div>
             <div className="bg-accent-green border border-accent-green-border rounded-2xl p-4 text-center">
               <p className="text-2xl font-bold text-foreground">{deposits.filter(d => d.verified_by).length}</p>
-              <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mt-1">Verified</p>
+              <p className="text-[10px] font-semibold text-muted uppercase tracking-wider mt-1">Terverifikasi</p>
             </div>
           </div>
         </div>
@@ -111,10 +111,10 @@ export default function AdminDepositsPage() {
         {/* Right: Deposits Table */}
         <div className="lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">All Deposits</h2>
+            <h2 className="text-lg font-semibold text-foreground">Semua Setoran</h2>
             <div className="flex gap-1 bg-stone-light rounded-lg p-0.5">
-              {(["all", "pending", "verified"] as const).map((f) => (
-                <button key={f} onClick={() => setFilter(f)} className={`text-xs font-medium px-3 py-1.5 rounded-md capitalize transition-all ${filter === f ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground"}`}>{f}</button>
+              {([{key:"all",label:"Semua"},{key:"pending",label:"Menunggu"},{key:"verified",label:"Terverifikasi"}] as const).map((f) => (
+                <button key={f.key} onClick={() => setFilter(f.key as "all"|"pending"|"verified")} className={`text-xs font-medium px-3 py-1.5 rounded-md transition-all ${filter === f.key ? "bg-white text-foreground shadow-sm" : "text-muted hover:text-foreground"}`}>{f.label}</button>
               ))}
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function AdminDepositsPage() {
           {loading ? (
             <div className="space-y-3">{[1,2,3].map(i => <div key={i} className="bg-white border border-stone-border rounded-2xl p-4 animate-pulse"><div className="h-4 bg-stone-light rounded w-1/3" /></div>)}</div>
           ) : filtered.length === 0 ? (
-            <div className="bg-white/60 border border-stone-border rounded-2xl p-8 text-center"><p className="text-sm text-muted">No deposits found.</p></div>
+            <div className="bg-white/60 border border-stone-border rounded-2xl p-8 text-center"><p className="text-sm text-muted">Tidak ada setoran ditemukan.</p></div>
           ) : (
             <div className="space-y-2">{filtered.map((d) => (
               <div key={d.id} className="bg-white border border-stone-border rounded-xl p-3.5 flex items-center justify-between hover:shadow-sm transition-shadow">
@@ -135,7 +135,7 @@ export default function AdminDepositsPage() {
                 </div>
                 <div className="text-right shrink-0 ml-2">
                   <p className="text-xs font-bold text-primary">+{d.points_earned}</p>
-                  <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full ${d.verified_by ? "bg-accent-green text-green-status-text" : "bg-yellow-bg text-amber-700"}`}>{d.verified_by ? "Verified" : "Pending"}</span>
+                  <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full ${d.verified_by ? "bg-accent-green text-green-status-text" : "bg-yellow-bg text-amber-700"}`}>{d.verified_by ? "Terverifikasi" : "Menunggu"}</span>
                 </div>
               </div>
             ))}</div>

@@ -32,13 +32,13 @@ export default function Navbar() {
 
       {/* Nav Links */}
       <div className="hidden md:flex items-center gap-8">
-        {["Features", "Impact", "Marketplace", "Vitality"].map((item) => (
+        {[{label:"Fitur",href:"/#features"},{label:"Dampak",href:"/impact"},{label:"Pasar",href:"/#marketplace"},{label:"Vitalitas",href:"/#vitality"}].map((item) => (
           <Link
-            key={item}
-            href={`#${item.toLowerCase()}`}
+            key={item.label}
+            href={item.href}
             className="text-sm font-medium text-stone-dark hover:text-primary transition-colors duration-200"
           >
-            {item}
+            {item.label}
           </Link>
         ))}
       </div>
@@ -48,7 +48,7 @@ export default function Navbar() {
         href="/register"
         className="hidden sm:block bg-primary-dark text-white text-sm font-medium px-5 py-2.5 rounded-full shadow-lg hover:bg-primary-darker hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
       >
-        Join the Movement
+        Bergabung Sekarang
       </Link>
     </nav>
   );
