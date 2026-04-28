@@ -1,7 +1,8 @@
-"use client";
-
-import { useState } from "react";
+import { createClient } from "../../../lib/supabase/server";
 import Link from "next/link";
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface OrderItem {
   id: string;
@@ -25,19 +26,27 @@ const statusMap: Record<string, { label: string; color: string }> = {
   completed: { label: "Selesai", color: "bg-accent-green text-green-status-text border-accent-green-border" },
 };
 
-export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loaded, setLoaded] = useState(false);
+export default async function OrdersPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  const loadRef = (node: HTMLDivElement | null) => {
-    if (node && !loaded) {
-      setLoaded(true);
-      fetch("/api/orders").then((r) => r.json()).then((d) => { if (Array.isArray(d)) setOrders(d); });
-    }
-  };
+  let orders: Order[] = [];
+
+  if (user) {
+    const { data } = await supabase
+      .from("orders")
+      .select(`
+        id, total_price_rp, status, created_at,
+        order_items ( id, quantity, unit_price_rp, products ( name, category ) )
+      `)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    
+    if (data) orders = data as any;
+  }
 
   return (
-    <div ref={loadRef} className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto animate-fade-in">
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
           Riwayat <span className="font-serif italic text-primary">Pesanan</span>
@@ -45,9 +54,7 @@ export default function OrdersPage() {
         <p className="text-muted mt-1 text-sm">Pantau status pesanan Anda dari marketplace.</p>
       </div>
 
-      {!loaded ? (
-        <div className="space-y-4">{[1, 2].map((i) => (<div key={i} className="bg-white border border-stone-light rounded-2xl p-6 animate-pulse"><div className="h-4 bg-stone-light rounded w-1/3 mb-3" /><div className="h-3 bg-stone-light rounded w-1/2" /></div>))}</div>
-      ) : orders.length === 0 ? (
+      {orders.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
           <div className="w-20 h-20 bg-stone-light rounded-full flex items-center justify-center text-4xl mb-6">📦</div>
           <h2 className="text-xl font-semibold text-foreground mb-2">Belum ada pesanan</h2>
@@ -64,7 +71,7 @@ export default function OrdersPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <p className="text-xs text-muted font-mono">#{order.id.slice(0, 8).toUpperCase()}</p>
-                    <p className="text-xs text-muted mt-0.5">{d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</p>
+                    <p className="text-xs text-muted mt-0.5">{d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
                   </div>
                   <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${s.color}`}>{s.label}</span>
                 </div>
@@ -77,7 +84,7 @@ export default function OrdersPage() {
                   ))}
                 </div>
                 <div className="flex items-center justify-between pt-3 border-t border-stone-border">
-                  <span className="text-sm font-medium text-muted">Total</span>
+                  <span className="text-sm font-medium text-muted">Total Tagihan</span>
                   <span className="text-base font-bold text-foreground">Rp {order.total_price_rp.toLocaleString("id-ID")}</span>
                 </div>
               </div>

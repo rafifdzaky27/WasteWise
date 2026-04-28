@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import productCompost from "../../assets/images/product-compost.png";
 import productLiquid from "../../assets/images/product-liquid.png";
 import productSeeds from "../../assets/images/product-seeds.png";
@@ -73,7 +74,7 @@ export default function Marketplace() {
             tinggi yang diproduksi langsung di desa.
           </p>
         </div>
-        <button className="flex items-center gap-1 text-base font-medium text-primary hover:gap-2 transition-all duration-300 shrink-0">
+        <Link href="/marketplace" className="flex items-center gap-1 text-base font-medium text-primary hover:gap-2 transition-all duration-300 shrink-0">
           Lihat semua produk
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
@@ -84,7 +85,7 @@ export default function Marketplace() {
               strokeLinejoin="round"
             />
           </svg>
-        </button>
+        </Link>
       </div>
 
       {/* Product Grid */}
