@@ -52,8 +52,6 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
         cart.clearCart();
         setShowCheckoutModal(false);
         setShowCart(false);
-        // Refresh router so Server Component fetches new stock
-        router.refresh();
         router.push("/orders");
       }
     } catch {
