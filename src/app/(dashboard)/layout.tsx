@@ -29,26 +29,40 @@ export default async function DashboardLayout({
     .eq("id", user.id)
     .single();
 
-  const isAdmin = profile?.role === "admin";
+  const userRole = profile?.role || "warga";
+  const isAdmin = userRole === "admin";
+  const isWarga = userRole === "warga";
+  const isPetani = userRole === "petani";
 
+  // Navigation items based on role
   const navItems = [
     { href: "/dashboard", label: "Beranda", icon: "📊" },
-    ...(profile?.role !== "petani"
+    // Warga: setor sampah + hadiah
+    ...(isWarga
       ? [
           { href: "/deposit", label: "Setor Sampah", icon: "♻️" },
           { href: "/rewards", label: "Hadiah", icon: "🎁" },
         ]
       : []),
-    ...(profile?.role === "admin"
-      ? [{ href: "/biobin", label: "BioCompose", icon: "🌡️" }]
+    // Petani: marketplace + pesanan
+    ...(isPetani
+      ? [
+          { href: "/marketplace", label: "Marketplace", icon: "🛒" },
+          { href: "/orders", label: "Pesanan", icon: "📦" },
+        ]
       : []),
-    ...(profile?.role === "petani"
-      ? [{ href: "/orders", label: "Pesanan", icon: "📦" }]
+    // Admin: setor (verify), biocompose
+    ...(isAdmin
+      ? [
+          { href: "/deposit", label: "Setor Sampah", icon: "♻️" },
+          { href: "/biobin", label: "BioCompose", icon: "🌡️" },
+        ]
       : []),
   ];
 
   const adminItems = [
     { href: "/admin/deposits", label: "Verifikasi Setoran", icon: "✅" },
+    { href: "/admin/products", label: "Kelola Produk", icon: "📦" },
   ];
 
   return (
@@ -97,7 +111,7 @@ export default async function DashboardLayout({
 
         {/* User Info */}
         <div className="px-4 py-4 border-t border-stone-border">
-          <UserProfile fullName={profile?.full_name || ""} role={profile?.role || ""} />
+          <UserProfile fullName={profile?.full_name || ""} role={userRole} />
         </div>
       </aside>
 
@@ -113,7 +127,7 @@ export default async function DashboardLayout({
           </div>
           <div className="flex items-center">
             <span className="text-xs font-medium text-muted capitalize px-2 py-1 rounded-full bg-accent-green">
-              {profile?.role || "warga"}
+              {userRole}
             </span>
             <MobileHeaderLogout />
           </div>
@@ -123,8 +137,8 @@ export default async function DashboardLayout({
         <main className="flex-1 p-4 md:p-8 pb-20 md:pb-8">{children}</main>
       </div>
 
-      {/* Mobile Bottom Nav */}
-      <MobileNav />
+      {/* Mobile Bottom Nav — role passed as prop, no useEffect needed */}
+      <MobileNav role={userRole} />
     </div>
   );
 }

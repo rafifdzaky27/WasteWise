@@ -3,46 +3,39 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { createClient } from "../../lib/supabase/client";
-import { useEffect, useState } from "react";
+interface MobileNavProps {
+  role: string;
+}
 
-
-
-export default function MobileNav() {
+export default function MobileNav({ role }: MobileNavProps) {
   const pathname = usePathname();
-  const [role, setRole] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchRole() {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single();
-        if (profile) setRole(profile.role);
-      }
-    }
-    fetchRole();
-  }, []);
+  const isWarga = role === "warga";
+  const isPetani = role === "petani";
+  const isAdmin = role === "admin";
 
   const navItems = [
     { href: "/dashboard", label: "Beranda", icon: "📊" },
-    ...(role !== "petani"
+    // Warga: setor + hadiah
+    ...(isWarga
       ? [
           { href: "/deposit", label: "Setor", icon: "♻️" },
           { href: "/rewards", label: "Hadiah", icon: "🎁" },
         ]
       : []),
-    ...(role === "admin"
-      ? [{ href: "/biobin", label: "BioCompose", icon: "🌡️" }]
+    // Petani: marketplace + pesanan
+    ...(isPetani
+      ? [
+          { href: "/marketplace", label: "Pasar", icon: "🛒" },
+          { href: "/orders", label: "Pesanan", icon: "📦" },
+        ]
       : []),
-    ...(role === "petani"
-      ? [{ href: "/orders", label: "Pesanan", icon: "📦" }]
+    // Admin: biocompose + verify
+    ...(isAdmin
+      ? [
+          { href: "/biobin", label: "BioCompose", icon: "🌡️" },
+          { href: "/admin/deposits", label: "Verifikasi", icon: "✅" },
+        ]
       : []),
   ];
 
