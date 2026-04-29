@@ -46,12 +46,14 @@ export default async function DashboardLayout({
           { href: "/orders", label: "Pesanan" },
         ]
       : []),
-    // Admin: biocompose + verify + products
+    // Admin: biocompose + verify + products + orders + vouchers
     ...(isAdmin
       ? [
           { href: "/biobin", label: "BioCompose" },
-          { href: "/admin/deposits", label: "Verifikasi" },
+          { href: "/admin/deposits", label: "Verifikasi Setoran" },
+          { href: "/admin/orders", label: "Pesanan Masuk" },
           { href: "/admin/products", label: "Kelola Produk" },
+          { href: "/admin/vouchers", label: "Penukaran Voucher" },
         ]
       : []),
   ];

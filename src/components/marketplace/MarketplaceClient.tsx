@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "../../lib/store/cart";
 import type { Product } from "../../lib/types";
-import logo from "../../assets/images/wastewise_logo.png";
 
 interface MarketplaceClientProps {
   initialProducts: Product[];
@@ -87,11 +86,11 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
         {/* Editorial Header */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Pasar <span className="font-serif italic text-primary">Berkelanjutan</span>
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-muted max-w-lg leading-relaxed">
-            Produk pilihan dari prinsip ekonomi sirkular. Setiap pembelian mendukung inisiatif keberlanjutan desa.
+          <p className="mt-2 text-sm sm:text-base text-muted max-w-lg leading-relaxed">
+            Belanja produk organik yang diproduksi langsung dari pengelolaan sampah desa.
           </p>
         </div>
 
@@ -252,18 +251,13 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
           )}
 
           {/* Brand Story */}
-          <div className="flex flex-col sm:flex-row items-center gap-6 py-12 text-center sm:text-left">
-            <div className="shrink-0 bg-stone-light/50 p-4 rounded-2xl">
-              <Image src={logo} alt="WasteWise Logo" width={40} height={40} className="w-10 h-10 object-contain drop-shadow-sm" />
-            </div>
-            <div>
-              <h3 className="text-xl sm:text-2xl font-medium text-foreground mb-2">
-                Setiap produk bercerita tentang <span className="font-serif italic text-primary">pembaruan.</span>
-              </h3>
-              <p className="text-sm text-muted max-w-lg leading-relaxed">
-                Kami bermitra dengan koperasi desa untuk mengubah apa yang dulunya dianggap &lsquo;sampah&rsquo; menjadi sumber daya premium untuk rumah dan kebun Anda.
-              </p>
-            </div>
+          <div className="flex flex-col items-center text-center py-12">
+            <h3 className="text-xl sm:text-2xl font-medium text-foreground mb-2">
+              Setiap produk bercerita tentang <span className="font-serif italic text-primary">pembaruan.</span>
+            </h3>
+            <p className="text-sm text-muted max-w-lg leading-relaxed">
+              Kami bermitra dengan koperasi desa untuk mengubah apa yang dulunya dianggap &lsquo;sampah&rsquo; menjadi sumber daya premium untuk rumah dan kebun Anda.
+            </p>
           </div>
         </div>
       )}

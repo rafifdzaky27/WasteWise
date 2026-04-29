@@ -133,8 +133,8 @@ export default function DepositPage() {
           {/* Editorial Heading */}
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-              Catat{" "}
-              <span className="font-serif italic text-primary">Setoran</span>
+              Setor{" "}
+              <span className="font-serif italic text-primary">Sampah</span>
             </h1>
             <p className="mt-2 text-sm sm:text-base text-muted max-w-xl leading-relaxed">
               Timbang sampah yang sudah dipilah, masukkan berat, dan konfirmasi kontribusi Anda pada ekonomi sirkular.
@@ -165,8 +165,8 @@ export default function DepositPage() {
           </div>
         </div>
 
-        {/* Right Column — Deposit Form (mimics QR scanner area from mockup) */}
-        <div>
+        {/* Right Column — Deposit Form */}
+        <div className="lg:mt-14">
           <div className="bg-white border border-stone-border rounded-2xl overflow-hidden">
             {/* Waste Type Selector Header */}
             <div className="p-6 border-b border-stone-border">
@@ -302,8 +302,7 @@ export default function DepositPage() {
             {deposits.slice(0, page * ITEMS_PER_PAGE).map((deposit) => (
               <div
                 key={deposit.id}
-                className="flex items-center justify-between py-5 border-b border-stone-border last:border-b-0 group cursor-pointer hover:bg-stone-light/30 -mx-4 px-4 rounded-xl transition-colors"
-                onClick={!deposit.verified_by ? () => setShowQR(deposit) : undefined}
+                className="flex items-center justify-between py-5 border-b border-stone-border last:border-b-0 group hover:bg-stone-light/30 -mx-4 px-4 rounded-xl transition-colors"
               >
                 <div className="flex items-center gap-4">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${deposit.waste_type === "organic" ? "bg-accent-green" : "bg-blue-bg"}`}>
@@ -322,15 +321,26 @@ export default function DepositPage() {
                     </p>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium text-foreground">+ {Number(deposit.weight_kg)} kg</p>
-                  <p className="text-xs text-muted mt-0.5">
-                    {deposit.verified_by ? (
-                      <span className="text-green-status-text">✓ Terverifikasi</span>
-                    ) : (
-                      <span className="text-amber-600">Menunggu</span>
-                    )}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-foreground">+ {Number(deposit.weight_kg)} kg</p>
+                    <p className="text-xs text-muted mt-0.5">
+                      {deposit.verified_by ? (
+                        <span className="text-green-status-text">✓ Terverifikasi</span>
+                      ) : (
+                        <span className="text-amber-600">Menunggu</span>
+                      )}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowQR(deposit)}
+                    className="shrink-0 w-8 h-8 rounded-lg bg-stone-light flex items-center justify-center text-muted hover:bg-primary hover:text-white transition-colors"
+                    title="Lihat QR"
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+                    </svg>
+                  </button>
                 </div>
               </div>
             ))}

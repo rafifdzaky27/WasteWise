@@ -9,31 +9,38 @@ import productLiquid from "../../assets/images/product-liquid.png";
 import productSeeds from "../../assets/images/product-seeds.png";
 import productBriquettes from "../../assets/images/product-briquettes.png";
 
+const categoryImages: Record<string, any> = {
+  compost: productCompost,
+  liquid: productLiquid,
+  seeds: productSeeds,
+  briquettes: productBriquettes,
+};
+
 const fallbackProducts = [
   {
     name: "Kompos Premium Eco-Zip 2kg",
-    price: "Rp 15rb",
+    price: "Rp 15.000",
     description: "Nutrisi organik kaya untuk kebun rumah Anda.",
     image: productCompost,
     badge: "TERLARIS",
   },
   {
     name: "Campuran Nutrisi Cair",
-    price: "Rp 25rb",
+    price: "Rp 25.000",
     description: "Penguat tanaman terkonsentrasi untuk tanaman pot.",
     image: productLiquid,
     badge: null,
   },
   {
     name: "Paket Benih Unggul",
-    price: "Rp 45rb",
+    price: "Rp 45.000",
     description: "Paket lengkap benih unggulan musiman.",
     image: productSeeds,
     badge: null,
   },
   {
     name: "Briket Sampah",
-    price: "Rp 10rb",
+    price: "Rp 10.000",
     description: "Bahan bakar masak ramah lingkungan dari limbah daur ulang.",
     image: productBriquettes,
     badge: null,
@@ -42,13 +49,27 @@ const fallbackProducts = [
 
 export default function Marketplace() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [dbProducts, setDbProducts] = useState<any[]>([]);
+  const [displayProducts, setDisplayProducts] = useState(fallbackProducts);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const supabase = createClient();
-      const { data } = await supabase.from("products").select("*").limit(4);
-      if (data && data.length > 0) setDbProducts(data);
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.from("products").select("*").eq("is_active", true).limit(4);
+        if (data && data.length > 0) {
+          setDisplayProducts(
+            data.map((p) => ({
+              name: p.name,
+              price: `Rp ${Number(p.price_rp).toLocaleString("id-ID")}`,
+              description: p.description,
+              image: categoryImages[p.category] || productCompost,
+              badge: p.stock_qty < 10 ? "TERBATAS" : null,
+            }))
+          );
+        }
+      } catch {
+        // Fallback products are already set
+      }
     };
     fetchProducts();
 
@@ -64,16 +85,6 @@ export default function Marketplace() {
     reveals?.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
-
-  const displayProducts = dbProducts.length > 0 
-    ? dbProducts.map(p => ({
-        name: p.name,
-        price: `Rp ${(p.price_rp / 1000)}rb`,
-        description: p.description,
-        image: p.image_url || productCompost,
-        badge: p.stock_qty < 10 ? "TERBATAS" : null,
-      }))
-    : fallbackProducts;
 
   return (
     <section

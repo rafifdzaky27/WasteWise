@@ -1,5 +1,4 @@
 import About from "../../../components/landing/About";
-import Image from "next/image";
 
 export default function AboutPage() {
   return (
@@ -10,58 +9,40 @@ export default function AboutPage() {
       <section className="w-full max-w-[1152px] mx-auto px-6 py-16 mb-16">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-foreground">
-            Profil Tim{" "}
-            <span className="font-serif italic text-primary">Pengembang</span>
+            Tim{" "}
+            <span className="font-serif italic text-primary">ImpactCrafters</span>
           </h2>
           <p className="mt-4 text-base text-muted max-w-2xl mx-auto leading-relaxed">
-            Kenali lebih dekat inovator di balik WasteWise.
+            Inovator di balik WasteWise — I/O Festival 2026
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Anggota 1 */}
+          {/* Pradipta Muhtadin */}
           <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="w-24 h-24 rounded-full bg-stone-light mx-auto mb-4 overflow-hidden relative">
-              {/* Tempat gambar profil 1 */}
-              <div className="absolute inset-0 flex items-center justify-center text-stone-dark/50">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/20 mx-auto mb-4 overflow-hidden relative flex items-center justify-center">
+              <span className="text-3xl font-bold text-primary/60">PM</span>
             </div>
-            <h3 className="text-xl font-semibold text-foreground">Nama Anggota 1</h3>
-            <p className="text-sm text-primary font-medium mt-1">Peran / Posisi</p>
-            <p className="text-xs text-muted mt-3">Deskripsi singkat anggota tim atau motivasinya bergabung dalam pengembangan aplikasi ini.</p>
+            <h3 className="text-xl font-semibold text-foreground">Pradipta Muhtadin</h3>
+            <p className="text-sm text-primary font-medium mt-1">1202220327</p>
           </div>
 
-          {/* Anggota 2 */}
+          {/* Rafif Dzaky Daniswara */}
           <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="w-24 h-24 rounded-full bg-stone-light mx-auto mb-4 overflow-hidden relative">
-              {/* Tempat gambar profil 2 */}
-              <div className="absolute inset-0 flex items-center justify-center text-stone-dark/50">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/20 mx-auto mb-4 overflow-hidden relative flex items-center justify-center">
+              <span className="text-3xl font-bold text-primary/60">RD</span>
             </div>
-            <h3 className="text-xl font-semibold text-foreground">Nama Anggota 2</h3>
-            <p className="text-sm text-primary font-medium mt-1">Peran / Posisi</p>
-            <p className="text-xs text-muted mt-3">Deskripsi singkat anggota tim atau motivasinya bergabung dalam pengembangan aplikasi ini.</p>
+            <h3 className="text-xl font-semibold text-foreground">Rafif Dzaky Daniswara</h3>
+            <p className="text-sm text-primary font-medium mt-1">1202223211</p>
           </div>
 
-          {/* Anggota 3 */}
+          {/* Sahal Fajri */}
           <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="w-24 h-24 rounded-full bg-stone-light mx-auto mb-4 overflow-hidden relative">
-              {/* Tempat gambar profil 3 */}
-              <div className="absolute inset-0 flex items-center justify-center text-stone-dark/50">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                </svg>
-              </div>
+            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/20 mx-auto mb-4 overflow-hidden relative flex items-center justify-center">
+              <span className="text-3xl font-bold text-primary/60">SF</span>
             </div>
-            <h3 className="text-xl font-semibold text-foreground">Nama Anggota 3</h3>
-            <p className="text-sm text-primary font-medium mt-1">Peran / Posisi</p>
-            <p className="text-xs text-muted mt-3">Deskripsi singkat anggota tim atau motivasinya bergabung dalam pengembangan aplikasi ini.</p>
+            <h3 className="text-xl font-semibold text-foreground">Sahal Fajri</h3>
+            <p className="text-sm text-primary font-medium mt-1">1202223364</p>
           </div>
         </div>
       </section>

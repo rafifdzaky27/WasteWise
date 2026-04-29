@@ -94,7 +94,7 @@ export default function CommunityImpact() {
               <p className="mt-2 text-xs font-semibold text-muted uppercase tracking-widest leading-4">
                 Pengurangan
                 <br />
-                TPA
+                Sampah di TPA
               </p>
             </div>
             <div>
