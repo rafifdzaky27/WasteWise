@@ -14,6 +14,8 @@ export default function DepositPage() {
   const [showQR, setShowQR] = useState<WasteDeposit | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   async function fetchDeposits() {
     const res = await fetch("/api/deposits");
@@ -101,7 +103,7 @@ export default function DepositPage() {
     <div className="animate-fade-in">
       {/* QR Modal */}
       {showQR && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-background rounded-3xl p-6 max-w-sm w-full animate-fade-in-up shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-bold text-foreground">QR Setoran Anda</h2>
@@ -219,17 +221,15 @@ export default function DepositPage() {
               />
             </div>
 
-            {/* Points Preview */}
-            {weightKg && parseFloat(weightKg) > 0 && (
-              <div className="px-6 py-4 bg-stone-light/50 flex items-center justify-between">
-                <p className="text-sm text-muted">
-                  Poin <span className="font-serif italic">Didapat</span>
-                </p>
-                <p className="text-xl font-bold text-primary">
-                  +{Math.round(parseFloat(weightKg) * (wasteType === "organic" ? 10 : 15))}
-                </p>
-              </div>
-            )}
+            {/* Points Preview (Always visible to avoid layout shift) */}
+            <div className="px-6 py-4 bg-stone-light/50 flex items-center justify-between">
+              <p className="text-sm text-muted">
+                Poin <span className="font-serif italic">Didapat</span>
+              </p>
+              <p className="text-xl font-bold text-primary">
+                +{weightKg && parseFloat(weightKg) > 0 ? Math.round(parseFloat(weightKg) * (wasteType === "organic" ? 10 : 15)) : 0}
+              </p>
+            </div>
 
             {/* Messages */}
             {error && (
@@ -297,7 +297,7 @@ export default function DepositPage() {
           </div>
         ) : (
           <div className="space-y-0">
-            {deposits.map((deposit) => (
+            {deposits.slice(0, page * ITEMS_PER_PAGE).map((deposit) => (
               <div
                 key={deposit.id}
                 className="flex items-center justify-between py-5 border-b border-stone-border last:border-b-0 group cursor-pointer hover:bg-stone-light/30 -mx-4 px-4 rounded-xl transition-colors"
@@ -332,6 +332,17 @@ export default function DepositPage() {
                 </div>
               </div>
             ))}
+            
+            {deposits.length > page * ITEMS_PER_PAGE && (
+              <div className="pt-6 pb-2 text-center">
+                <button
+                  onClick={() => setPage((p) => p + 1)}
+                  className="text-sm font-serif italic text-muted hover:text-primary transition-colors"
+                >
+                  Muat lebih banyak ↓
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

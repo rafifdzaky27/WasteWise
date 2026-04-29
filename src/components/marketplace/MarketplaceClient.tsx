@@ -10,11 +10,23 @@ interface MarketplaceClientProps {
   initialProducts: Product[];
 }
 
+import productCompost from "../../assets/images/product-compost.png";
+import productLiquid from "../../assets/images/product-liquid.png";
+import productSeeds from "../../assets/images/product-seeds.png";
+import productBriquettes from "../../assets/images/product-briquettes.png";
+
 const categoryLabels: Record<string, string> = {
   compost: "Restorasi Tanah",
   liquid: "Nutrisi Tanaman",
   seeds: "Pertanian Urban",
   briquettes: "Energi Hijau",
+};
+
+const categoryImages: Record<string, any> = {
+  compost: productCompost,
+  liquid: productLiquid,
+  seeds: productSeeds,
+  briquettes: productBriquettes,
 };
 
 export default function MarketplaceClient({ initialProducts }: MarketplaceClientProps) {
@@ -73,8 +85,10 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
       {/* Editorial Header */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <p className="text-sm font-serif italic text-muted mb-2">Pasar <span className="underline decoration-primary decoration-2 underline-offset-4">Berkelanjutan</span></p>
-          <p className="text-base text-muted max-w-lg leading-relaxed mt-3">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+            Pasar <span className="font-serif italic text-primary">Berkelanjutan</span>
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-muted max-w-lg leading-relaxed">
             Produk pilihan dari prinsip ekonomi sirkular. Setiap pembelian mendukung inisiatif keberlanjutan desa.
           </p>
         </div>
@@ -162,8 +176,8 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
           {featured && (
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-6 bg-white border border-stone-border rounded-2xl overflow-hidden">
               <div className="sm:col-span-3 relative aspect-[4/3] sm:aspect-auto bg-stone-light overflow-hidden">
-                {featured.image_url ? (
-                  <Image src={featured.image_url} alt={featured.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 60vw" />
+                {categoryImages[featured.category] || featured.image_url ? (
+                  <Image src={categoryImages[featured.category] || featured.image_url} alt={featured.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 60vw" />
                 ) : (
                   <div className="w-full h-full min-h-[240px] flex items-center justify-center bg-stone-light">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d6d3d1" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
@@ -201,8 +215,8 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
               {regularProducts.map((product) => (
                 <div key={product.id} className="bg-white border border-stone-border rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300 group">
                   <div className="relative aspect-[4/3] bg-stone-light overflow-hidden">
-                    {product.image_url ? (
-                      <Image src={product.image_url} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                    {categoryImages[product.category] || product.image_url ? (
+                      <Image src={categoryImages[product.category] || product.image_url} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d6d3d1" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
@@ -256,7 +270,7 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
 
       {/* Checkout Modal */}
       {showCheckoutModal && (
-        <div role="dialog" aria-modal="true" aria-label="Checkout pesanan" className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+        <div role="dialog" aria-modal="true" aria-label="Checkout pesanan" className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="px-6 py-4 border-b border-stone-border flex items-center justify-between">
               <h3 className="text-lg font-medium text-foreground">Checkout Pesanan</h3>

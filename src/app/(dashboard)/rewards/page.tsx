@@ -23,6 +23,8 @@ export default function RewardsPage() {
   const [redeeming, setRedeeming] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [txPage, setTxPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   async function fetchData() {
     const res = await fetch("/api/rewards");
@@ -87,17 +89,17 @@ export default function RewardsPage() {
           return (
             <div
               key={option.type}
-              className={`${isFeatured ? "sm:col-span-2 sm:grid sm:grid-cols-5" : ""} bg-white border border-stone-border rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300`}
+              className={`bg-white border border-stone-border rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300 flex flex-col`}
             >
               {/* Image */}
-              <div className={`relative ${isFeatured ? "sm:col-span-3 aspect-[16/10] sm:aspect-auto" : "aspect-[4/3]"} bg-stone-light overflow-hidden`}>
+              <div className={`relative aspect-[4/3] bg-stone-light overflow-hidden shrink-0`}>
                 {img && (
                   <Image
                     src={img}
                     alt={option.label}
                     fill
-                    className="object-cover"
-                    sizes={isFeatured ? "(max-width: 640px) 100vw, 60vw" : "(max-width: 640px) 100vw, 50vw"}
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    sizes="(max-width: 640px) 100vw, 50vw"
                   />
                 )}
                 {isFeatured && (
@@ -105,26 +107,16 @@ export default function RewardsPage() {
                     Esensial
                   </span>
                 )}
-                {isFeatured && (
-                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
-                    <h3 className="text-2xl font-medium text-white">{option.label}</h3>
-                    <p className="text-sm text-white/70 mt-1">{option.description}</p>
-                  </div>
-                )}
               </div>
 
               {/* Info */}
-              <div className={`p-6 ${isFeatured ? "sm:col-span-2 flex flex-col justify-center" : ""}`}>
-                {!isFeatured && (
-                  <>
-                    <h3 className="text-lg font-medium text-foreground mb-1">{option.label}</h3>
-                    <p className="text-sm text-muted mb-4">{option.description}</p>
-                  </>
-                )}
+              <div className={`p-6 flex flex-col flex-1`}>
+                <h3 className="text-lg font-medium text-foreground mb-1">{option.label}</h3>
+                <p className="text-sm text-muted mb-6 flex-1">{option.description}</p>
                 <button
                   onClick={() => handleRedeem(option.type)}
                   disabled={!canAfford || redeeming === option.type}
-                  className={`w-full text-sm font-medium py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${
+                  className={`w-full text-sm font-medium py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 mt-auto ${
                     canAfford
                       ? "bg-primary-dark text-white hover:bg-primary-darker"
                       : "bg-stone-light text-muted-light border border-stone-border cursor-not-allowed"
@@ -207,7 +199,7 @@ export default function RewardsPage() {
             </h2>
           </div>
           <div className="space-y-0">
-            {transactions.map((tx) => (
+            {transactions.slice(0, txPage * ITEMS_PER_PAGE).map((tx) => (
               <div key={tx.id} className="flex items-center justify-between py-4 border-b border-stone-border last:border-b-0">
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.type === "earned" ? "bg-accent-green" : "bg-red-50"}`}>
@@ -227,6 +219,17 @@ export default function RewardsPage() {
                 </span>
               </div>
             ))}
+            
+            {transactions.length > txPage * ITEMS_PER_PAGE && (
+              <div className="pt-6 pb-2 text-center">
+                <button
+                  onClick={() => setTxPage((p) => p + 1)}
+                  className="text-sm font-serif italic text-muted hover:text-primary transition-colors"
+                >
+                  Muat lebih banyak ↓
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -33,13 +33,25 @@ const categoryLabels: Record<string, string> = {
   briquettes: "Reward",
 };
 
-export default async function OrdersPage() {
+export default async function OrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
+  const sp = await searchParams;
+  const page = Number(sp?.page || 1);
+  const ITEMS_PER_PAGE = 10;
+
   let orders: Order[] = [];
+  let totalCount = 0;
 
   if (user) {
+    const { count } = await supabase.from("orders").select("*", { count: "exact", head: true }).eq("user_id", user.id);
+    totalCount = count || 0;
+
     const { data } = await supabase
       .from("orders")
       .select(`
@@ -47,7 +59,8 @@ export default async function OrdersPage() {
         order_items ( id, quantity, unit_price_rp, products ( name, category ) )
       `)
       .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(page * ITEMS_PER_PAGE);
     
     if (data) orders = data as any;
   }
@@ -139,11 +152,16 @@ export default async function OrdersPage() {
             );
           })}
 
-          <div className="pt-8 text-center">
-            <span className="text-sm font-serif italic text-muted">
-              Muat catatan lama ↓
-            </span>
-          </div>
+          {totalCount > page * ITEMS_PER_PAGE && (
+            <div className="pt-8 text-center">
+              <Link
+                href={`/orders?page=${page + 1}`}
+                className="text-sm font-serif italic text-muted hover:text-primary transition-colors inline-block px-4 py-2"
+              >
+                Muat catatan lama ↓
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>

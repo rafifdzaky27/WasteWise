@@ -25,7 +25,8 @@ export default async function DashboardPage() {
     .eq("user_id", user?.id)
     .order("created_at", { ascending: false });
 
-  const totalWeight = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
+  const totalWeightRaw = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
+  const totalWeight = Math.round(totalWeightRaw * 10) / 10;
   const organicWeight = deposits?.filter(d => d.waste_type === "organic").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
   const recyclableWeight = deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
   const co2Avoided = Math.round(((organicWeight * 0.5) + (recyclableWeight * 1.2)) * 10) / 10;

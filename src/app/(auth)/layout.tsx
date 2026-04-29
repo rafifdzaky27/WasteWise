@@ -17,9 +17,7 @@ export default function AuthLayout({
         href="/"
         className="relative z-10 flex items-center gap-2 mb-10"
       >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77" />
-        </svg>
+        <Image src={logo} alt="WasteWise Logo" width={32} height={32} className="w-8 h-8 object-contain drop-shadow-sm" />
         <span className="text-xl font-bold text-primary-darker tracking-tight">
           WasteWise
         </span>
