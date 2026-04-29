@@ -1,8 +1,7 @@
 import { createClient } from "../../lib/supabase/server";
 import { redirect } from "next/navigation";
-import DashboardNavbar from "../../components/dashboard/DashboardNavbar";
+import DashboardSidebar from "../../components/dashboard/DashboardSidebar";
 import MobileNav from "../../components/dashboard/MobileNav";
-import Footer from "../../components/landing/Footer";
 
 export default async function DashboardLayout({
   children,
@@ -59,21 +58,18 @@ export default async function DashboardLayout({
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      {/* Floating Top Navbar */}
-      <DashboardNavbar
+    <div className="flex min-h-screen bg-background">
+      {/* Desktop Left Sidebar */}
+      <DashboardSidebar
         navItems={navItems}
         fullName={profile?.full_name || ""}
         role={userRole}
       />
 
-      {/* Page Content — full width, generous whitespace */}
-      <main className="flex-1 w-full max-w-[1152px] mx-auto px-5 sm:px-6 pt-28 pb-24 md:pb-16">
+      {/* Page Content — pushed to right on desktop */}
+      <main className="flex-1 w-full max-w-[1152px] mx-auto px-5 sm:px-8 pt-10 pb-24 md:pb-16 md:ml-[260px] lg:ml-[280px]">
         {children}
       </main>
-
-      {/* Footer — same as landing for design consistency */}
-      <Footer />
 
       {/* Mobile Bottom Nav — only on mobile for thumb-friendly UX */}
       <MobileNav role={userRole} />

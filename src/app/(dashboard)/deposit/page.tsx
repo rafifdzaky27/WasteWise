@@ -100,7 +100,7 @@ export default function DepositPage() {
   const progressPercent = Math.min((monthlyWeight / monthlyGoal) * 100, 100);
 
   return (
-    <div className="animate-fade-in">
+    <>
       {/* QR Modal */}
       {showQR && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -126,8 +126,9 @@ export default function DepositPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-        {/* Left Column — Editorial Content */}
+      <div className="animate-fade-in">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+          {/* Left Column — Editorial Content */}
         <div>
           {/* Editorial Heading */}
           <div className="mb-8">
@@ -266,6 +267,7 @@ export default function DepositPage() {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Deposit History — Ledger style */}
       <div className="mt-16">
@@ -346,6 +348,6 @@ export default function DepositPage() {
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }

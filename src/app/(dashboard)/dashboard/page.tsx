@@ -1,6 +1,8 @@
 import { createClient } from "../../../lib/supabase/server";
 import Link from "next/link";
 
+export const revalidate = 0;
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -18,211 +20,167 @@ export default async function DashboardPage() {
   const isPetani = userRole === "petani";
   const isAdmin = userRole === "admin";
 
-  // Fetch real stats
-  const { data: deposits } = await supabase
-    .from("waste_deposits")
-    .select("weight_kg, waste_type, created_at, verified_by")
-    .eq("user_id", user?.id)
-    .order("created_at", { ascending: false });
+  // Fetch real stats based on role
+  let depositsQuery = supabase.from("waste_deposits").select("weight_kg, waste_type, created_at, points_earned");
+  let vouchersQuery = supabase.from("voucher_redemptions").select("id", { count: "exact" });
+  let ordersQuery = supabase.from("orders").select("id, total_price_rp", { count: "exact" });
 
+  if (!isAdmin) {
+    depositsQuery = depositsQuery.eq("user_id", user?.id);
+    vouchersQuery = vouchersQuery.eq("user_id", user?.id);
+    ordersQuery = ordersQuery.eq("buyer_id", user?.id);
+  }
+
+  const { data: deposits } = await depositsQuery.order("created_at", { ascending: false });
+  const { count: voucherCount } = await vouchersQuery;
+  const { data: orders, count: orderCount } = await ordersQuery;
+
+  // Global / User Stats
   const totalWeightRaw = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
   const totalWeight = Math.round(totalWeightRaw * 10) / 10;
+  
   const organicWeight = deposits?.filter(d => d.waste_type === "organic").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
   const recyclableWeight = deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
+  const otherWeight = deposits?.filter(d => d.waste_type === "other").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
+  
   const co2Avoided = Math.round(((organicWeight * 0.5) + (recyclableWeight * 1.2)) * 10) / 10;
+  const totalPoints = deposits?.reduce((sum, d) => sum + Number(d.points_earned), 0) || 0;
+  const totalRevenue = orders?.reduce((sum, o) => sum + Number(o.total_price_rp), 0) || 0;
 
-  const { count: voucherCount } = await supabase
-    .from("voucher_redemptions")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user?.id);
-
-  const { count: orderCount } = await supabase
-    .from("orders")
-    .select("*", { count: "exact", head: true })
-    .eq("buyer_id", user?.id);
-
-  // Recent deposits for the ledger (last 5)
-  const recentDeposits = (deposits || []).slice(0, 5);
+  // Chart Percentages
+  const totalCategorized = organicWeight + recyclableWeight + otherWeight || 1;
+  const orgPct = Math.round((organicWeight / totalCategorized) * 100);
+  const recPct = Math.round((recyclableWeight / totalCategorized) * 100);
+  const othPct = Math.round((otherWeight / totalCategorized) * 100);
 
   return (
     <div className="animate-fade-in">
       {/* Editorial Header */}
-      <div className="mb-4">
-        <p className="text-xs font-semibold tracking-[2.4px] uppercase text-primary mb-4">
-          Ringkasan Pribadi
-        </p>
+      <div className="mb-8">
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
-          {isWarga && (
-            <>Dampak <span className="font-serif italic text-primary">Anda</span> pada Bumi</>
-          )}
-          {isPetani && (
-            <>Aktivitas <span className="font-serif italic text-primary">Belanja</span> Anda</>
-          )}
-          {isAdmin && (
-            <>Operasional <span className="font-serif italic text-primary">BUMDes</span></>
-          )}
+          {isWarga && <>Dampak <span className="font-serif italic text-primary">Anda</span> pada Bumi</>}
+          {isPetani && <>Aktivitas <span className="font-serif italic text-primary">Belanja</span> Anda</>}
+          {isAdmin && <>Operasional <span className="font-serif italic text-primary">BUMDes</span></>}
         </h1>
         <p className="mt-4 text-base sm:text-lg text-muted max-w-xl leading-relaxed">
           {isWarga && "Melihat kontribusi lingkungan yang telah Anda hasilkan melalui pengelolaan sampah cerdas."}
           {isPetani && "Catatan lengkap aktivitas belanja dan pesanan Anda di marketplace."}
-          {isAdmin && "Pantau dan kelola seluruh operasional pengelolaan sampah desa."}
+          {isAdmin && "Pantau dan kelola seluruh operasional pengelolaan sampah desa secara real-time."}
         </p>
       </div>
 
-      {/* Stats Grid — glass card style with SVG icons */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mt-12 mb-16">
-        {isWarga && (
-          <>
-            <Link href="/deposit" className="group bg-white border border-stone-border rounded-2xl p-6 sm:p-8 hover:shadow-md transition-all duration-300">
-              <div className="mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77" />
-                  <circle cx="7.5" cy="11.5" r="1" fill="#016630" stroke="none" />
-                  <circle cx="12" cy="7.5" r="1" fill="#016630" stroke="none" />
-                  <circle cx="16.5" cy="11.5" r="1" fill="#016630" stroke="none" />
-                </svg>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Stat Column */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Hero Stat Box */}
+          <div className="bg-white border border-stone-border rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-8 opacity-5">
+              <svg width="120" height="120" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77"/></svg>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-2">
+                {isAdmin ? "Total Sampah Terkumpul" : "Total Sampah Diselamatkan"}
+              </p>
+              <h2 className="text-5xl sm:text-7xl font-medium text-foreground tracking-tighter">
+                {totalWeight}<span className="text-2xl text-muted font-normal ml-2">kg</span>
+              </h2>
+            </div>
+            
+            <div className="mt-8 pt-8 border-t border-stone-border/50 grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-xs text-muted mb-1">Karbon Dihindari (CO₂e)</p>
+                <p className="text-2xl font-medium text-primary">{co2Avoided} <span className="text-sm">kg</span></p>
               </div>
-              <p className="text-sm text-muted mb-1">
-                Sampah <span className="font-serif italic">Terkelola</span>
-              </p>
-              <p className="text-xs text-muted-light mb-3">Total sampah yang diselamatkan dari TPA</p>
-              <p className="text-4xl sm:text-5xl font-medium text-foreground tracking-tight">
-                {totalWeight}<span className="text-xl font-medium text-muted ml-2">kg</span>
-              </p>
-            </Link>
-            <Link href="/impact" className="group bg-accent-green border border-accent-green-border rounded-2xl p-6 sm:p-8 hover:shadow-md transition-all duration-300">
-              <div className="mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 22L12 2l10 20H2z" />
-                  <path d="M12 9v4" />
-                  <circle cx="12" cy="17" r="0.5" fill="#016630" stroke="none" />
-                </svg>
+              <div>
+                <p className="text-xs text-muted mb-1">{isAdmin ? "Total Poin Dikeluarkan" : "Total Poin Anda"}</p>
+                <p className="text-2xl font-medium text-amber-500">{totalPoints.toLocaleString("id-ID")} <span className="text-sm">pts</span></p>
               </div>
-              <p className="text-sm text-muted mb-1">
-                Karbon <span className="font-serif italic">Dihindari</span>
-              </p>
-              <p className="text-xs text-muted-light mb-3">Estimasi pengurangan emisi CO₂e</p>
-              <p className="text-4xl sm:text-5xl font-medium text-foreground tracking-tight">
-                {co2Avoided}<span className="text-xl font-medium text-muted ml-2">kg</span>
-              </p>
-            </Link>
-            <Link href="/rewards" className="group bg-white border border-stone-border rounded-2xl p-6 sm:p-8 hover:shadow-md transition-all duration-300">
-              <div className="mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-              </div>
-              <p className="text-sm text-muted mb-1">
-                Kontribusi <span className="font-serif italic">Komunitas</span>
-              </p>
-              <p className="text-xs text-muted-light mb-3">Voucher dan hadiah yang diperoleh</p>
-              <p className="text-4xl sm:text-5xl font-medium text-foreground tracking-tight">
-                {voucherCount || 0}<span className="text-xl font-medium text-muted ml-2">voucher</span>
-              </p>
-            </Link>
-          </>
-        )}
-        {isPetani && (
-          <>
-            <Link href="/orders" className="group bg-white border border-stone-border rounded-2xl p-6 sm:p-8 hover:shadow-md transition-all duration-300">
-              <div className="mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <rect x="1" y="3" width="15" height="13" rx="2" /><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
-                </svg>
-              </div>
-              <p className="text-sm text-muted mb-1">Pesanan <span className="font-serif italic">Aktif</span></p>
-              <p className="text-xs text-muted-light mb-3">Total pesanan yang dibuat</p>
-              <p className="text-4xl sm:text-5xl font-medium text-foreground tracking-tight">
-                {orderCount || 0}<span className="text-xl font-medium text-muted ml-2">pesanan</span>
-              </p>
-            </Link>
-            <Link href="/marketplace" className="group bg-accent-green border border-accent-green-border rounded-2xl p-6 sm:p-8 hover:shadow-md transition-all duration-300 sm:col-span-2 flex flex-col justify-center">
-              <h3 className="text-xl font-medium text-foreground mb-2">Jelajahi <span className="font-serif italic text-primary">Marketplace</span></h3>
-              <p className="text-sm text-muted mb-4">Temukan produk daur ulang berkualitas dari desa.</p>
-              <span className="text-sm font-medium text-primary">Mulai Belanja →</span>
-            </Link>
-          </>
-        )}
-        {isAdmin && (
-          <>
-            <Link href="/deposit" className="group bg-white border border-stone-border rounded-2xl p-6 sm:p-8 hover:shadow-md transition-all duration-300">
-              <div className="mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77" /></svg>
-              </div>
-              <p className="text-sm text-muted mb-1">Sampah <span className="font-serif italic">Terdata</span></p>
-              <p className="text-xs text-muted-light mb-3">Total berat tercatat</p>
-              <p className="text-4xl sm:text-5xl font-medium text-foreground tracking-tight">{totalWeight}<span className="text-xl font-medium text-muted ml-2">kg</span></p>
-            </Link>
-            <Link href="/admin/deposits" className="group bg-accent-green border border-accent-green-border rounded-2xl p-6 sm:p-8 hover:shadow-md transition-all duration-300">
-              <h3 className="text-xl font-medium text-foreground mb-2">Verifikasi <span className="font-serif italic text-primary">Setoran</span></h3>
-              <p className="text-sm text-muted">Pindai QR untuk memverifikasi setoran warga.</p>
-            </Link>
-            <Link href="/biobin" className="group bg-white border border-stone-border rounded-2xl p-6 sm:p-8 hover:shadow-md transition-all duration-300">
-              <h3 className="text-xl font-medium text-foreground mb-2">Monitor <span className="font-serif italic text-primary">BioCompose</span></h3>
-              <p className="text-sm text-muted">Pantau sensor pengomposan real-time.</p>
-            </Link>
-          </>
-        )}
-      </div>
-
-      {/* Personal Impact Ledger — Warga only */}
-      {isWarga && (
-        <div>
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-1 h-6 bg-primary rounded-full" />
-            <h2 className="text-xl sm:text-2xl font-medium text-foreground">
-              Catatan Dampak <span className="font-serif italic">Pribadi</span>
-            </h2>
+            </div>
           </div>
 
-          {recentDeposits.length === 0 ? (
-            <div className="bg-white/60 border border-stone-border rounded-2xl p-8 text-center">
-              <p className="text-muted text-sm">Belum ada catatan. <Link href="/deposit" className="text-primary font-medium hover:underline">Mulai setor sampah</Link> untuk memulai.</p>
+          {/* Composition Bar Chart */}
+          <div className="bg-white border border-stone-border rounded-3xl p-8">
+            <h3 className="text-lg font-medium text-foreground mb-6">Komposisi Sampah</h3>
+            
+            {/* Visual Bar */}
+            <div className="w-full h-8 flex rounded-full overflow-hidden mb-6 bg-stone-light">
+              <div style={{ width: `${orgPct}%` }} className="h-full bg-accent-green transition-all duration-1000 ease-out" />
+              <div style={{ width: `${recPct}%` }} className="h-full bg-blue-400 transition-all duration-1000 ease-out border-l border-white/20" />
+              <div style={{ width: `${othPct}%` }} className="h-full bg-stone-400 transition-all duration-1000 ease-out border-l border-white/20" />
             </div>
-          ) : (
-            <div className="space-y-0">
-              {recentDeposits.map((deposit, i) => (
-                <div key={i} className="flex items-center justify-between py-5 border-b border-stone-border last:border-b-0 group">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${deposit.waste_type === "organic" ? "bg-accent-green" : "bg-blue-bg"}`}>
-                      {deposit.waste_type === "organic" ? (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9" /></svg>
-                      ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2"><path d="M21 12a9 9 0 1 1-9-9" /><path d="M21 3v6h-6" /></svg>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {deposit.waste_type === "organic" ? "Setor Sampah Organik" : "Setor Daur Ulang"}
-                      </p>
-                      <p className="text-xs text-muted mt-0.5">
-                        BUMDes Desa • {new Date(deposit.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-foreground">+ {Number(deposit.weight_kg)} kg</p>
-                    <p className="text-xs text-muted mt-0.5">
-                      {deposit.verified_by ? "Terverifikasi" : "Menunggu"}
-                    </p>
-                  </div>
+
+            {/* Legend */}
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-3 h-3 rounded-full bg-accent-green" />
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted">Organik</p>
                 </div>
-              ))}
+                <p className="text-lg font-medium">{organicWeight} kg <span className="text-sm text-muted">({orgPct}%)</span></p>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-3 h-3 rounded-full bg-blue-400" />
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted">Daur Ulang</p>
+                </div>
+                <p className="text-lg font-medium">{recyclableWeight} kg <span className="text-sm text-muted">({recPct}%)</span></p>
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="w-3 h-3 rounded-full bg-stone-400" />
+                  <p className="text-xs font-bold uppercase tracking-wider text-muted">Lainnya</p>
+                </div>
+                <p className="text-lg font-medium">{otherWeight} kg <span className="text-sm text-muted">({othPct}%)</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Side Column (Activity & Secondary Stats) */}
+        <div className="space-y-6">
+          {/* Revenue / Marketplace Stat */}
+          {(isAdmin || isPetani) && (
+            <div className="bg-primary-dark text-white rounded-3xl p-8 shadow-xl">
+              <p className="text-[10px] font-bold text-white/60 uppercase tracking-[2px] mb-2">
+                {isAdmin ? "Total Pendapatan Marketplace" : "Total Belanja Anda"}
+              </p>
+              <h3 className="text-3xl font-medium tracking-tight mb-4">
+                Rp {totalRevenue.toLocaleString("id-ID")}
+              </h3>
+              <div className="flex justify-between items-center text-sm border-t border-white/20 pt-4">
+                <span className="text-white/80">Total Pesanan</span>
+                <span className="font-bold">{orderCount || 0} Transaksi</span>
+              </div>
             </div>
           )}
 
-          {recentDeposits.length > 0 && (
-            <div className="mt-6">
-              <Link href="/deposit" className="text-sm font-serif italic text-primary hover:underline">
-                Lihat Arsip Lengkap →
-              </Link>
+          {/* Vouchers Redeemed */}
+          {(isAdmin || isWarga) && (
+            <div className="bg-white border border-stone-border rounded-3xl p-8">
+              <div className="w-12 h-12 bg-yellow-bg border border-yellow-border text-yellow-700 rounded-full flex items-center justify-center mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              </div>
+              <p className="text-xs font-bold text-muted uppercase tracking-[2px] mb-1">Tukar Poin</p>
+              <p className="text-2xl font-medium text-foreground">{voucherCount || 0} <span className="text-sm font-normal text-muted">Voucher</span></p>
             </div>
           )}
+
+          {/* Quick Action / Deep Dive */}
+          <Link href={isAdmin ? "/admin/deposits" : "/deposit"} className="block bg-stone-light/50 border border-stone-border hover:border-primary/50 transition-colors rounded-3xl p-6 group">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-foreground group-hover:text-primary transition-colors">
+                  {isAdmin ? "Lihat Antrean Verifikasi" : "Catat Setoran Baru"}
+                </p>
+                <p className="text-xs text-muted mt-1">Lanjutkan aktivitas Anda</p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-white border border-stone-border flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </div>
+            </div>
+          </Link>
         </div>
-      )}
+      </div>
     </div>
   );
 }

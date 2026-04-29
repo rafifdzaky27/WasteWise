@@ -17,10 +17,22 @@ export default function BioBinPage() {
   const { readings, latestReading, isConnected, error, isLoading } =
     useSensorData(selectedId);
 
-  // Fetch list of BioBin units
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newBinName, setNewBinName] = useState("");
+  const [adding, setAdding] = useState(false);
+
+  // Fetch list of BioBin units and role
   useEffect(() => {
-    async function fetchBiobins() {
+    async function fetchData() {
       const supabase = createClient();
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+        setIsAdmin(profile?.role === "admin");
+      }
+
       const { data, error } = await supabase
         .from("biobin_units")
         .select("*")
@@ -35,8 +47,22 @@ export default function BioBinPage() {
       setLoadingBiobins(false);
     }
 
-    fetchBiobins();
+    fetchData();
   }, []);
+
+  async function handleAddBioBin() {
+    if (!newBinName.trim()) return;
+    setAdding(true);
+    const supabase = createClient();
+    const { data, error } = await supabase.from("biobin_units").insert({ name: newBinName, status: "active" }).select().single();
+    if (!error && data) {
+      setBiobins(prev => [...prev, data]);
+      setSelectedId(data.id);
+      setShowAddModal(false);
+      setNewBinName("");
+    }
+    setAdding(false);
+  }
 
   // IoT Simulator Effect
   useEffect(() => {
@@ -120,8 +146,8 @@ export default function BioBinPage() {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8 animate-fade-in">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
-          🌡️ BioCompose IoT Dashboard
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+          BioCompose <span className="font-serif italic text-primary">IoT Tracking</span>
         </h1>
         <p className="text-sm text-muted">
           Monitoring suhu, kelembapan, dan gas secara real-time untuk
@@ -146,6 +172,14 @@ export default function BioBinPage() {
               {b.name}
             </button>
           ))}
+          {isAdmin && (
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex-shrink-0 px-5 py-3 rounded-xl border border-dashed border-stone-border text-sm font-medium bg-stone-50 text-muted hover:text-primary hover:border-primary/50 transition-colors flex items-center gap-2"
+            >
+              + Tambah Unit
+            </button>
+          )}
         </div>
 
         {/* IoT Simulator Toggle for Vercel Demo */}
@@ -246,6 +280,39 @@ export default function BioBinPage() {
       {selectedId && !isLoading && (
         <div className="animate-fade-in animate-delay-400">
           <HarvestPrediction biobinId={selectedId} />
+        </div>
+      )}
+
+      {/* Add BioBin Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="text-lg font-medium text-foreground mb-4">Tambah Unit BioCompose</h3>
+            <input
+              type="text"
+              value={newBinName}
+              onChange={(e) => setNewBinName(e.target.value)}
+              placeholder="Contoh: BioBin RT 03"
+              className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
+              autoFocus
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
+                disabled={adding}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleAddBioBin}
+                disabled={!newBinName.trim() || adding}
+                className="bg-primary-dark text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-primary-darker transition-colors disabled:opacity-50"
+              >
+                {adding ? "Menyimpan..." : "Simpan"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

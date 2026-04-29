@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "../../lib/store/cart";
 import type { Product } from "../../lib/types";
+import logo from "../../assets/images/wastewise_logo.png";
 
 interface MarketplaceClientProps {
   initialProducts: Product[];
@@ -81,8 +82,9 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
   const regularProducts = products.slice(1);
 
   return (
-    <div className="animate-fade-in">
-      {/* Editorial Header */}
+    <>
+      <div className="animate-fade-in">
+        {/* Editorial Header */}
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
@@ -251,10 +253,8 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
 
           {/* Brand Story */}
           <div className="flex flex-col sm:flex-row items-center gap-6 py-12 text-center sm:text-left">
-            <div className="shrink-0">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77" />
-              </svg>
+            <div className="shrink-0 bg-stone-light/50 p-4 rounded-2xl">
+              <Image src={logo} alt="WasteWise Logo" width={40} height={40} className="w-10 h-10 object-contain drop-shadow-sm" />
             </div>
             <div>
               <h3 className="text-xl sm:text-2xl font-medium text-foreground mb-2">
@@ -267,6 +267,7 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
           </div>
         </div>
       )}
+      </div>
 
       {/* Checkout Modal */}
       {showCheckoutModal && (
@@ -321,6 +322,6 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
