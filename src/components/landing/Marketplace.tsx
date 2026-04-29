@@ -1,22 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef } from "react";
+import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import { createClient } from "../../lib/supabase/client";
 import productCompost from "../../assets/images/product-compost.png";
 import productLiquid from "../../assets/images/product-liquid.png";
 import productSeeds from "../../assets/images/product-seeds.png";
 import productBriquettes from "../../assets/images/product-briquettes.png";
 
-const categoryImages: Record<string, any> = {
-  compost: productCompost,
-  liquid: productLiquid,
-  seeds: productSeeds,
-  briquettes: productBriquettes,
-};
+interface DisplayProduct {
+  name: string;
+  price: string;
+  description: string;
+  image: StaticImageData;
+  badge: string | null;
+}
 
-const fallbackProducts = [
+const displayProducts: DisplayProduct[] = [
   {
     name: "Kompos Premium Eco-Zip 2kg",
     price: "Rp 15.000",
@@ -49,30 +49,8 @@ const fallbackProducts = [
 
 export default function Marketplace() {
   const sectionRef = useRef<HTMLElement>(null);
-  const [displayProducts, setDisplayProducts] = useState(fallbackProducts);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const supabase = createClient();
-        const { data } = await supabase.from("products").select("*").limit(4);
-        if (data && data.length > 0) {
-          setDisplayProducts(
-            data.map((p) => ({
-              name: p.name,
-              price: `Rp ${Number(p.price_rp).toLocaleString("id-ID")}`,
-              description: p.description,
-              image: categoryImages[p.category] || productCompost,
-              badge: p.stock_qty < 10 ? "TERBATAS" : null,
-            }))
-          );
-        }
-      } catch {
-        // Fallback products are already set
-      }
-    };
-    fetchProducts();
-
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -93,84 +71,73 @@ export default function Marketplace() {
       className="w-full max-w-[1152px] mx-auto px-5 sm:px-6 pt-20 sm:pt-32 pb-16"
     >
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-16 gap-6 reveal">
-        <div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-foreground">
-            Pasar{" "}
-            <span className="font-serif italic text-primary">Berkelanjutan</span>
-          </h2>
-          <p className="mt-4 text-base text-muted max-w-md">
-            Tukarkan poin reward Anda dengan sumber daya organik berkualitas
-            tinggi yang diproduksi langsung di desa.
-          </p>
-        </div>
-        <Link href="/marketplace" className="flex items-center gap-1 text-base font-medium text-primary hover:gap-2 transition-all duration-300 shrink-0">
-          Lihat semua produk
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <div className="text-center mb-12 reveal">
+        <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-foreground">
+          Pasar{" "}
+          <span className="font-serif italic text-primary">Berkelanjutan</span>
+        </h2>
+        <p className="mt-4 text-base text-muted max-w-md mx-auto">
+          Produk organik dari sampah desa yang diolah menjadi sumber daya bernilai.
+        </p>
+      </div>
+
+      {/* Product Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-10">
+        {displayProducts.map((product, i) => (
+          <div
+            key={product.name}
+            className={`reveal animate-delay-${(i + 1) * 100} bg-white/60 border border-stone-border rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300`}
+          >
+            <div className="relative aspect-square bg-stone-light overflow-hidden">
+              <Image
+                src={product.image}
+                alt={product.name}
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              {product.badge && (
+                <span className="absolute top-3 left-3 bg-primary text-white text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
+                  {product.badge}
+                </span>
+              )}
+            </div>
+            <div className="p-4">
+              <p className="text-sm font-semibold text-foreground line-clamp-1">
+                {product.name}
+              </p>
+              <p className="text-[11px] text-muted mt-1 line-clamp-2 leading-relaxed">
+                {product.description}
+              </p>
+              <p className="text-sm font-bold text-primary mt-3">
+                {product.price}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* CTA */}
+      <div className="text-center reveal animate-delay-500">
+        <Link
+          href="/marketplace"
+          className="inline-flex items-center gap-2 bg-primary-dark text-white px-8 py-3 rounded-full text-sm font-medium hover:bg-primary-darker transition-colors shadow-lg"
+        >
+          Jelajahi Marketplace
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
+          >
             <path
               d="M6 3L11 8L6 13"
-              stroke="currentColor"
+              stroke="white"
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
           </svg>
         </Link>
-      </div>
-
-      {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {displayProducts.map((product, i) => (
-          <div
-            key={product.name}
-            className={`reveal animate-delay-${(i + 1) * 100} group bg-white border border-stone-light rounded-[32px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 overflow-hidden`}
-          >
-            {/* Image */}
-            <div className="relative m-4 rounded-2xl overflow-hidden aspect-[4/5]">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-              />
-              {product.badge && (
-                <span className="absolute top-3 left-3 bg-primary-dark text-white text-[10px] font-bold tracking-wider px-3 py-1 rounded-full">
-                  {product.badge}
-                </span>
-              )}
-            </div>
-
-            {/* Info */}
-            <div className="px-6 pb-6">
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <h3 className="text-lg font-semibold text-foreground leading-snug">
-                  {product.name}
-                </h3>
-                <span className="text-base font-medium text-primary whitespace-nowrap">
-                  {product.price}
-                </span>
-              </div>
-              <p className="text-sm text-muted leading-relaxed mb-5">
-                {product.description}
-              </p>
-              <Link href="/marketplace" className="w-full flex items-center justify-center gap-2 bg-primary-dark text-white text-base font-medium py-3.5 rounded-2xl hover:bg-primary-darker transition-colors duration-300">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                >
-                  <path
-                    d="M7 18C5.9 18 5.01 18.9 5.01 20S5.9 22 7 22 9 21.1 9 20 8.1 18 7 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.59 17.3 11.97L20.88 5.48C20.96 5.34 21 5.17 21 5C21 4.45 20.55 4 20 4H5.21L4.27 2H1Z"
-                    fill="white"
-                  />
-                </svg>
-                Lihat di Marketplace
-              </Link>
-            </div>
-          </div>
-        ))}
       </div>
     </section>
   );

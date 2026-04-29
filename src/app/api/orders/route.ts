@@ -22,6 +22,7 @@ export async function GET() {
     .eq("id", user.id)
     .single();
 
+  // Try with joins first, fallback to plain if FK not configured
   let query = supabase
     .from("orders")
     .select("*, order_items(*, products(name, category))")
@@ -31,11 +32,28 @@ export async function GET() {
     query = query.eq("buyer_id", user.id);
   }
 
-  const { data, error } = await query;
+  let { data, error } = await query;
+  
+  // If the join fails (FK not set up), fallback to plain select
+  if (error) {
+    let fallbackQuery = supabase
+      .from("orders")
+      .select("*")
+      .order("created_at", { ascending: false });
+    
+    if (profile?.role !== "admin") {
+      fallbackQuery = fallbackQuery.eq("buyer_id", user.id);
+    }
+    
+    const fallback = await fallbackQuery;
+    data = fallback.data;
+    error = fallback.error;
+  }
+
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });
   }
-  return Response.json(data);
+  return Response.json(data || []);
 }
 
 /**

@@ -20,7 +20,9 @@ export default function BioBinPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newBinName, setNewBinName] = useState("");
+  const [newBinLocation, setNewBinLocation] = useState("");
   const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState("");
 
   // Fetch list of BioBin units and role
   useEffect(() => {
@@ -53,13 +55,25 @@ export default function BioBinPage() {
   async function handleAddBioBin() {
     if (!newBinName.trim()) return;
     setAdding(true);
+    setAddError("");
     const supabase = createClient();
-    const { data, error } = await supabase.from("biobin_units").insert({ name: newBinName, status: "active" }).select().single();
-    if (!error && data) {
+    const { data, error } = await supabase.from("biobin_units").insert({
+      name: newBinName.trim(),
+      location: newBinLocation.trim() || "Desa",
+      status: "active",
+    }).select().single();
+    if (error) {
+      console.error("Add BioBin error:", error);
+      setAddError(error.message || "Gagal menambahkan unit. Periksa koneksi atau hak akses.");
+      setAdding(false);
+      return;
+    }
+    if (data) {
       setBiobins(prev => [...prev, data]);
       setSelectedId(data.id);
       setShowAddModal(false);
       setNewBinName("");
+      setNewBinLocation("");
     }
     setAdding(false);
   }
@@ -152,17 +166,27 @@ export default function BioBinPage() {
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
             <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
               <h3 className="text-lg font-medium text-foreground mb-4">Tambah Unit BioCompose</h3>
+              {addError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl px-3 py-2 mb-3">{addError}</div>
+              )}
               <input
                 type="text"
                 value={newBinName}
                 onChange={(e) => setNewBinName(e.target.value)}
-                placeholder="Contoh: BioBin Desa Maju"
-                className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
+                placeholder="Nama unit, cth: BioBin Desa Maju"
+                className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-3"
                 autoFocus
+              />
+              <input
+                type="text"
+                value={newBinLocation}
+                onChange={(e) => setNewBinLocation(e.target.value)}
+                placeholder="Lokasi, cth: RT 03 / Balai Desa"
+                className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
               />
               <div className="flex justify-end gap-3">
                 <button
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => { setShowAddModal(false); setAddError(""); }}
                   className="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
                   disabled={adding}
                 >
@@ -329,17 +353,27 @@ export default function BioBinPage() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
             <h3 className="text-lg font-medium text-foreground mb-4">Tambah Unit BioCompose</h3>
+            {addError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl px-3 py-2 mb-3">{addError}</div>
+            )}
             <input
               type="text"
               value={newBinName}
               onChange={(e) => setNewBinName(e.target.value)}
-              placeholder="Contoh: BioBin RT 03"
-              className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
+              placeholder="Nama unit, cth: BioBin RT 03"
+              className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-3"
               autoFocus
+            />
+            <input
+              type="text"
+              value={newBinLocation}
+              onChange={(e) => setNewBinLocation(e.target.value)}
+              placeholder="Lokasi, cth: RT 03 / Balai Desa"
+              className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
             />
             <div className="flex justify-end gap-3">
               <button
-                onClick={() => setShowAddModal(false)}
+                onClick={() => { setShowAddModal(false); setAddError(""); }}
                 className="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
                 disabled={adding}
               >

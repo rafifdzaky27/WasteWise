@@ -38,7 +38,7 @@ export async function PATCH(request: NextRequest) {
     .update({ status: "claimed" })
     .eq("id", voucher_id)
     .eq("status", "pending")
-    .select("*, profiles:user_id(full_name, email)")
+    .select()
     .single();
 
   if (error) {
