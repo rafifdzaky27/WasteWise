@@ -8,30 +8,26 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-accent-green via-background to-background" />
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden bg-background">
+      {/* Subtle background gradient */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-accent-green/30 via-background to-background pointer-events-none" />
 
-      {/* Decorative circles */}
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+      {/* Logo */}
+      <Link
+        href="/"
+        className="relative z-10 flex items-center gap-2 mb-10"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77" />
+        </svg>
+        <span className="text-xl font-bold text-primary-darker tracking-tight">
+          WasteWise
+        </span>
+      </Link>
 
-      <div className="relative z-10 w-full max-w-md">
-        {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center justify-center gap-2 mb-8"
-        >
-          <Image src={logo} alt="WasteWise Logo" width={48} height={48} className="w-12 h-12 object-contain drop-shadow-sm" />
-          <span className="text-3xl font-bold text-primary-darker tracking-tight">
-            WasteWise
-          </span>
-        </Link>
-
-        {/* Card a */}
-        <div className="bg-white/70 border border-white/40 rounded-3xl shadow-xl p-8 backdrop-blur-xl">
-          {children}
-        </div>
+      {/* Card */}
+      <div className="relative z-10 w-full max-w-md bg-white border border-stone-border rounded-2xl shadow-sm p-8 sm:p-10">
+        {children}
       </div>
     </div>
   );

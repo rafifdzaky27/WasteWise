@@ -1,9 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
+import Image from "next/image";
 import type { PointTransaction, VoucherRedemption } from "../../../lib/types";
 import { VOUCHER_OPTIONS } from "../../../lib/types";
+
+// Import local product images for voucher display
+import productCompost from "../../../assets/images/product-compost.png";
+import productSeeds from "../../../assets/images/product-seeds.png";
+import productBriquettes from "../../../assets/images/product-briquettes.png";
+
+const voucherImages: Record<string, any> = {
+  lpg: productBriquettes,
+  marketplace_credit: productSeeds,
+};
 
 export default function RewardsPage() {
   const [points, setPoints] = useState(0);
@@ -35,85 +45,191 @@ export default function RewardsPage() {
     setSuccess(`Berhasil menukar ${option?.label}! 🎉`); setRedeeming(null); fetchData();
   }
 
-  if (loading) return <div className="max-w-5xl mx-auto pb-20 md:pb-0 animate-pulse space-y-4"><div className="h-8 bg-stone-light rounded w-48" /><div className="h-32 bg-stone-light rounded-2xl" /></div>;
+  if (loading) return (
+    <div className="animate-pulse space-y-8">
+      <div className="h-12 bg-stone-light rounded w-2/3" />
+      <div className="h-6 bg-stone-light rounded w-1/3" />
+      <div className="grid grid-cols-2 gap-6"><div className="h-64 bg-stone-light rounded-2xl" /><div className="h-64 bg-stone-light rounded-2xl" /></div>
+    </div>
+  );
 
   return (
-    <div className="max-w-5xl mx-auto pb-20 md:pb-0">
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">Hadiah <span className="font-serif italic text-primary">Saya</span></h1>
-        <p className="text-muted text-sm mt-1">Tukarkan poin Anda dengan voucher berharga.</p>
+    <div className="animate-fade-in">
+      {/* Editorial Header + Balance */}
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-12">
+        <div>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+            Pustaka Hadiah{" "}
+            <span className="font-serif italic text-primary">Sirkular</span>
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-muted max-w-lg leading-relaxed">
+            Tukarkan poin lingkungan Anda dengan hadiah pilihan yang berkelanjutan. Setiap poin mencerminkan dampak nyata.
+          </p>
+        </div>
+        {/* Balance Badge */}
+        <div className="bg-accent-green border border-accent-green-border rounded-2xl px-6 py-5 text-center shrink-0">
+          <p className="text-[10px] font-bold text-muted uppercase tracking-[2px]">Saldo Tersedia</p>
+          <p className="text-4xl sm:text-5xl font-medium text-foreground tracking-tight mt-1">{points}</p>
+          <p className="text-sm font-serif italic text-muted mt-1">Poin</p>
+        </div>
       </div>
 
-      {/* Points Balance */}
-      <div className="relative bg-gradient-to-br from-primary-dark via-primary to-green-status rounded-3xl p-6 sm:p-8 text-white mb-6 shadow-xl overflow-hidden">
-        <div className="absolute -top-8 -right-8 w-32 h-32 bg-white/10 rounded-full" />
-        <p className="text-sm font-medium opacity-80 relative z-10">Saldo Total Poin</p>
-        <p className="text-5xl sm:text-6xl font-bold mt-2 relative z-10">{points}<span className="text-2xl ml-2">⭐</span></p>
-        <p className="text-xs opacity-60 mt-2 relative z-10">Kumpulkan lebih banyak dengan menyetor sampah</p>
-      </div>
+      {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-6">{error}</div>}
+      {success && <div className="bg-accent-green border border-accent-green-border text-green-status-text text-sm rounded-xl px-4 py-3 mb-6">{success}</div>}
 
-      {error && <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3 mb-4">{error}</div>}
-      {success && <div className="bg-accent-green border border-accent-green-border text-green-status-text text-sm rounded-xl px-4 py-3 mb-4">{success}</div>}
+      {/* Bento Grid for Vouchers */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-16">
+        {VOUCHER_OPTIONS.map((option, i) => {
+          const canAfford = points >= option.cost;
+          const img = voucherImages[option.type];
+          const isFeatured = i === 0;
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {/* Left: Vouchers */}
-        <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-lg font-semibold text-foreground">Tukar Voucher</h2>
-          {VOUCHER_OPTIONS.map((option) => {
-            const canAfford = points >= option.cost;
-            const progress = Math.min((points / option.cost) * 100, 100);
-            return (
-              <div key={option.type} className="bg-white border border-stone-border rounded-2xl p-5 shadow-sm">
-                <div className="flex items-start gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-xl bg-yellow-bg flex items-center justify-center text-xl shrink-0">{option.type === "lpg" ? "⛽" : "🛍️"}</div>
-                  <div><h3 className="font-semibold text-foreground text-sm">{option.label}</h3><p className="text-xs text-muted mt-0.5">{option.description}</p></div>
-                </div>
-                <div className="mb-3">
-                  <div className="flex justify-between text-xs mb-1"><span className="text-muted">{points}/{option.cost} poin</span><span className="font-medium text-primary">{Math.round(progress)}%</span></div>
-                  <div className="h-2 bg-stone-light rounded-full overflow-hidden"><div className="h-full bg-gradient-to-r from-primary to-green-status rounded-full transition-all duration-700" style={{ width: `${progress}%` }} /></div>
-                </div>
-                <button onClick={() => handleRedeem(option.type)} disabled={!canAfford || redeeming === option.type} className={`w-full text-sm font-medium py-2.5 rounded-xl transition-all duration-300 ${canAfford ? "bg-primary-dark text-white hover:bg-primary-darker shadow-md" : "bg-stone-light text-muted-light cursor-not-allowed"}`}>
-                  {redeeming === option.type ? "Menukar..." : canAfford ? `Tukar (${option.cost} poin)` : `Butuh ${option.cost - points} poin lagi`}
+          return (
+            <div
+              key={option.type}
+              className={`${isFeatured ? "sm:col-span-2 sm:grid sm:grid-cols-5" : ""} bg-white border border-stone-border rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300`}
+            >
+              {/* Image */}
+              <div className={`relative ${isFeatured ? "sm:col-span-3 aspect-[16/10] sm:aspect-auto" : "aspect-[4/3]"} bg-stone-light overflow-hidden`}>
+                {img && (
+                  <Image
+                    src={img}
+                    alt={option.label}
+                    fill
+                    className="object-cover"
+                    sizes={isFeatured ? "(max-width: 640px) 100vw, 60vw" : "(max-width: 640px) 100vw, 50vw"}
+                  />
+                )}
+                {isFeatured && (
+                  <span className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full text-foreground">
+                    Esensial
+                  </span>
+                )}
+                {isFeatured && (
+                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent">
+                    <h3 className="text-2xl font-medium text-white">{option.label}</h3>
+                    <p className="text-sm text-white/70 mt-1">{option.description}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Info */}
+              <div className={`p-6 ${isFeatured ? "sm:col-span-2 flex flex-col justify-center" : ""}`}>
+                {!isFeatured && (
+                  <>
+                    <h3 className="text-lg font-medium text-foreground mb-1">{option.label}</h3>
+                    <p className="text-sm text-muted mb-4">{option.description}</p>
+                  </>
+                )}
+                <button
+                  onClick={() => handleRedeem(option.type)}
+                  disabled={!canAfford || redeeming === option.type}
+                  className={`w-full text-sm font-medium py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 ${
+                    canAfford
+                      ? "bg-primary-dark text-white hover:bg-primary-darker"
+                      : "bg-stone-light text-muted-light border border-stone-border cursor-not-allowed"
+                  }`}
+                >
+                  {redeeming === option.type ? (
+                    <>
+                      <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                      Menukar...
+                    </>
+                  ) : canAfford ? (
+                    <>
+                      Tukar dengan {option.cost} Poin
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </>
+                  ) : (
+                    `Butuh ${option.cost - points} poin lagi`
+                  )}
                 </button>
               </div>
-            );
-          })}
-          {vouchers.length > 0 && (
-            <div><h3 className="text-sm font-semibold text-foreground mb-3">Voucher Ditukar</h3>
-              <div className="space-y-2">{vouchers.map((v) => (
-                <div key={v.id} className="bg-white/60 border border-stone-border rounded-xl p-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2"><span className="text-base">{v.voucher_type === "lpg" ? "⛽" : "🛍️"}</span>
-                    <div><p className="text-xs font-medium text-foreground capitalize">{v.voucher_type === "lpg" ? "Voucher LPG" : "Kredit Marketplace"}</p><p className="text-[10px] text-muted">{new Date(v.created_at).toLocaleDateString("id-ID")}</p></div>
-                  </div>
-                  <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${v.status === "approved" ? "bg-accent-green text-green-status-text" : v.status === "claimed" ? "bg-blue-bg text-blue-700" : "bg-yellow-bg text-amber-700"}`}>{v.status}</span>
-                </div>
-              ))}</div>
             </div>
-          )}
-        </div>
+          );
+        })}
 
-        {/* Right: Point History */}
-        <div className="lg:col-span-3">
-          <h2 className="text-lg font-semibold text-foreground mb-4">Riwayat Poin</h2>
-          {transactions.length === 0 ? (
-            <div className="bg-white/60 border border-stone-border rounded-2xl p-8 text-center">
-              <div className="w-16 h-16 mx-auto bg-yellow-bg rounded-full flex items-center justify-center text-3xl mb-4">⭐</div>
-              <h3 className="font-semibold text-foreground mb-1">Belum ada transaksi</h3>
-              <p className="text-sm text-muted">Mulai setor sampah untuk mendapatkan poin pertama Anda!</p>
-            </div>
-          ) : (
-            <div className="space-y-2">{transactions.map((tx) => (
-              <div key={tx.id} className="bg-white border border-stone-border rounded-xl p-3.5 flex items-center justify-between hover:shadow-sm transition-shadow">
-                <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm ${tx.type === "earned" ? "bg-accent-green text-green-status-text" : "bg-red-50 text-red-600"}`}>{tx.type === "earned" ? "↑" : "↓"}</div>
-                  <div><p className="text-sm font-medium text-foreground">{tx.description}</p><p className="text-[11px] text-muted">{new Date(tx.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p></div>
-                </div>
-                <span className={`text-sm font-bold ${tx.type === "earned" ? "text-primary" : "text-red-500"}`}>{tx.type === "earned" ? "+" : ""}{tx.amount} ⭐</span>
-              </div>
-            ))}</div>
-          )}
+        {/* Value of Circularity Info Card */}
+        <div className="sm:col-span-2 bg-accent-green/30 border border-accent-green-border rounded-2xl p-8 flex items-start gap-4">
+          <div className="shrink-0 mt-1">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              Nilai <span className="font-serif italic">Sirkularitas</span>
+            </h3>
+            <p className="text-sm text-muted leading-relaxed">
+              Setiap item di perpustakaan kami dipilih dengan cermat untuk memastikan hadiah Anda melanjutkan siklus keberlanjutan. Poin Anda mencerminkan dampak nyata terhadap sumber daya yang dilestarikan.
+            </p>
+          </div>
         </div>
       </div>
+
+      {/* Voucher History */}
+      {vouchers.length > 0 && (
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-1 h-6 bg-primary rounded-full" />
+            <h2 className="text-xl sm:text-2xl font-medium text-foreground">
+              Voucher <span className="font-serif italic">Ditebus</span>
+            </h2>
+          </div>
+          <div className="space-y-0">
+            {vouchers.map((v) => (
+              <div key={v.id} className="flex items-center justify-between py-4 border-b border-stone-border last:border-b-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-accent-green flex items-center justify-center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{v.voucher_type === "lpg" ? "Voucher LPG" : "Kredit Marketplace"}</p>
+                    <p className="text-xs text-muted">{new Date(v.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</p>
+                  </div>
+                </div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${
+                  v.status === "approved" ? "bg-accent-green text-green-status-text" : v.status === "claimed" ? "bg-blue-bg text-blue-700" : "bg-yellow-bg text-amber-700"
+                }`}>{v.status}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Point Transaction History */}
+      {transactions.length > 0 && (
+        <div>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-1 h-6 bg-primary rounded-full" />
+            <h2 className="text-xl sm:text-2xl font-medium text-foreground">
+              Riwayat <span className="font-serif italic">Poin</span>
+            </h2>
+          </div>
+          <div className="space-y-0">
+            {transactions.map((tx) => (
+              <div key={tx.id} className="flex items-center justify-between py-4 border-b border-stone-border last:border-b-0">
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${tx.type === "earned" ? "bg-accent-green" : "bg-red-50"}`}>
+                    {tx.type === "earned" ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2.5"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2.5"><path d="M12 5v14M19 12l-7 7-7-7" /></svg>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">{tx.description}</p>
+                    <p className="text-xs text-muted">{new Date(tx.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</p>
+                  </div>
+                </div>
+                <span className={`text-sm font-bold ${tx.type === "earned" ? "text-primary" : "text-red-500"}`}>
+                  {tx.type === "earned" ? "+" : ""}{tx.amount}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

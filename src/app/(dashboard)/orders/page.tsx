@@ -19,11 +19,18 @@ interface Order {
   order_items: OrderItem[];
 }
 
-const statusMap: Record<string, { label: string; color: string }> = {
-  pending: { label: "Menunggu", color: "bg-yellow-bg text-amber-700 border-yellow-border" },
-  confirmed: { label: "Dikonfirmasi", color: "bg-blue-bg text-blue-700 border-blue-border" },
-  shipped: { label: "Dikirim", color: "bg-purple-bg text-purple-700 border-purple-border" },
-  completed: { label: "Selesai", color: "bg-accent-green text-green-status-text border-accent-green-border" },
+const statusMap: Record<string, { label: string; icon: string; color: string }> = {
+  pending: { label: "Diproses", icon: "◷", color: "text-amber-600" },
+  confirmed: { label: "Dikonfirmasi", icon: "◉", color: "text-blue-600" },
+  shipped: { label: "Siap Ambil di BUMDes", icon: "◎", color: "text-purple-600" },
+  completed: { label: "Ditebus", icon: "✓", color: "text-green-status-text" },
+};
+
+const categoryLabels: Record<string, string> = {
+  compost: "Marketplace",
+  liquid: "Marketplace",
+  seeds: "Resource",
+  briquettes: "Reward",
 };
 
 export default async function OrdersPage() {
@@ -46,50 +53,97 @@ export default async function OrdersPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto animate-fade-in">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-          Riwayat <span className="font-serif italic text-primary">Pesanan</span>
+    <div className="animate-fade-in">
+      {/* Editorial Header */}
+      <div className="mb-12">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+          Pesanan <span className="font-serif italic text-primary">& Aktivitas</span> Anda
         </h1>
-        <p className="text-muted mt-1 text-sm">Pantau status pesanan Anda dari marketplace.</p>
+        <p className="mt-4 text-base sm:text-lg text-muted max-w-lg leading-relaxed">
+          Catatan lengkap akuisisi marketplace dan penukaran reward Anda. Dipelihara untuk kejelasan.
+        </p>
       </div>
 
       {orders.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
-          <div className="w-20 h-20 bg-stone-light rounded-full flex items-center justify-center text-4xl mb-6">📦</div>
-          <h2 className="text-xl font-semibold text-foreground mb-2">Belum ada pesanan</h2>
+        <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
+          <div className="w-16 h-16 bg-stone-light rounded-full flex items-center justify-center mb-6">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="1" y="3" width="15" height="13" rx="2" /><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-medium text-foreground mb-2">Belum ada pesanan</h2>
           <p className="text-muted text-sm mb-6">Anda belum pernah memesan produk dari marketplace.</p>
-          <Link href="/marketplace" className="bg-primary-dark text-white px-6 py-2.5 rounded-xl font-medium text-sm hover:bg-primary-darker transition-colors">Mulai Belanja</Link>
+          <Link href="/marketplace" className="bg-primary-dark text-white px-6 py-3 rounded-xl font-medium text-sm hover:bg-primary-darker transition-colors flex items-center gap-2">
+            Mulai Belanja
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          </Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-0">
           {orders.map((order) => {
             const s = statusMap[order.status] || statusMap.pending;
             const d = new Date(order.created_at);
+            const firstItem = order.order_items[0];
+            const itemName = firstItem?.products?.name || "Produk";
+            const category = firstItem?.products?.category || "compost";
+            const badge = categoryLabels[category] || "Marketplace";
+
             return (
-              <div key={order.id} className="bg-white border border-stone-border rounded-2xl p-5 sm:p-6 hover:shadow-md transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-xs text-muted font-mono">#{order.id.slice(0, 8).toUpperCase()}</p>
-                    <p className="text-xs text-muted mt-0.5">{d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}</p>
+              <div key={order.id} className="flex items-center gap-4 sm:gap-6 py-6 border-b border-stone-border last:border-b-0">
+                {/* Icon */}
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${
+                  order.status === "completed" ? "bg-stone-light" : "bg-accent-green border border-accent-green-border"
+                }`}>
+                  {order.status === "completed" ? (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  ) : (
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="1" y="3" width="15" height="13" rx="2" /><path d="M16 8h4l3 3v5a2 2 0 0 1-2 2h-1" />
+                    </svg>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-base font-medium text-foreground">{itemName}</h3>
+                    {order.order_items.length > 1 && (
+                      <span className="text-xs text-muted">+{order.order_items.length - 1} lainnya</span>
+                    )}
                   </div>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${s.color}`}>{s.label}</span>
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-accent-green text-green-status-text border border-accent-green-border">
+                      {badge}
+                    </span>
+                    <span className="text-xs text-muted">
+                      Order #{order.id.slice(0, 8).toUpperCase()}
+                    </span>
+                    <span className="text-xs text-muted">
+                      {d.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                    </span>
+                  </div>
                 </div>
-                <div className="space-y-2 mb-4">
-                  {order.order_items.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between text-sm">
-                      <span className="text-foreground">{item.products?.name || "Produk"} × {item.quantity}</span>
-                      <span className="text-muted font-medium">Rp {(item.unit_price_rp * item.quantity).toLocaleString("id-ID")}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between pt-3 border-t border-stone-border">
-                  <span className="text-sm font-medium text-muted">Total Tagihan</span>
-                  <span className="text-base font-bold text-foreground">Rp {order.total_price_rp.toLocaleString("id-ID")}</span>
+
+                {/* Price + Status */}
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-medium text-foreground">
+                    Rp {order.total_price_rp.toLocaleString("id-ID")}
+                  </p>
+                  <p className={`text-xs mt-1 ${s.color} font-medium`}>
+                    {s.icon} {s.label}
+                  </p>
                 </div>
               </div>
             );
           })}
+
+          <div className="pt-8 text-center">
+            <span className="text-sm font-serif italic text-muted">
+              Muat catatan lama ↓
+            </span>
+          </div>
         </div>
       )}
     </div>

@@ -124,7 +124,7 @@ export default function Marketplace() {
               <p className="text-sm text-muted leading-relaxed mb-5">
                 {product.description}
               </p>
-              <button className="w-full flex items-center justify-center gap-2 bg-primary-dark text-white text-base font-medium py-3.5 rounded-2xl hover:bg-primary-darker transition-colors duration-300">
+              <Link href="/marketplace" className="w-full flex items-center justify-center gap-2 bg-primary-dark text-white text-base font-medium py-3.5 rounded-2xl hover:bg-primary-darker transition-colors duration-300">
                 <svg
                   width="16"
                   height="16"
@@ -136,8 +136,8 @@ export default function Marketplace() {
                     fill="white"
                   />
                 </svg>
-                Tambah ke Keranjang
-              </button>
+                Lihat di Marketplace
+              </Link>
             </div>
           </div>
         ))}
