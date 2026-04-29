@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "../../assets/images/wastewise_logo.png";
 
+import { createClient } from "../../lib/supabase/client";
+
 const navLinks = [
   { label: "Tentang", href: "/#about" },
   { label: "Reward", href: "/#features" },
@@ -16,10 +18,23 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
+
+    // Fetch user
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+        if (data) setUserName(data.full_name);
+      }
+    };
+    fetchUser();
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -69,18 +84,29 @@ export default function Navbar() {
 
         {/* Desktop CTA */}
         <div className="hidden sm:flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm font-medium text-stone-dark hover:text-primary transition-colors duration-200"
-          >
-            Masuk
-          </Link>
-          <Link
-            href="/register"
-            className="bg-primary-dark text-white text-sm font-medium px-5 py-2.5 rounded-full shadow-lg hover:bg-primary-darker hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
-          >
-            Daftar
-          </Link>
+          {userName ? (
+            <Link
+              href="/dashboard"
+              className="bg-primary-dark text-white text-sm font-medium px-5 py-2.5 rounded-full shadow-lg hover:bg-primary-darker hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2"
+            >
+              Dashboard <span className="opacity-60">—</span> {userName.split(' ')[0]}
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-medium text-stone-dark hover:text-primary transition-colors duration-200"
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/register"
+                className="bg-primary-dark text-white text-sm font-medium px-5 py-2.5 rounded-full shadow-lg hover:bg-primary-darker hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+              >
+                Daftar
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -149,20 +175,32 @@ export default function Navbar() {
 
         {/* CTA Buttons */}
         <div className="px-6 py-6 border-t border-stone-border space-y-3">
-          <Link
-            href="/login"
-            onClick={() => setMenuOpen(false)}
-            className="block w-full text-center text-sm font-medium text-foreground py-3 rounded-xl border border-stone-border hover:bg-stone-light transition-colors"
-          >
-            Masuk
-          </Link>
-          <Link
-            href="/register"
-            onClick={() => setMenuOpen(false)}
-            className="block w-full text-center bg-primary-dark text-white text-sm font-medium py-3 rounded-xl shadow-lg hover:bg-primary-darker transition-all duration-300"
-          >
-            Daftar Sekarang
-          </Link>
+          {userName ? (
+            <Link
+              href="/dashboard"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center justify-center w-full bg-primary-dark text-white text-base font-medium py-3.5 rounded-xl hover:bg-primary-darker transition-colors"
+            >
+              Dashboard <span className="opacity-60 mx-2">—</span> {userName.split(' ')[0]}
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center w-full bg-stone-light/50 text-stone-dark text-base font-medium py-3.5 rounded-xl hover:bg-stone-light transition-colors"
+              >
+                Masuk
+              </Link>
+              <Link
+                href="/register"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center w-full bg-primary-dark text-white text-base font-medium py-3.5 rounded-xl hover:bg-primary-darker transition-colors"
+              >
+                Daftar
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </>

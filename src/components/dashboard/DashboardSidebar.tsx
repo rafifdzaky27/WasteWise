@@ -59,22 +59,22 @@ export default function DashboardSidebar({ navItems, fullName, role }: Dashboard
       <div className="px-8 py-10 flex flex-col gap-2">
         <Link href="/dashboard" className="flex items-center gap-3 group">
           <Image src={logo} alt="WasteWise Logo" width={32} height={32} className="w-8 h-8 object-contain drop-shadow-sm group-hover:scale-105 transition-transform" />
-          <span className="font-bold text-2xl text-primary-darker tracking-tight font-serif italic">
+          <span className="font-bold text-2xl text-foreground tracking-tight">
             WasteWise
           </span>
         </Link>
-        <p className="text-[10px] uppercase tracking-[2px] text-muted font-bold ml-11">Dashboard</p>
+        <p className="text-[10px] uppercase tracking-[2px] text-muted font-bold ml-12">Dashboard</p>
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto mt-4">
+      <nav className="flex-1 px-6 space-y-2 overflow-y-auto mt-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
           return (
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm transition-all duration-300 group relative overflow-hidden ${
+              className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-[15px] transition-all duration-300 group relative overflow-hidden ${
                 isActive
                   ? "font-medium text-primary-dark bg-white shadow-sm border border-stone-border/60"
                   : "font-medium text-stone-dark hover:text-foreground hover:bg-white/60 border border-transparent"

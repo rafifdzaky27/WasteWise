@@ -74,9 +74,6 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Hero Stat Box */}
           <div className="bg-white border border-stone-border rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-8 opacity-5">
-              <svg width="120" height="120" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9c0 3.31-2.69 6-6 6h-1.77"/></svg>
-            </div>
             <div>
               <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-2">
                 {isAdmin ? "Total Sampah Terkumpul" : "Total Sampah Diselamatkan"}
