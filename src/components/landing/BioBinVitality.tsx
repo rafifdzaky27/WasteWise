@@ -38,7 +38,7 @@ const metrics = [
   },
   {
     value: "4 Hari",
-    label: "Menuju Panen",
+    label: "Menuju Compose",
     iconBg: "bg-purple-bg",
     iconBorder: "border-purple-border",
     icon: (
@@ -76,7 +76,7 @@ export default function BioBinVitality() {
         {/* Header */}
         <div className="text-center mb-10">
           <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-foreground">
-            BioBin{" "}
+            BioCompose{" "}
             <span className="font-serif italic text-[#096]">Vitality</span>
           </h2>
           <p className="mt-4 text-base text-muted max-w-md mx-auto">

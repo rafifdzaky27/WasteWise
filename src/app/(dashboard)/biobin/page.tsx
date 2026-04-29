@@ -12,6 +12,7 @@ export default function BioBinPage() {
   const [biobins, setBiobins] = useState<BioBinUnit[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [loadingBiobins, setLoadingBiobins] = useState(true);
+  const [isSimulating, setIsSimulating] = useState(false);
 
   const { readings, latestReading, isConnected, error, isLoading } =
     useSensorData(selectedId);
@@ -36,6 +37,42 @@ export default function BioBinPage() {
 
     fetchBiobins();
   }, []);
+
+  // IoT Simulator Effect
+  useEffect(() => {
+    if (!isSimulating || !selectedId) return;
+
+    let baseTemp = 58.0;
+    let baseHumid = 60.0;
+    let baseMethane = 120.0;
+    let baseAmmonia = 15.0;
+
+    const interval = setInterval(async () => {
+      // Generate slight random variations
+      const temp = baseTemp + (Math.random() * 4 - 2);
+      const humid = baseHumid + (Math.random() * 6 - 3);
+      const methane = Math.max(0, baseMethane + (Math.random() * 20 - 10));
+      const ammonia = Math.max(0, baseAmmonia + (Math.random() * 5 - 2));
+
+      try {
+        await fetch("/api/sensors", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            biobin_id: selectedId,
+            temperature: parseFloat(temp.toFixed(2)),
+            humidity: parseFloat(humid.toFixed(2)),
+            methane_level: parseFloat(methane.toFixed(2)),
+            ammonia_level: parseFloat(ammonia.toFixed(2)),
+          }),
+        });
+      } catch (err) {
+        console.error("IoT Simulator failed to push data:", err);
+      }
+    }, 5000); // Every 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isSimulating, selectedId]);
 
   const selectedBiobin = biobins.find((b) => b.id === selectedId);
 
@@ -66,14 +103,14 @@ export default function BioBinPage() {
           🌡️
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
-          BioBin IoT Dashboard
+          BioCompose IoT Dashboard
         </h1>
         <p className="text-muted max-w-md mb-6">
-          Belum ada unit BioBin yang terdaftar. Hubungi admin untuk menambahkan
-          unit BioBin ke sistem.
+          Belum ada unit BioCompose yang terdaftar. Hubungi admin untuk menambahkan
+          unit BioCompose ke sistem.
         </p>
         <div className="px-4 py-2 rounded-xl bg-yellow-bg border border-yellow-border text-sm text-amber-700">
-          💡 Tip: Admin dapat menambahkan unit BioBin melalui Supabase Dashboard
+          💡 Tip: Admin dapat menambahkan unit BioCompose melalui Supabase Dashboard
         </div>
       </div>
     );
@@ -84,7 +121,7 @@ export default function BioBinPage() {
       {/* Header */}
       <div className="mb-8 animate-fade-in">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
-          🌡️ BioBin IoT Dashboard
+          🌡️ BioCompose IoT Dashboard
         </h1>
         <p className="text-sm text-muted">
           Monitoring suhu, kelembapan, dan gas secara real-time untuk
@@ -92,9 +129,9 @@ export default function BioBinPage() {
         </p>
       </div>
 
-      {/* BioBin Selector (if multiple units) */}
-      {biobins.length > 1 && (
-        <div className="flex gap-3 mb-6 overflow-x-auto pb-2 animate-fade-in animate-delay-100">
+      {/* BioCompose Selector (if multiple units) */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 animate-fade-in animate-delay-100">
+        <div className="flex gap-3 overflow-x-auto pb-2">
           {biobins.map((b) => (
             <button
               key={b.id}
@@ -110,7 +147,33 @@ export default function BioBinPage() {
             </button>
           ))}
         </div>
-      )}
+
+        {/* IoT Simulator Toggle for Vercel Demo */}
+        {selectedId && (
+          <button
+            onClick={() => setIsSimulating(!isSimulating)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+              isSimulating
+                ? "bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+                : "bg-stone-800 text-white border-stone-900 hover:bg-stone-900"
+            }`}
+          >
+            {isSimulating ? (
+              <>
+                <span className="relative flex h-3 w-3">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+                Hentikan Simulasi IoT
+              </>
+            ) : (
+              <>
+                <span>▶️</span> Mulai Simulasi IoT (Demo)
+              </>
+            )}
+          </button>
+        )}
+      </div>
 
       {/* Error Banner */}
       {error && (
@@ -120,7 +183,7 @@ export default function BioBinPage() {
         </div>
       )}
 
-      {/* BioBin Status Card */}
+      {/* BioCompose Status Card */}
       {selectedBiobin && (
         <div className="mb-6 animate-fade-in animate-delay-200">
           <BioBinStatus

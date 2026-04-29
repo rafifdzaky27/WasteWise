@@ -42,7 +42,7 @@ INSERT INTO auth.users (
     now()
 );
 
--- 3. Insert Pembeli (Sahal Fajri)
+-- 3. Insert Petani (Sahal Fajri)
 INSERT INTO auth.users (
     instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, 
     raw_app_meta_data, raw_user_meta_data, created_at, updated_at
@@ -52,10 +52,10 @@ INSERT INTO auth.users (
     'authenticated', 
     'authenticated', 
     'sahal@gmail.com', 
-    crypt('pembeli123', gen_salt('bf')), 
+    crypt('petani123', gen_salt('bf')), 
     now(), 
     '{"provider":"email","providers":["email"]}', 
-    '{"full_name":"Sahal Fajri","role":"pembeli"}', 
+    '{"full_name":"Sahal Fajri","role":"petani"}', 
     now(), 
     now()
 );

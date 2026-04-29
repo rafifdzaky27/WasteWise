@@ -7,7 +7,7 @@ export default function Hero() {
     <section
       id="hero"
       className="relative w-full overflow-hidden rounded-b-[48px]"
-      style={{ minHeight: "660px" }}
+      style={{ minHeight: "520px" }}
     >
       {/* Background Image */}
       <Image
@@ -23,7 +23,7 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/50 to-background/90" />
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 pt-40 pb-24 min-h-[660px]">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-5 sm:px-6 pt-28 sm:pt-40 pb-16 sm:pb-24 min-h-[520px] sm:min-h-[660px]">
         {/* Tag */}
         <p className="text-xs font-semibold tracking-[2.4px] uppercase text-primary mb-6 animate-fade-in">
           Inovasi Teknologi Hijau
@@ -31,16 +31,16 @@ export default function Hero() {
 
         {/* Heading */}
         <h1 className="animate-fade-in-up">
-          <span className="block text-5xl sm:text-6xl md:text-7xl font-medium text-primary-darker tracking-tight leading-tight">
-            Empowering Smart Villages
+          <span className="block text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-medium text-primary-darker tracking-tight leading-tight">
+            Membangun Desa Cerdas
           </span>
-          <span className="block text-5xl sm:text-6xl md:text-7xl font-serif italic text-primary tracking-tight leading-tight">
-            through Digital Waste Innovation.
+          <span className="block text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-serif italic text-primary tracking-tight leading-tight">
+            melalui Inovasi Pengelolaan Sampah.
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className="mt-8 text-lg sm:text-xl text-stone-dark max-w-xl leading-relaxed animate-fade-in-up animate-delay-200">
+        <p className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-stone-dark max-w-xl leading-relaxed animate-fade-in-up animate-delay-200">
           Platform ekonomi sirkular yang memberdayakan komunitas lokal melalui
           pengelolaan sampah cerdas dan sistem reward berbasis komunitas.
         </p>

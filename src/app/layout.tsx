@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Instrument_Serif } from "next/font/google";
 import "./globals.css";
@@ -17,18 +17,38 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "WasteWise — Turning Trash into Treasures",
+  title: "WasteWise — Mengubah Sampah Menjadi Berkah",
   description:
-    "A circular economy platform empowering local communities through intelligent waste management, IoT-powered composting, and community rewards. Powered by BUMDes.",
+    "Platform ekonomi sirkular berbasis IoT untuk memberdayakan masyarakat desa melalui pengelolaan sampah cerdas, pengomposan terpantau, dan sistem reward komunitas. Didukung oleh BUMDes.",
   keywords: [
-    "waste management",
-    "circular economy",
+    "pengelolaan sampah",
+    "ekonomi sirkular",
     "BUMDes",
-    "composting",
+    "pengomposan",
     "IoT",
-    "smart village",
-    "organic fertilizer",
+    "desa cerdas",
+    "pupuk organik",
+    "WasteWise",
   ],
+  openGraph: {
+    title: "WasteWise — Mengubah Sampah Menjadi Berkah",
+    description:
+      "Platform ekonomi sirkular berbasis IoT untuk memberdayakan masyarakat desa melalui pengelolaan sampah cerdas.",
+    url: "https://waste-wise-rosy.vercel.app",
+    siteName: "WasteWise",
+    locale: "id_ID",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#016630",
 };
 
 export default function RootLayout({
@@ -38,7 +58,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="id"
       className={`${inter.variable} ${instrumentSerif.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>

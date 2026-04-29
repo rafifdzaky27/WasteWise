@@ -68,18 +68,18 @@ export async function POST(request: NextRequest) {
   // Validate
   if (!weight_kg || !waste_type) {
     return Response.json(
-      { error: "weight_kg and waste_type are required" },
+      { error: "Berat dan jenis sampah wajib diisi" },
       { status: 400 }
     );
   }
 
   if (!["organic", "recyclable"].includes(waste_type)) {
-    return Response.json({ error: "Invalid waste_type" }, { status: 400 });
+    return Response.json({ error: "Jenis sampah tidak valid" }, { status: 400 });
   }
 
   if (weight_kg <= 0 || weight_kg > 500) {
     return Response.json(
-      { error: "weight_kg must be between 0.01 and 500" },
+      { error: "Berat harus antara 0,01 dan 500 kg" },
       { status: 400 }
     );
   }

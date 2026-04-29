@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import productCompost from "../../assets/images/product-compost.png";
 import productLiquid from "../../assets/images/product-liquid.png";
 import productSeeds from "../../assets/images/product-seeds.png";
@@ -59,12 +60,12 @@ export default function Marketplace() {
     <section
       id="marketplace"
       ref={sectionRef}
-      className="w-full max-w-[1152px] mx-auto px-6 pt-32 pb-16"
+      className="w-full max-w-[1152px] mx-auto px-5 sm:px-6 pt-20 sm:pt-32 pb-16"
     >
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-16 gap-6 reveal">
         <div>
-          <h2 className="text-4xl sm:text-5xl font-medium tracking-tight text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-foreground">
             Pasar{" "}
             <span className="font-serif italic text-primary">Berkelanjutan</span>
           </h2>
@@ -73,7 +74,7 @@ export default function Marketplace() {
             tinggi yang diproduksi langsung di desa.
           </p>
         </div>
-        <button className="flex items-center gap-1 text-base font-medium text-primary hover:gap-2 transition-all duration-300 shrink-0">
+        <Link href="/marketplace" className="flex items-center gap-1 text-base font-medium text-primary hover:gap-2 transition-all duration-300 shrink-0">
           Lihat semua produk
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path
@@ -84,7 +85,7 @@ export default function Marketplace() {
               strokeLinejoin="round"
             />
           </svg>
-        </button>
+        </Link>
       </div>
 
       {/* Product Grid */}
@@ -135,7 +136,7 @@ export default function Marketplace() {
                     fill="white"
                   />
                 </svg>
-                Add to Cart
+                Tambah ke Keranjang
               </button>
             </div>
           </div>

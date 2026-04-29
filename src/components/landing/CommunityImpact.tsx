@@ -72,11 +72,11 @@ export default function CommunityImpact() {
     >
       <div className="relative glass-card rounded-[48px] border border-white/40 shadow-md overflow-hidden min-h-[630px] flex flex-col lg:flex-row items-center">
         {/* Left Content */}
-        <div className="flex-1 p-10 md:p-16 reveal">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-medium text-foreground tracking-tight leading-tight">
+        <div className="flex-1 p-6 sm:p-10 md:p-16 reveal">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-foreground tracking-tight leading-tight">
             Menjaga
           </h2>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-serif italic text-primary tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif italic text-primary tracking-tight leading-tight">
             Jejak Komunitas Kita
           </h2>
 
@@ -86,7 +86,7 @@ export default function CommunityImpact() {
           </p>
 
           {/* Stats */}
-          <div className="flex gap-12 mt-12">
+          <div className="flex flex-col sm:flex-row gap-6 sm:gap-12 mt-8 sm:mt-12">
             <div>
               <p className="text-5xl font-medium text-foreground tracking-tight">
                 <AnimatedCounter end={58} suffix="%" />
@@ -111,11 +111,11 @@ export default function CommunityImpact() {
         </div>
 
         {/* Right Image */}
-        <div className="flex-1 p-6 md:p-10 reveal animate-delay-200">
+        <div className="flex-1 p-4 sm:p-6 md:p-10 reveal animate-delay-200">
           <div className="relative w-full max-w-[463px] aspect-square rounded-3xl overflow-hidden shadow-xl">
             <Image
               src={communityImpactImg}
-              alt="Community garden composting"
+              alt="Kebun komunitas pengomposan warga desa"
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 463px"

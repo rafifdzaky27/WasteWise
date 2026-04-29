@@ -3,16 +3,41 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navItems = [
-  { href: "/dashboard", label: "Beranda", icon: "📊" },
-  { href: "/deposit", label: "Setor", icon: "♻️" },
-  { href: "/rewards", label: "Hadiah", icon: "🎁" },
-  { href: "/biobin", label: "BioBin", icon: "🌡️" },
-  { href: "/orders", label: "Pesanan", icon: "📦" },
-];
+interface MobileNavProps {
+  role: string;
+}
 
-export default function MobileNav() {
+export default function MobileNav({ role }: MobileNavProps) {
   const pathname = usePathname();
+
+  const isWarga = role === "warga";
+  const isPetani = role === "petani";
+  const isAdmin = role === "admin";
+
+  const navItems = [
+    { href: "/dashboard", label: "Beranda", icon: "📊" },
+    // Warga: setor + hadiah
+    ...(isWarga
+      ? [
+          { href: "/deposit", label: "Setor", icon: "♻️" },
+          { href: "/rewards", label: "Hadiah", icon: "🎁" },
+        ]
+      : []),
+    // Petani: marketplace + pesanan
+    ...(isPetani
+      ? [
+          { href: "/marketplace", label: "Pasar", icon: "🛒" },
+          { href: "/orders", label: "Pesanan", icon: "📦" },
+        ]
+      : []),
+    // Admin: biocompose + verify
+    ...(isAdmin
+      ? [
+          { href: "/biobin", label: "BioCompose", icon: "🌡️" },
+          { href: "/admin/deposits", label: "Verifikasi", icon: "✅" },
+        ]
+      : []),
+  ];
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-2xl border-t border-stone-border shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
