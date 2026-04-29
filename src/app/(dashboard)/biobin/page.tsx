@@ -146,10 +146,10 @@ export default function BioBinPage() {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8 animate-fade-in">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
           BioCompose <span className="font-serif italic text-primary">IoT Tracking</span>
         </h1>
-        <p className="text-sm text-muted">
+        <p className="mt-2 text-sm sm:text-base text-muted max-w-lg">
           Monitoring suhu, kelembapan, dan gas secara real-time untuk
           pengomposan optimal.
         </p>

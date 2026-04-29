@@ -39,9 +39,9 @@ export default async function DashboardPage() {
   const totalWeightRaw = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
   const totalWeight = Math.round(totalWeightRaw * 10) / 10;
   
-  const organicWeight = deposits?.filter(d => d.waste_type === "organic").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
-  const recyclableWeight = deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
-  const otherWeight = deposits?.filter(d => d.waste_type === "other").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
+  const organicWeight = Math.round((deposits?.filter(d => d.waste_type === "organic").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0) * 10) / 10;
+  const recyclableWeight = Math.round((deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0) * 10) / 10;
+  const otherWeight = Math.round((deposits?.filter(d => d.waste_type === "other").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0) * 10) / 10;
   
   const co2Avoided = Math.round(((organicWeight * 0.5) + (recyclableWeight * 1.2)) * 10) / 10;
   const totalPoints = deposits?.reduce((sum, d) => sum + Number(d.points_earned), 0) || 0;
@@ -57,12 +57,12 @@ export default async function DashboardPage() {
     <div className="animate-fade-in">
       {/* Editorial Header */}
       <div className="mb-8">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
           {isWarga && <>Dampak <span className="font-serif italic text-primary">Anda</span> pada Bumi</>}
           {isPetani && <>Aktivitas <span className="font-serif italic text-primary">Belanja</span> Anda</>}
           {isAdmin && <>Operasional <span className="font-serif italic text-primary">BUMDes</span></>}
         </h1>
-        <p className="mt-4 text-base sm:text-lg text-muted max-w-xl leading-relaxed">
+        <p className="mt-2 text-sm sm:text-base text-muted max-w-xl leading-relaxed">
           {isWarga && "Melihat kontribusi lingkungan yang telah Anda hasilkan melalui pengelolaan sampah cerdas."}
           {isPetani && "Catatan lengkap aktivitas belanja dan pesanan Anda di marketplace."}
           {isAdmin && "Pantau dan kelola seluruh operasional pengelolaan sampah desa secara real-time."}

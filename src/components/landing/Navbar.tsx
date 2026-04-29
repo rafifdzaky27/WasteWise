@@ -8,7 +8,7 @@ import logo from "../../assets/images/wastewise_logo.png";
 import { createClient } from "../../lib/supabase/client";
 
 const navLinks = [
-  { label: "Tentang", href: "/#about" },
+  { label: "Tentang", href: "/about" },
   { label: "Reward", href: "/#features" },
   { label: "Dampak", href: "/impact" },
   { label: "Pasar", href: "/#marketplace" },

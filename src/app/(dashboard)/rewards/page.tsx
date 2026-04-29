@@ -60,11 +60,11 @@ export default function RewardsPage() {
       {/* Editorial Header + Balance */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-12">
         <div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
             Pustaka Hadiah{" "}
             <span className="font-serif italic text-primary">Sirkular</span>
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-muted max-w-lg leading-relaxed">
+          <p className="mt-2 text-sm sm:text-base text-muted max-w-lg leading-relaxed">
             Tukarkan poin lingkungan Anda dengan hadiah pilihan yang berkelanjutan. Setiap poin mencerminkan dampak nyata.
           </p>
         </div>

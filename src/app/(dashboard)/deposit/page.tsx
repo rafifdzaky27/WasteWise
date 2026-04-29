@@ -132,11 +132,11 @@ export default function DepositPage() {
         <div>
           {/* Editorial Heading */}
           <div className="mb-8">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-foreground leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
               Catat{" "}
               <span className="font-serif italic text-primary">Setoran</span>
             </h1>
-            <p className="mt-4 text-base sm:text-lg text-muted max-w-xl leading-relaxed">
+            <p className="mt-2 text-sm sm:text-base text-muted max-w-xl leading-relaxed">
               Timbang sampah yang sudah dipilah, masukkan berat, dan konfirmasi kontribusi Anda pada ekonomi sirkular.
             </p>
           </div>

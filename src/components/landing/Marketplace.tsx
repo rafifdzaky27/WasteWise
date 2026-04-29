@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { createClient } from "../../lib/supabase/client";
 import productCompost from "../../assets/images/product-compost.png";
 import productLiquid from "../../assets/images/product-liquid.png";
 import productSeeds from "../../assets/images/product-seeds.png";
 import productBriquettes from "../../assets/images/product-briquettes.png";
 
-const products = [
+const fallbackProducts = [
   {
     name: "Kompos Premium Eco-Zip 2kg",
     price: "Rp 15rb",
@@ -41,8 +42,16 @@ const products = [
 
 export default function Marketplace() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [dbProducts, setDbProducts] = useState<any[]>([]);
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      const supabase = createClient();
+      const { data } = await supabase.from("products").select("*").limit(4);
+      if (data && data.length > 0) setDbProducts(data);
+    };
+    fetchProducts();
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -55,6 +64,16 @@ export default function Marketplace() {
     reveals?.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
+
+  const displayProducts = dbProducts.length > 0 
+    ? dbProducts.map(p => ({
+        name: p.name,
+        price: `Rp ${(p.price_rp / 1000)}rb`,
+        description: p.description,
+        image: p.image_url || productCompost,
+        badge: p.stock_qty < 10 ? "TERBATAS" : null,
+      }))
+    : fallbackProducts;
 
   return (
     <section
@@ -90,7 +109,7 @@ export default function Marketplace() {
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((product, i) => (
+        {displayProducts.map((product, i) => (
           <div
             key={product.name}
             className={`reveal animate-delay-${(i + 1) * 100} group bg-white border border-stone-light rounded-[32px] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500 overflow-hidden`}
