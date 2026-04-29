@@ -127,46 +127,20 @@ export default function DepositPage() {
       )}
 
       <div className="animate-fade-in">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Left Column — Editorial Content */}
-        <div>
-          {/* Editorial Heading */}
-          <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-              Setor{" "}
-              <span className="font-serif italic text-primary">Sampah</span>
-            </h1>
-            <p className="mt-2 text-sm sm:text-base text-muted max-w-xl leading-relaxed">
-              Timbang sampah yang sudah dipilah, masukkan berat, dan konfirmasi kontribusi Anda pada ekonomi sirkular.
-            </p>
-          </div>
-
-          {/* Monthly Goal Card */}
-          <div className="bg-white border border-stone-border rounded-2xl p-6 mb-4">
-            <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-2">Target Bulanan</p>
-            <p className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight">
-              {monthlyWeight}<span className="text-lg font-medium text-muted ml-2">kg</span>
-            </p>
-            <div className="mt-4 h-1.5 bg-stone-light rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary rounded-full transition-all duration-700"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-            <p className="text-xs text-muted mt-2">{monthlyWeight} / {monthlyGoal} kg bulan ini</p>
-          </div>
-
-          {/* Total Points Card */}
-          <div className="bg-white border border-stone-border rounded-2xl p-6">
-            <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-2">Total Poin</p>
-            <p className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight">
-              {totalPoints.toLocaleString("id-ID")}<span className="text-lg font-medium text-muted ml-2">pts</span>
-            </p>
-          </div>
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+            Setor{" "}
+            <span className="font-serif italic text-primary">Sampah</span>
+          </h1>
+          <p className="mt-2 text-sm sm:text-base text-muted max-w-xl leading-relaxed">
+            Timbang sampah yang sudah dipilah, masukkan berat, dan konfirmasi kontribusi Anda pada ekonomi sirkular.
+          </p>
         </div>
 
-        {/* Right Column — Deposit Form */}
-        <div className="lg:mt-14">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+          {/* Left Column — Deposit Form (first so it's the primary focus) */}
+        <div>
           <div className="bg-white border border-stone-border rounded-2xl overflow-hidden">
             {/* Waste Type Selector Header */}
             <div className="p-6 border-b border-stone-border">
@@ -183,12 +157,8 @@ export default function DepositPage() {
                         : "border-stone-border bg-white hover:border-primary/30"
                     }`}
                   >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${type === "organic" ? "bg-accent-green" : "bg-blue-bg"}`}>
-                      {type === "organic" ? (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9" /></svg>
-                      ) : (
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2"><path d="M21 12a9 9 0 1 1-9-9" /><path d="M21 3v6h-6" /></svg>
-                      )}
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-xl ${type === "organic" ? "bg-accent-green" : "bg-blue-bg"}`}>
+                      {type === "organic" ? "🌿" : "♻️"}
                     </div>
                     <div className="text-left">
                       <p className="text-sm font-medium text-foreground">
@@ -266,6 +236,32 @@ export default function DepositPage() {
             </div>
           </div>
         </div>
+
+        {/* Right Column — Stats */}
+        <div className="space-y-4">
+          {/* Monthly Goal Card */}
+          <div className="bg-white border border-stone-border rounded-2xl p-6">
+            <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-2">Target Bulanan</p>
+            <p className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight">
+              {monthlyWeight}<span className="text-lg font-medium text-muted ml-2">kg</span>
+            </p>
+            <div className="mt-4 h-1.5 bg-stone-light rounded-full overflow-hidden">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-700"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            <p className="text-xs text-muted mt-2">{monthlyWeight} / {monthlyGoal} kg bulan ini</p>
+          </div>
+
+          {/* Total Points Card */}
+          <div className="bg-white border border-stone-border rounded-2xl p-6">
+            <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-2">Total Poin</p>
+            <p className="text-3xl sm:text-4xl font-medium text-foreground tracking-tight">
+              {totalPoints.toLocaleString("id-ID")}<span className="text-lg font-medium text-muted ml-2">pts</span>
+            </p>
+          </div>
+        </div>
       </div>
       </div>
 
@@ -305,12 +301,8 @@ export default function DepositPage() {
                 className="flex items-center justify-between py-5 border-b border-stone-border last:border-b-0 group hover:bg-stone-light/30 -mx-4 px-4 rounded-xl transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${deposit.waste_type === "organic" ? "bg-accent-green" : "bg-blue-bg"}`}>
-                    {deposit.waste_type === "organic" ? (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#016630" strokeWidth="2"><path d="M12 22C6.49 22 2 17.51 2 12S6.49 2 12 2s10 4.04 10 9" /></svg>
-                    ) : (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" strokeWidth="2"><path d="M21 12a9 9 0 1 1-9-9" /><path d="M21 3v6h-6" /></svg>
-                    )}
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-xl ${deposit.waste_type === "organic" ? "bg-accent-green" : "bg-blue-bg"}`}>
+                    {deposit.waste_type === "organic" ? "🌿" : "♻️"}
                   </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">

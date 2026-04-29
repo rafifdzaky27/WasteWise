@@ -55,7 +55,7 @@ export default function Marketplace() {
     const fetchProducts = async () => {
       try {
         const supabase = createClient();
-        const { data } = await supabase.from("products").select("*").eq("is_active", true).limit(4);
+        const { data } = await supabase.from("products").select("*").limit(4);
         if (data && data.length > 0) {
           setDisplayProducts(
             data.map((p) => ({

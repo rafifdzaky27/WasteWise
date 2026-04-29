@@ -74,15 +74,20 @@ export default async function DashboardPage() {
           <div className="bg-white border border-stone-border rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden">
             <div>
               <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-2">
-                Total Sampah Terkumpul
+                {isPetani ? "Total Belanja" : "Total Sampah Terkumpul"}
               </p>
-              <h2 className="text-5xl sm:text-7xl font-medium text-foreground tracking-tighter">
-                {totalWeight}<span className="text-2xl text-muted font-normal ml-2">kg</span>
-              </h2>
+              {isPetani ? (
+                <h2 className="text-5xl sm:text-7xl font-medium text-foreground tracking-tighter">
+                  Rp {totalRevenue.toLocaleString("id-ID")}
+                </h2>
+              ) : (
+                <h2 className="text-5xl sm:text-7xl font-medium text-foreground tracking-tighter">
+                  {totalWeight}<span className="text-2xl text-muted font-normal ml-2">kg</span>
+                </h2>
+              )}
             </div>
             
             <div className="mt-8 pt-8 border-t border-stone-border/50 grid grid-cols-2 gap-4">
-              {/* Petani: hide these, show purchase-focused stats instead */}
               {!isPetani && (
                 <>
                   <div>
@@ -98,12 +103,12 @@ export default async function DashboardPage() {
               {isPetani && (
                 <>
                   <div>
-                    <p className="text-xs text-muted mb-1">Total Belanja</p>
-                    <p className="text-2xl font-medium text-primary">Rp {totalRevenue.toLocaleString("id-ID")}</p>
+                    <p className="text-xs text-muted mb-1">Jumlah Pesanan</p>
+                    <p className="text-2xl font-medium text-primary">{orderCount || 0} <span className="text-sm">pesanan</span></p>
                   </div>
                   <div>
-                    <p className="text-xs text-muted mb-1">Jumlah Pesanan</p>
-                    <p className="text-2xl font-medium text-amber-500">{orderCount || 0} <span className="text-sm">pesanan</span></p>
+                    <p className="text-xs text-muted mb-1">Status Terakhir</p>
+                    <p className="text-2xl font-medium text-amber-500">{orders && orders.length > 0 ? (orders[0] as any).status === "completed" ? "Selesai" : "Diproses" : "—"}</p>
                   </div>
                 </>
               )}

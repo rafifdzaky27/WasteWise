@@ -24,11 +24,30 @@ export async function GET() {
     return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { data, error } = await supabase
+  // Fetch voucher redemptions
+  const { data: vouchers, error: vError } = await supabase
     .from("voucher_redemptions")
-    .select("*, profiles:user_id(full_name, email)")
+    .select("*")
     .order("created_at", { ascending: false });
 
-  if (error) return Response.json({ error: error.message }, { status: 500 });
-  return Response.json(data);
+  if (vError) return Response.json({ error: vError.message }, { status: 500 });
+  if (!vouchers || vouchers.length === 0) return Response.json([]);
+
+  // Fetch user profiles for all unique user_ids
+  const userIds = [...new Set(vouchers.map((v: any) => v.user_id))];
+  const { data: profiles } = await supabase
+    .from("profiles")
+    .select("id, full_name, email")
+    .in("id", userIds);
+
+  const profileMap: Record<string, any> = {};
+  profiles?.forEach((p: any) => { profileMap[p.id] = p; });
+
+  // Merge profiles into vouchers
+  const result = vouchers.map((v: any) => ({
+    ...v,
+    profiles: profileMap[v.user_id] || { full_name: "Warga", email: "" },
+  }));
+
+  return Response.json(result);
 }

@@ -132,12 +132,53 @@ export default function BioBinPage() {
           BioCompose IoT Dashboard
         </h1>
         <p className="text-muted max-w-md mb-6">
-          Belum ada unit BioCompose yang terdaftar. Hubungi admin untuk menambahkan
-          unit BioCompose ke sistem.
+          Belum ada unit BioCompose yang terdaftar. {isAdmin ? "Tambahkan unit pertama Anda." : "Hubungi admin untuk menambahkan unit BioCompose ke sistem."}
         </p>
-        <div className="px-4 py-2 rounded-xl bg-yellow-bg border border-yellow-border text-sm text-amber-700">
-          💡 Tip: Admin dapat menambahkan unit BioCompose melalui Supabase Dashboard
-        </div>
+        {isAdmin ? (
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="bg-primary-dark text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-primary-darker transition-colors"
+          >
+            + Tambah Unit BioCompose
+          </button>
+        ) : (
+          <div className="px-4 py-2 rounded-xl bg-yellow-bg border border-yellow-border text-sm text-amber-700">
+            💡 Tip: Admin dapat menambahkan unit BioCompose melalui halaman ini
+          </div>
+        )}
+
+        {/* Add BioBin Modal (also available in empty state) */}
+        {showAddModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+              <h3 className="text-lg font-medium text-foreground mb-4">Tambah Unit BioCompose</h3>
+              <input
+                type="text"
+                value={newBinName}
+                onChange={(e) => setNewBinName(e.target.value)}
+                placeholder="Contoh: BioBin Desa Maju"
+                className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
+                autoFocus
+              />
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  className="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
+                  disabled={adding}
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleAddBioBin}
+                  disabled={!newBinName.trim() || adding}
+                  className="bg-primary-dark text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-primary-darker transition-colors disabled:opacity-50"
+                >
+                  {adding ? "Menyimpan..." : "Simpan"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
