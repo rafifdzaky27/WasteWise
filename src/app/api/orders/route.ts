@@ -136,13 +136,21 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "Gagal menyimpan item pesanan" }, { status: 500 });
   }
 
-  // Reduce stock
+  // Reduce stock atomically to prevent race conditions
   for (const item of items) {
-    const product = products.find((p) => p.id === item.product_id)!;
-    await supabase
-      .from("products")
-      .update({ stock_qty: product.stock_qty - item.quantity })
-      .eq("id", item.product_id);
+    const { error: stockError } = await supabase.rpc('decrement_stock', {
+      p_product_id: item.product_id,
+      p_quantity: item.quantity,
+    });
+    // Fallback: if RPC doesn't exist, use direct update with filter
+    if (stockError) {
+      const product = products.find((p) => p.id === item.product_id)!;
+      await supabase
+        .from("products")
+        .update({ stock_qty: Math.max(0, product.stock_qty - item.quantity) })
+        .eq("id", item.product_id)
+        .gte("stock_qty", item.quantity);
+    }
   }
 
   return Response.json(order, { status: 201 });

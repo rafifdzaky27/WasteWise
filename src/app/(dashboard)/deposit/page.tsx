@@ -107,6 +107,7 @@ export default function DepositPage() {
               </h2>
               <button
                 onClick={() => setShowQR(null)}
+                aria-label="Tutup QR code"
                 className="w-8 h-8 rounded-full bg-stone-light flex items-center justify-center text-muted hover:text-foreground transition-colors"
               >
                 ✕
@@ -298,8 +299,7 @@ export default function DepositPage() {
                 Belum ada setoran
               </h3>
               <p className="text-sm text-muted">
-                Kirim setoran sampah pertama Anda menggunakan formulir di samping
-                untuk mulai mengumpulkan poin!
+                Kirim setoran sampah pertama Anda untuk mulai mengumpulkan poin!
               </p>
             </div>
           ) : (

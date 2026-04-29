@@ -157,7 +157,7 @@ export default async function DashboardPage() {
 
       {/* Info Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {(isWarga || isAdmin) && (
+        {isAdmin && (
           <div className="bg-white/60 border border-stone-border rounded-2xl p-6">
             <h3 className="font-semibold text-foreground mb-2">🌡️ Status BioCompose</h3>
             <p className="text-sm text-muted">Lihat data sensor pengomposan secara real-time di halaman <Link href="/biobin" className="text-primary font-medium hover:underline">BioCompose</Link>.</p>

@@ -84,12 +84,13 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
         {/* Cart Button */}
         <button
           onClick={() => setShowCart(!showCart)}
-          className="relative bg-primary-dark text-white px-4 py-2.5 rounded-xl font-medium text-sm hover:bg-primary-darker transition-colors"
+          aria-label={`Keranjang belanja, ${cart.totalItems()} item`}
+          className="relative bg-primary-dark text-white px-3 sm:px-4 py-2.5 rounded-xl font-medium text-sm hover:bg-primary-darker transition-colors"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="inline mr-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="inline sm:mr-2">
             <path d="M7 18C5.9 18 5.01 18.9 5.01 20S5.9 22 7 22 9 21.1 9 20 8.1 18 7 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.59 17.3 11.97L20.88 5.48C20.96 5.34 21 5.17 21 5C21 4.45 20.55 4 20 4H5.21L4.27 2H1Z" fill="white"/>
           </svg>
-          Keranjang
+          <span className="hidden sm:inline">Keranjang</span>
           {cart.totalItems() > 0 && (
             <span className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
               {cart.totalItems()}
@@ -114,7 +115,7 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
         <div className="mb-8 bg-white border border-stone-border rounded-2xl p-6 shadow-md animate-fade-in">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-foreground">Keranjang Belanja</h2>
-            <button onClick={() => setShowCart(false)} className="text-muted hover:text-foreground">✕</button>
+            <button onClick={() => setShowCart(false)} aria-label="Tutup keranjang" className="text-muted hover:text-foreground">✕</button>
           </div>
           
           {cart.items.length === 0 ? (
@@ -123,7 +124,7 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
             <>
               <div className="space-y-3 mb-4">
                 {cart.items.map((item) => (
-                  <div key={item.product_id} className="flex items-center justify-between gap-4 bg-stone-light rounded-xl px-4 py-3">
+                  <div key={item.product_id} className="flex flex-wrap items-center justify-between gap-3 bg-stone-light rounded-xl px-3 sm:px-4 py-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
                       <p className="text-xs text-muted">Rp {item.price_rp.toLocaleString("id-ID")} × {item.quantity}</p>
@@ -131,6 +132,7 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => cart.updateQuantity(item.product_id, item.quantity - 1)}
+                        aria-label={`Kurangi jumlah ${item.name}`}
                         className="w-7 h-7 rounded-lg bg-white border border-stone-border text-foreground text-sm flex items-center justify-center hover:bg-stone-light"
                       >
                         −
@@ -138,18 +140,20 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
                       <span className="text-sm font-medium w-6 text-center">{item.quantity}</span>
                       <button
                         onClick={() => cart.updateQuantity(item.product_id, item.quantity + 1)}
+                        aria-label={`Tambah jumlah ${item.name}`}
                         className="w-7 h-7 rounded-lg bg-white border border-stone-border text-foreground text-sm flex items-center justify-center hover:bg-stone-light"
                       >
                         +
                       </button>
                       <button
                         onClick={() => cart.removeItem(item.product_id)}
+                        aria-label={`Hapus ${item.name} dari keranjang`}
                         className="w-7 h-7 rounded-lg bg-red-50 border border-red-200 text-red-500 text-sm flex items-center justify-center hover:bg-red-100 ml-1"
                       >
                         ×
                       </button>
                     </div>
-                    <p className="text-sm font-semibold text-foreground w-24 text-right">
+                    <p className="text-sm font-semibold text-foreground w-full sm:w-24 text-right">
                       Rp {(item.price_rp * item.quantity).toLocaleString("id-ID")}
                     </p>
                   </div>
@@ -258,12 +262,13 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
 
       {/* Checkout Modal */}
       {showCheckoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+        <div role="dialog" aria-modal="true" aria-label="Checkout pesanan" className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="px-6 py-4 border-b border-stone-border flex items-center justify-between bg-stone-light/50">
               <h3 className="text-lg font-bold text-foreground">Checkout Pesanan</h3>
               <button 
                 onClick={() => setShowCheckoutModal(false)}
+                aria-label="Tutup checkout"
                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-stone-200 transition-colors"
               >
                 ✕

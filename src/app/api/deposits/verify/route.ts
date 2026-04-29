@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
 
   if (profile?.role !== "admin") {
     return Response.json(
-      { error: "Only admins can verify deposits" },
+      { error: "Hanya admin yang dapat memverifikasi setoran" },
       { status: 403 }
     );
   }
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   const { qr_code } = body;
 
   if (!qr_code) {
-    return Response.json({ error: "qr_code is required" }, { status: 400 });
+    return Response.json({ error: "Kode QR wajib diisi" }, { status: 400 });
   }
 
   // Find deposit by QR code
@@ -47,14 +47,14 @@ export async function POST(request: NextRequest) {
   if (findError || !deposit) {
     console.error("API /deposits/verify Error:", findError, "Deposit found:", !!deposit);
     return Response.json(
-      { error: "Deposit not found for this QR code" },
+      { error: "Setoran tidak ditemukan untuk kode QR ini" },
       { status: 404 }
     );
   }
 
   if (deposit.verified_by) {
     return Response.json(
-      { error: "Deposit already verified", deposit },
+      { error: "Setoran sudah diverifikasi sebelumnya", deposit },
       { status: 409 }
     );
   }
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     amount: deposit.points_earned,
     type: "earned",
     reference_id: deposit.id,
-    description: `Deposit ${deposit.weight_kg}kg ${deposit.waste_type} waste`,
+    description: `Setor ${deposit.weight_kg} kg sampah ${deposit.waste_type === 'organic' ? 'organik' : 'daur ulang'}`,
   });
 
   // Update total_points on profile
