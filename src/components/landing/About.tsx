@@ -62,6 +62,28 @@ export default function About() {
                 </svg>
               </div>
               <div>
+                <strong className="text-foreground text-sm block">SDG 8: Pekerjaan Layak dan Pertumbuhan Ekonomi</strong>
+                <span className="text-xs text-muted">Menciptakan lapangan kerja hijau dan mendorong pertumbuhan ekonomi desa melalui pengelolaan sampah.</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-accent-green flex items-center justify-center mt-0.5 shrink-0">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M10 3L4.5 8.5L2 6" stroke="#006045" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div>
+                <strong className="text-foreground text-sm block">SDG 9: Industri, Inovasi, dan Infrastruktur</strong>
+                <span className="text-xs text-muted">Memanfaatkan IoT dan teknologi digital untuk inovasi pengelolaan limbah di tingkat desa.</span>
+              </div>
+            </li>
+            <li className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-accent-green flex items-center justify-center mt-0.5 shrink-0">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                  <path d="M10 3L4.5 8.5L2 6" stroke="#006045" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+              <div>
                 <strong className="text-foreground text-sm block">SDG 11: Kota dan Komunitas yang Berkelanjutan</strong>
                 <span className="text-xs text-muted">Mewujudkan desa yang bersih dan pengelolaan limbah yang aman.</span>
               </div>
@@ -75,17 +97,6 @@ export default function About() {
               <div>
                 <strong className="text-foreground text-sm block">SDG 12: Konsumsi dan Produksi yang Bertanggung Jawab</strong>
                 <span className="text-xs text-muted">Mendorong pengurangan, daur ulang, dan penggunaan kembali sampah.</span>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-accent-green flex items-center justify-center mt-0.5 shrink-0">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M10 3L4.5 8.5L2 6" stroke="#006045" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-              <div>
-                <strong className="text-foreground text-sm block">SDG 13: Penanganan Perubahan Iklim</strong>
-                <span className="text-xs text-muted">Mengurangi emisi gas rumah kaca dengan mencegah sampah organik ke TPA.</span>
               </div>
             </li>
           </ul>

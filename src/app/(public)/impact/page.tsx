@@ -147,11 +147,10 @@ export default async function ImpactPage() {
             color="bg-white"
           />
           <ImpactCounter
-            end={data.co2Avoided}
-            suffix=" kg"
-            decimals={1}
-            label="Emisi CO₂ Dihindari"
-            icon="☁️"
+            end={data.totalDeposits}
+            suffix=""
+            label="Total Setoran Terverifikasi"
+            icon="📋"
             color="bg-accent-green border-accent-green-border"
           />
           <ImpactCounter
@@ -178,11 +177,8 @@ export default async function ImpactPage() {
           <div className="lg:col-span-1 glass-card rounded-3xl p-8 border border-stone-border shadow-sm flex flex-col justify-center">
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-foreground mb-2">
-                Target Bulanan
+                Sampah Terkumpul Bulan Ini
               </h3>
-              <p className="text-sm text-muted">
-                Pengurangan sampah TPA bulan ini.
-              </p>
             </div>
 
             <div className="relative w-48 h-48 mx-auto mb-6">

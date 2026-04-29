@@ -94,12 +94,12 @@ export default function CommunityImpact() {
               <p className="mt-2 text-xs font-semibold text-muted uppercase tracking-widest leading-4">
                 Pengurangan
                 <br />
-                TPA
+                Sampah di TPA
               </p>
             </div>
             <div>
               <p className="text-5xl font-medium text-foreground tracking-tight">
-                <AnimatedCounter end={540} suffix="kg" />
+                <AnimatedCounter end={216} suffix="kg" />
               </p>
               <p className="mt-2 text-xs font-semibold text-muted uppercase tracking-widest leading-4">
                 Kompos

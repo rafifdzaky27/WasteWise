@@ -14,6 +14,8 @@ export default function AdminDepositsPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [filter, setFilter] = useState<"all" | "pending" | "verified">("all");
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   async function fetchDeposits() {
     const res = await fetch("/api/deposits");
@@ -124,21 +126,34 @@ export default function AdminDepositsPage() {
           ) : filtered.length === 0 ? (
             <div className="bg-white/60 border border-stone-border rounded-2xl p-8 text-center"><p className="text-sm text-muted">Tidak ada setoran ditemukan.</p></div>
           ) : (
-            <div className="space-y-2">{filtered.map((d) => (
-              <div key={d.id} className="bg-white border border-stone-border rounded-xl p-3.5 flex items-center justify-between hover:shadow-sm transition-shadow">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0 ${d.waste_type === "organic" ? "bg-accent-green" : "bg-blue-bg"}`}>{d.waste_type === "organic" ? "🌿" : "♻️"}</div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">{d.profiles?.full_name || "Unknown"}</p>
-                    <p className="text-[11px] text-muted">{d.weight_kg}kg · {new Date(d.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</p>
+            <div className="space-y-2">
+              {filtered.slice(0, page * ITEMS_PER_PAGE).map((d) => (
+                <div key={d.id} className="bg-white border border-stone-border rounded-xl p-3.5 flex items-center justify-between hover:shadow-sm transition-shadow">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm shrink-0 ${d.waste_type === "organic" ? "bg-accent-green" : "bg-blue-bg"}`}>{d.waste_type === "organic" ? "🌿" : "♻️"}</div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">{d.profiles?.full_name || "Unknown"}</p>
+                      <p className="text-[11px] text-muted">{d.weight_kg}kg · {new Date(d.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short" })}</p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0 ml-2">
+                    <p className="text-xs font-bold text-primary">+{d.points_earned}</p>
+                    <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full ${d.verified_by ? "bg-accent-green text-green-status-text" : "bg-yellow-bg text-amber-700"}`}>{d.verified_by ? "Terverifikasi" : "Menunggu"}</span>
                   </div>
                 </div>
-                <div className="text-right shrink-0 ml-2">
-                  <p className="text-xs font-bold text-primary">+{d.points_earned}</p>
-                  <span className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded-full ${d.verified_by ? "bg-accent-green text-green-status-text" : "bg-yellow-bg text-amber-700"}`}>{d.verified_by ? "Terverifikasi" : "Menunggu"}</span>
+              ))}
+              
+              {filtered.length > page * ITEMS_PER_PAGE && (
+                <div className="pt-4 text-center">
+                  <button
+                    onClick={() => setPage((p) => p + 1)}
+                    className="text-xs font-medium text-muted hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-stone-light"
+                  >
+                    Muat lebih banyak ↓
+                  </button>
                 </div>
-              </div>
-            ))}</div>
+              )}
+            </div>
           )}
         </div>
       </div>

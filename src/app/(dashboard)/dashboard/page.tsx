@@ -1,6 +1,8 @@
 import { createClient } from "../../../lib/supabase/server";
 import Link from "next/link";
 
+export const revalidate = 0;
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -18,154 +20,237 @@ export default async function DashboardPage() {
   const isPetani = userRole === "petani";
   const isAdmin = userRole === "admin";
 
-  // Fetch real stats
-  const { data: deposits } = await supabase
-    .from("waste_deposits")
-    .select("weight_kg")
-    .eq("user_id", user?.id);
+  // Fetch real stats based on role
+  let depositsQuery = supabase.from("waste_deposits").select("weight_kg, waste_type, created_at, points_earned");
+  let vouchersQuery = supabase.from("voucher_redemptions").select("id", { count: "exact" });
+  let ordersQuery = supabase.from("orders").select("id, total_price_rp, status, created_at", { count: "exact" });
 
-  const totalWeight = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
+  if (!isAdmin) {
+    depositsQuery = depositsQuery.eq("user_id", user?.id);
+    vouchersQuery = vouchersQuery.eq("user_id", user?.id);
+    ordersQuery = ordersQuery.eq("buyer_id", user?.id);
+  }
 
-  const { count: voucherCount } = await supabase
-    .from("voucher_redemptions")
-    .select("*", { count: "exact", head: true })
-    .eq("user_id", user?.id);
+  const { data: deposits } = await depositsQuery.order("created_at", { ascending: false });
+  const { count: voucherCount } = await vouchersQuery;
+  const { data: orders, count: orderCount } = await ordersQuery;
 
-  const { count: orderCount } = await supabase
-    .from("orders")
-    .select("*", { count: "exact", head: true })
-    .eq("buyer_id", user?.id);
+  // Global / User Stats
+  const totalWeightRaw = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
+  const totalWeight = Math.round(totalWeightRaw * 10) / 10;
+  const totalDeposits = deposits?.length || 0;
+  
+  const organicWeight = Math.round((deposits?.filter(d => d.waste_type === "organic").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0) * 10) / 10;
+  const recyclableWeight = Math.round((deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0) * 10) / 10;
+  
+  const totalPoints = deposits?.reduce((sum, d) => sum + Number(d.points_earned), 0) || 0;
+  const totalRevenue = orders?.reduce((sum, o) => sum + Number(o.total_price_rp), 0) || 0;
 
-  // Build stats based on role
-  const stats = [
-    // Warga stats
-    ...(isWarga
-      ? [
-          { label: "Total Poin", value: profile?.total_points || 0, icon: "⭐", color: "bg-yellow-bg border-yellow-border", href: "/rewards" },
-          { label: "Sampah Disetor", value: `${totalWeight} kg`, icon: "♻️", color: "bg-accent-green border-accent-green-border", href: "/deposit" },
-          { label: "Voucher Diperoleh", value: voucherCount || 0, icon: "🎁", color: "bg-purple-bg border-purple-border", href: "/rewards" },
-        ]
-      : []),
-    // Petani stats
-    ...(isPetani
-      ? [
-          { label: "Pesanan Dibuat", value: orderCount || 0, icon: "📦", color: "bg-blue-bg border-blue-border", href: "/orders" },
-        ]
-      : []),
-    // Admin stats
-    ...(isAdmin
-      ? [
-          { label: "Sampah Disetor", value: `${totalWeight} kg`, icon: "♻️", color: "bg-accent-green border-accent-green-border", href: "/deposit" },
-          { label: "Pesanan Masuk", value: orderCount || 0, icon: "📦", color: "bg-blue-bg border-blue-border", href: "/admin/deposits" },
-        ]
-      : []),
-  ];
+  // Chart Percentages (only organic + recyclable, no "other")
+  const totalCategorized = organicWeight + recyclableWeight || 1;
+  const orgPct = Math.round((organicWeight / totalCategorized) * 100);
+  const recPct = Math.round((recyclableWeight / totalCategorized) * 100);
 
   return (
-    <div className="max-w-5xl mx-auto">
-      {/* Welcome Header */}
+    <div className="animate-fade-in">
+      {/* Editorial Header */}
       <div className="mb-8">
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
-          Selamat datang kembali,{" "}
-          <span className="font-serif italic text-primary">
-            {profile?.full_name || "Pengguna"}
-          </span>
+          {isWarga && <>Dampak <span className="font-serif italic text-primary">Anda</span> pada Bumi</>}
+          {isPetani && <>Aktivitas <span className="font-serif italic text-primary">Belanja</span> Anda</>}
+          {isAdmin && <>Operasional <span className="font-serif italic text-primary">BUMDes</span></>}
         </h1>
-        <p className="text-muted mt-1 text-sm">
-          {isWarga && "Berikut ringkasan dampak lingkungan Anda."}
-          {isPetani && "Berikut ringkasan aktivitas belanja Anda."}
-          {isAdmin && "Berikut ringkasan operasional BUMDes."}
+        <p className="mt-2 text-sm sm:text-base text-muted max-w-xl leading-relaxed">
+          {isWarga && "Melihat kontribusi lingkungan yang telah Anda hasilkan melalui pengelolaan sampah cerdas."}
+          {isPetani && "Catatan lengkap aktivitas belanja dan pesanan Anda di marketplace."}
+          {isAdmin && "Pantau dan kelola seluruh operasional pengelolaan sampah desa secara real-time."}
         </p>
       </div>
 
-      {/* Stats Grid */}
-      {stats.length > 0 && (
-        <div className={`grid grid-cols-2 ${stats.length > 2 ? "lg:grid-cols-3" : ""} gap-3 sm:gap-4 mb-8`}>
-          {stats.map((stat) => (
-            <Link
-              key={stat.label}
-              href={stat.href}
-              className={`${stat.color} border rounded-2xl p-4 sm:p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300`}
-            >
-              <div className="flex items-center justify-between mb-2 sm:mb-3">
-                <span className="text-xl sm:text-2xl">{stat.icon}</span>
-              </div>
-              <p className="text-xl sm:text-2xl font-bold text-foreground">{stat.value}</p>
-              <p className="text-[10px] sm:text-xs font-medium text-muted uppercase tracking-wider mt-1">
-                {stat.label}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Stat Column */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Hero Stat Box */}
+          <div className="bg-white border border-stone-border rounded-3xl p-8 flex flex-col justify-between relative overflow-hidden">
+            <div>
+              <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-2">
+                {isPetani ? "Total Belanja" : "Total Sampah Terkumpul"}
               </p>
-            </Link>
-          ))}
-        </div>
-      )}
-
-      {/* Quick Actions — role-specific */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        {/* Warga actions */}
-        {isWarga && (
-          <>
-            <Link href="/deposit" className="bg-gradient-to-br from-primary-dark to-primary rounded-2xl p-5 text-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <span className="text-2xl mb-2 block">♻️</span>
-              <h3 className="font-semibold mb-1">Setor Baru</h3>
-              <p className="text-xs opacity-80">Setor sampah dan dapatkan poin</p>
-            </Link>
-            <Link href="/rewards" className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <span className="text-2xl mb-2 block">🎁</span>
-              <h3 className="font-semibold mb-1">Tukar Hadiah</h3>
-              <p className="text-xs opacity-80">Tukarkan poin menjadi voucher LPG</p>
-            </Link>
-          </>
-        )}
-
-        {/* Petani actions */}
-        {isPetani && (
-          <>
-            <Link href="/marketplace" className="bg-gradient-to-br from-primary-dark to-primary rounded-2xl p-5 text-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <span className="text-2xl mb-2 block">🛒</span>
-              <h3 className="font-semibold mb-1">Marketplace</h3>
-              <p className="text-xs opacity-80">Beli produk daur ulang berkualitas</p>
-            </Link>
-            <Link href="/orders" className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <span className="text-2xl mb-2 block">📦</span>
-              <h3 className="font-semibold mb-1">Riwayat Pesanan</h3>
-              <p className="text-xs opacity-80">Lihat status pesanan Anda</p>
-            </Link>
-          </>
-        )}
-
-        {/* Admin actions */}
-        {isAdmin && (
-          <>
-            <Link href="/admin/deposits" className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-5 text-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <span className="text-2xl mb-2 block">📷</span>
-              <h3 className="font-semibold mb-1">Verifikasi Setoran</h3>
-              <p className="text-xs opacity-80">Pindai QR code untuk verifikasi</p>
-            </Link>
-            <Link href="/biobin" className="bg-gradient-to-br from-primary-dark to-primary rounded-2xl p-5 text-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <span className="text-2xl mb-2 block">🌡️</span>
-              <h3 className="font-semibold mb-1">Monitor BioCompose</h3>
-              <p className="text-xs opacity-80">Pantau sensor pengomposan real-time</p>
-            </Link>
-            <Link href="/admin/products" className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-5 text-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-              <span className="text-2xl mb-2 block">📦</span>
-              <h3 className="font-semibold mb-1">Kelola Produk</h3>
-              <p className="text-xs opacity-80">Atur stok dan harga produk</p>
-            </Link>
-          </>
-        )}
-      </div>
-
-      {/* Info Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {isAdmin && (
-          <div className="bg-white/60 border border-stone-border rounded-2xl p-6">
-            <h3 className="font-semibold text-foreground mb-2">🌡️ Status BioCompose</h3>
-            <p className="text-sm text-muted">Lihat data sensor pengomposan secara real-time di halaman <Link href="/biobin" className="text-primary font-medium hover:underline">BioCompose</Link>.</p>
+              {isPetani ? (
+                <h2 className="text-5xl sm:text-7xl font-medium text-foreground tracking-tighter">
+                  Rp {totalRevenue.toLocaleString("id-ID")}
+                </h2>
+              ) : (
+                <h2 className="text-5xl sm:text-7xl font-medium text-foreground tracking-tighter">
+                  {totalWeight}<span className="text-2xl text-muted font-normal ml-2">kg</span>
+                </h2>
+              )}
+            </div>
+            
+            <div className="mt-8 pt-8 border-t border-stone-border/50 grid grid-cols-2 gap-4">
+              {!isPetani && (
+                <>
+                  <div>
+                    <p className="text-xs text-muted mb-1">Total Setoran Masuk</p>
+                    <p className="text-2xl font-medium text-primary">{totalDeposits} <span className="text-sm">setoran</span></p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted mb-1">{isAdmin ? "Total Poin Dikeluarkan" : "Total Poin Anda"}</p>
+                    <p className="text-2xl font-medium text-amber-500">{totalPoints.toLocaleString("id-ID")} <span className="text-sm">pts</span></p>
+                  </div>
+                </>
+              )}
+              {isPetani && (
+                <>
+                  <div>
+                    <p className="text-xs text-muted mb-1">Jumlah Pesanan</p>
+                    <p className="text-2xl font-medium text-primary">{orderCount || 0} <span className="text-sm">pesanan</span></p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted mb-1">Status Terakhir</p>
+                    <p className="text-2xl font-medium text-amber-500">{orders && orders.length > 0 ? (orders[0] as any).status === "completed" ? "Selesai" : "Diproses" : "—"}</p>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
-        )}
-        <div className="bg-white/60 border border-stone-border rounded-2xl p-6">
-          <h3 className="font-semibold text-foreground mb-2">📊 Dampak Lingkungan</h3>
-          <p className="text-sm text-muted">Pantau kontribusi komunitas terhadap pengurangan sampah TPA di halaman <Link href="/impact" className="text-primary font-medium hover:underline">Dampak</Link>.</p>
+
+          {/* Composition Bar Chart — only for Warga & Admin (not Petani) */}
+          {!isPetani && (
+            <div className="bg-white border border-stone-border rounded-3xl p-8">
+              <h3 className="text-lg font-medium text-foreground mb-6">Komposisi Sampah</h3>
+              
+              {/* Visual Bar — only 2 categories */}
+              <div className="w-full h-8 flex rounded-full overflow-hidden mb-6 bg-stone-light">
+                <div style={{ width: `${orgPct}%` }} className="h-full bg-accent-green transition-all duration-1000 ease-out" />
+                <div style={{ width: `${recPct}%` }} className="h-full bg-blue-400 transition-all duration-1000 ease-out border-l border-white/20" />
+              </div>
+
+              {/* Legend — 2 columns only */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-3 h-3 rounded-full bg-accent-green" />
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted">Organik</p>
+                  </div>
+                  <p className="text-lg font-medium">{organicWeight} kg <span className="text-sm text-muted">({orgPct}%)</span></p>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-3 h-3 rounded-full bg-blue-400" />
+                    <p className="text-xs font-bold uppercase tracking-wider text-muted">Daur Ulang</p>
+                  </div>
+                  <p className="text-lg font-medium">{recyclableWeight} kg <span className="text-sm text-muted">({recPct}%)</span></p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Petani: Recent Orders instead of composition */}
+          {isPetani && orders && orders.length > 0 && (
+            <div className="bg-white border border-stone-border rounded-3xl p-8">
+              <h3 className="text-lg font-medium text-foreground mb-6">Pesanan Terakhir</h3>
+              <div className="space-y-3">
+                {orders.slice(0, 5).map((order: any) => {
+                  const statusLabels: Record<string, string> = {
+                    pending: "Diproses",
+                    confirmed: "Dikonfirmasi",
+                    shipped: "Siap Ambil",
+                    completed: "Selesai",
+                  };
+                  return (
+                    <div key={order.id} className="flex items-center justify-between py-3 border-b border-stone-border/50 last:border-b-0">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Order #{order.id.slice(0, 8).toUpperCase()}</p>
+                        <p className="text-xs text-muted">{new Date(order.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-foreground">Rp {Number(order.total_price_rp).toLocaleString("id-ID")}</p>
+                        <p className="text-xs text-muted">{statusLabels[order.status] || order.status}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Side Column (Activity & Secondary Stats) */}
+        <div className="space-y-6">
+          {/* Revenue / Marketplace Stat */}
+          {isAdmin && (
+            <div className="bg-primary-dark text-white rounded-3xl p-8 shadow-xl">
+              <p className="text-[10px] font-bold text-white/60 uppercase tracking-[2px] mb-2">
+                Total Pendapatan Marketplace
+              </p>
+              <h3 className="text-3xl font-medium tracking-tight mb-4">
+                Rp {totalRevenue.toLocaleString("id-ID")}
+              </h3>
+              <div className="flex justify-between items-center text-sm border-t border-white/20 pt-4">
+                <span className="text-white/80">Total Pesanan</span>
+                <span className="font-bold">{orderCount || 0} Transaksi</span>
+              </div>
+            </div>
+          )}
+
+          {/* Vouchers Redeemed */}
+          {(isAdmin || isWarga) && (
+            <div className="bg-white border border-stone-border rounded-3xl p-8">
+              <div className="w-12 h-12 bg-yellow-bg border border-yellow-border text-yellow-700 rounded-full flex items-center justify-center mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              </div>
+              <p className="text-xs font-bold text-muted uppercase tracking-[2px] mb-1">Tukar Poin</p>
+              <p className="text-2xl font-medium text-foreground">{voucherCount || 0} <span className="text-sm font-normal text-muted">Voucher</span></p>
+            </div>
+          )}
+
+          {/* Quick Action */}
+          {isAdmin && (
+            <Link href="/admin/deposits" className="block bg-stone-light/50 border border-stone-border hover:border-primary/50 transition-colors rounded-3xl p-6 group">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-foreground group-hover:text-primary transition-colors">
+                    Lihat Antrean Verifikasi
+                  </p>
+                  <p className="text-xs text-muted mt-1">Lanjutkan aktivitas Anda</p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-white border border-stone-border flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+              </div>
+            </Link>
+          )}
+          {isWarga && (
+            <Link href="/deposit" className="block bg-stone-light/50 border border-stone-border hover:border-primary/50 transition-colors rounded-3xl p-6 group">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-foreground group-hover:text-primary transition-colors">
+                    Setor Sampah Baru
+                  </p>
+                  <p className="text-xs text-muted mt-1">Lanjutkan aktivitas Anda</p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-white border border-stone-border flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+              </div>
+            </Link>
+          )}
+          {isPetani && (
+            <Link href="/marketplace" className="block bg-stone-light/50 border border-stone-border hover:border-primary/50 transition-colors rounded-3xl p-6 group">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-foreground group-hover:text-primary transition-colors">
+                    Belanja di Marketplace
+                  </p>
+                  <p className="text-xs text-muted mt-1">Lanjutkan aktivitas Anda</p>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-white border border-stone-border flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+              </div>
+            </Link>
+          )}
         </div>
       </div>
     </div>

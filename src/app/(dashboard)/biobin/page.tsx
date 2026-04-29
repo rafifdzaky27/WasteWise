@@ -17,10 +17,24 @@ export default function BioBinPage() {
   const { readings, latestReading, isConnected, error, isLoading } =
     useSensorData(selectedId);
 
-  // Fetch list of BioBin units
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newBinName, setNewBinName] = useState("");
+  const [newBinLocation, setNewBinLocation] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState("");
+
+  // Fetch list of BioBin units and role
   useEffect(() => {
-    async function fetchBiobins() {
+    async function fetchData() {
       const supabase = createClient();
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+        setIsAdmin(profile?.role === "admin");
+      }
+
       const { data, error } = await supabase
         .from("biobin_units")
         .select("*")
@@ -35,8 +49,34 @@ export default function BioBinPage() {
       setLoadingBiobins(false);
     }
 
-    fetchBiobins();
+    fetchData();
   }, []);
+
+  async function handleAddBioBin() {
+    if (!newBinName.trim()) return;
+    setAdding(true);
+    setAddError("");
+    const supabase = createClient();
+    const { data, error } = await supabase.from("biobin_units").insert({
+      name: newBinName.trim(),
+      location: newBinLocation.trim() || "Desa",
+      status: "active",
+    }).select().single();
+    if (error) {
+      console.error("Add BioBin error:", error);
+      setAddError(error.message || "Gagal menambahkan unit. Periksa koneksi atau hak akses.");
+      setAdding(false);
+      return;
+    }
+    if (data) {
+      setBiobins(prev => [...prev, data]);
+      setSelectedId(data.id);
+      setShowAddModal(false);
+      setNewBinName("");
+      setNewBinLocation("");
+    }
+    setAdding(false);
+  }
 
   // IoT Simulator Effect
   useEffect(() => {
@@ -106,12 +146,63 @@ export default function BioBinPage() {
           BioCompose IoT Dashboard
         </h1>
         <p className="text-muted max-w-md mb-6">
-          Belum ada unit BioCompose yang terdaftar. Hubungi admin untuk menambahkan
-          unit BioCompose ke sistem.
+          Belum ada unit BioCompose yang terdaftar. {isAdmin ? "Tambahkan unit pertama Anda." : "Hubungi admin untuk menambahkan unit BioCompose ke sistem."}
         </p>
-        <div className="px-4 py-2 rounded-xl bg-yellow-bg border border-yellow-border text-sm text-amber-700">
-          💡 Tip: Admin dapat menambahkan unit BioCompose melalui Supabase Dashboard
-        </div>
+        {isAdmin ? (
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="bg-primary-dark text-white px-6 py-3 rounded-xl text-sm font-medium hover:bg-primary-darker transition-colors"
+          >
+            + Tambah Unit BioCompose
+          </button>
+        ) : (
+          <div className="px-4 py-2 rounded-xl bg-yellow-bg border border-yellow-border text-sm text-amber-700">
+            💡 Tip: Admin dapat menambahkan unit BioCompose melalui halaman ini
+          </div>
+        )}
+
+        {/* Add BioBin Modal (also available in empty state) */}
+        {showAddModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+              <h3 className="text-lg font-medium text-foreground mb-4">Tambah Unit BioCompose</h3>
+              {addError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl px-3 py-2 mb-3">{addError}</div>
+              )}
+              <input
+                type="text"
+                value={newBinName}
+                onChange={(e) => setNewBinName(e.target.value)}
+                placeholder="Nama unit, cth: BioBin Desa Maju"
+                className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-3"
+                autoFocus
+              />
+              <input
+                type="text"
+                value={newBinLocation}
+                onChange={(e) => setNewBinLocation(e.target.value)}
+                placeholder="Lokasi, cth: RT 03 / Balai Desa"
+                className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
+              />
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => { setShowAddModal(false); setAddError(""); }}
+                  className="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
+                  disabled={adding}
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleAddBioBin}
+                  disabled={!newBinName.trim() || adding}
+                  className="bg-primary-dark text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-primary-darker transition-colors disabled:opacity-50"
+                >
+                  {adding ? "Menyimpan..." : "Simpan"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -120,10 +211,10 @@ export default function BioBinPage() {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8 animate-fade-in">
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground mb-1">
-          🌡️ BioCompose IoT Dashboard
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+          BioCompose <span className="font-serif italic text-primary">IoT Tracking</span>
         </h1>
-        <p className="text-sm text-muted">
+        <p className="mt-2 text-sm sm:text-base text-muted max-w-lg">
           Monitoring suhu, kelembapan, dan gas secara real-time untuk
           pengomposan optimal.
         </p>
@@ -146,6 +237,14 @@ export default function BioBinPage() {
               {b.name}
             </button>
           ))}
+          {isAdmin && (
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex-shrink-0 px-5 py-3 rounded-xl border border-dashed border-stone-border text-sm font-medium bg-stone-50 text-muted hover:text-primary hover:border-primary/50 transition-colors flex items-center gap-2"
+            >
+              + Tambah Unit
+            </button>
+          )}
         </div>
 
         {/* IoT Simulator Toggle for Vercel Demo */}
@@ -246,6 +345,49 @@ export default function BioBinPage() {
       {selectedId && !isLoading && (
         <div className="animate-fade-in animate-delay-400">
           <HarvestPrediction biobinId={selectedId} />
+        </div>
+      )}
+
+      {/* Add BioBin Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+            <h3 className="text-lg font-medium text-foreground mb-4">Tambah Unit BioCompose</h3>
+            {addError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl px-3 py-2 mb-3">{addError}</div>
+            )}
+            <input
+              type="text"
+              value={newBinName}
+              onChange={(e) => setNewBinName(e.target.value)}
+              placeholder="Nama unit, cth: BioBin RT 03"
+              className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-3"
+              autoFocus
+            />
+            <input
+              type="text"
+              value={newBinLocation}
+              onChange={(e) => setNewBinLocation(e.target.value)}
+              placeholder="Lokasi, cth: RT 03 / Balai Desa"
+              className="w-full bg-stone-light/50 border border-stone-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 mb-4"
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => { setShowAddModal(false); setAddError(""); }}
+                className="px-4 py-2 text-sm font-medium text-muted hover:text-foreground transition-colors"
+                disabled={adding}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleAddBioBin}
+                disabled={!newBinName.trim() || adding}
+                className="bg-primary-dark text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-primary-darker transition-colors disabled:opacity-50"
+              >
+                {adding ? "Menyimpan..." : "Simpan"}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
