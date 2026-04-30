@@ -2,8 +2,10 @@ import ImpactCounter from "../../../components/impact/ImpactCounter";
 import ImpactChart from "../../../components/impact/ImpactChart";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
+// Must be dynamic because SUPABASE_SERVICE_ROLE_KEY is runtime-only
 export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// But we cache the rendered result for 60 seconds
+export const revalidate = 60;
 
 interface ImpactData {
   totalWaste: number;
@@ -26,31 +28,30 @@ async function getImpactData(): Promise<ImpactData> {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Fetch all verified deposits
-  const { data: deposits } = await supabase
-    .from("waste_deposits")
-    .select("weight_kg, waste_type, created_at, verified_by")
-    .not("verified_by", "is", null)
-    .order("created_at", { ascending: true });
+  // 🚀 Run all 3 queries in PARALLEL
+  const [depositsResult, wargaResult, petaniResult] = await Promise.all([
+    supabase
+      .from("waste_deposits")
+      .select("weight_kg, waste_type, created_at, verified_by")
+      .not("verified_by", "is", null)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "warga"),
+    supabase
+      .from("profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "petani"),
+  ]);
 
+  const deposits = depositsResult.data;
   let totalWaste = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
   let organicWaste = deposits?.filter(d => d.waste_type === "organic").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
   let recyclableWaste = deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
 
-  let activeUsers = 0;
-  const { count: wargaCount } = await supabase
-    .from("profiles")
-    .select("*", { count: "exact", head: true })
-    .eq("role", "warga");
-  if (wargaCount !== null) activeUsers = wargaCount;
-
-  let totalPetani = 0;
-  const { count: petaniCount } = await supabase
-    .from("profiles")
-    .select("*", { count: "exact", head: true })
-    .eq("role", "petani");
-  if (petaniCount !== null) totalPetani = petaniCount;
-
+  let activeUsers = wargaResult.count ?? 0;
+  let totalPetani = petaniResult.count ?? 0;
   let totalDeposits = deposits?.length || 0;
 
   const dailyMap: Record<string, { organic: number; recyclable: number; total: number }> = {};

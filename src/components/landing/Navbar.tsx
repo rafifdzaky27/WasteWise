@@ -24,16 +24,21 @@ export default function Navbar() {
     const handleScroll = () => setScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
 
-    // Fetch user
-    const fetchUser = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
-        if (data) setUserName(data.full_name);
-      }
-    };
-    fetchUser();
+    // Fast path: check if auth cookie exists before making Supabase API call
+    // Supabase SSR cookies start with "sb-" — if none exist, user is not logged in
+    const hasAuthCookie = document.cookie.split(";").some(c => c.trim().startsWith("sb-"));
+    
+    if (hasAuthCookie) {
+      const fetchUser = async () => {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+          if (data) setUserName(data.full_name);
+        }
+      };
+      fetchUser();
+    }
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);

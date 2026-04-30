@@ -49,20 +49,22 @@ export default async function OrdersPage({
   let totalCount = 0;
 
   if (user) {
-    const { count } = await supabase.from("orders").select("*", { count: "exact", head: true }).eq("buyer_id", user.id);
-    totalCount = count || 0;
+    // 🚀 Run count + data queries in PARALLEL
+    const [countResult, dataResult] = await Promise.all([
+      supabase.from("orders").select("*", { count: "exact", head: true }).eq("buyer_id", user.id),
+      supabase
+        .from("orders")
+        .select(`
+          id, total_price_rp, status, created_at,
+          order_items ( id, quantity, unit_price_rp, products ( name, category ) )
+        `)
+        .eq("buyer_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(page * ITEMS_PER_PAGE),
+    ]);
 
-    const { data } = await supabase
-      .from("orders")
-      .select(`
-        id, total_price_rp, status, created_at,
-        order_items ( id, quantity, unit_price_rp, products ( name, category ) )
-      `)
-      .eq("buyer_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(page * ITEMS_PER_PAGE);
-    
-    if (data) orders = data as any;
+    totalCount = countResult.count || 0;
+    if (dataResult.data) orders = dataResult.data as any;
   }
 
   return (

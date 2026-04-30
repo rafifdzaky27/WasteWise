@@ -2,8 +2,7 @@ import { createClient } from "../../../lib/supabase/server";
 import MarketplaceClient from "../../../components/marketplace/MarketplaceClient";
 import type { Product } from "../../../lib/types";
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 30; // Revalidate every 30 seconds (ISR)
 
 export default async function MarketplacePage() {
   const supabase = await createClient();

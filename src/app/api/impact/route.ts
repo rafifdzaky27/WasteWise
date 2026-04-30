@@ -8,13 +8,20 @@ export async function GET() {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
 
-    // Fetch all verified deposits with dates
-    const { data: deposits, error: depositsError } = await supabase
-      .from("waste_deposits")
-      .select("weight_kg, waste_type, created_at, verified_by")
-      .not("verified_by", "is", null)
-      .order("created_at", { ascending: true });
+    // 🚀 Run both queries in PARALLEL
+    const [depositsResult, usersResult] = await Promise.all([
+      supabase
+        .from("waste_deposits")
+        .select("weight_kg, waste_type, created_at, verified_by")
+        .not("verified_by", "is", null)
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .eq("role", "warga"),
+    ]);
 
+    const { data: deposits, error: depositsError } = depositsResult;
     if (depositsError) throw depositsError;
 
     // Total stats
@@ -22,13 +29,7 @@ export async function GET() {
     let organicWaste = deposits?.filter(d => d.waste_type === "organic").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
     let recyclableWaste = deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
 
-    let activeUsers = 0;
-    const { count } = await supabase
-      .from("profiles")
-      .select("*", { count: "exact", head: true })
-      .eq("role", "warga");
-    if (count !== null) activeUsers = count;
-
+    let activeUsers = usersResult.count ?? 0;
     let totalDeposits = deposits?.length || 0;
 
     // Daily trend data (last 30 days)
