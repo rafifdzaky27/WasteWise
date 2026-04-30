@@ -17,19 +17,7 @@ export async function POST(request: NextRequest) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Check admin role
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
 
-  if (profile?.role !== "admin") {
-    return Response.json(
-      { error: "Hanya admin yang bisa mengunggah gambar" },
-      { status: 403 }
-    );
-  }
 
   // Parse multipart form data
   const formData = await request.formData();
