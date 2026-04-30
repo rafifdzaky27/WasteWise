@@ -22,18 +22,24 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // Read cached role from cookie (set by proxy) — avoids extra DB call
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const cachedRole = cookieStore.get("x-user-role")?.value;
+
+  // Only fetch profile if we don't have cached role
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*")
+    .select("role, total_points")
     .eq("id", user?.id)
     .single();
 
-  const userRole = profile?.role || "warga";
+  const userRole = cachedRole || profile?.role || "warga";
   const isWarga = userRole === "warga";
   const isPetani = userRole === "petani";
   const isAdmin = userRole === "admin";
 
-  // Fetch real stats based on role
+  // Build queries (NOT awaited yet — just builders)
   let depositsQuery = supabase.from("waste_deposits").select("weight_kg, waste_type, created_at, points_earned");
   let vouchersQuery = supabase.from("voucher_redemptions").select("id", { count: "exact" });
   let ordersQuery = supabase.from("orders").select("id, total_price_rp, status, created_at", { count: "exact" });
@@ -45,10 +51,19 @@ export default async function DashboardPage() {
     ordersQuery = ordersQuery.eq("buyer_id", user?.id);
   }
 
-  const { data: deposits } = await depositsQuery.order("created_at", { ascending: false });
-  const { count: voucherCount } = await vouchersQuery;
-  const { data: orders, count: orderCount } = await ordersQuery;
-  const { data: newestProducts } = await productsQuery;
+  // 🚀 Execute ALL queries in PARALLEL — biggest perf win
+  const [depositsResult, vouchersResult, ordersResult, productsResult] = await Promise.all([
+    depositsQuery.order("created_at", { ascending: false }),
+    vouchersQuery,
+    ordersQuery,
+    productsQuery,
+  ]);
+
+  const deposits = depositsResult.data;
+  const voucherCount = vouchersResult.count;
+  const orders = ordersResult.data;
+  const orderCount = ordersResult.count;
+  const newestProducts = productsResult.data;
 
   // Global / User Stats
   const totalWeightRaw = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;

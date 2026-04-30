@@ -1,4 +1,5 @@
 import { createClient } from "../../lib/supabase/server";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import DashboardSidebar from "../../components/dashboard/DashboardSidebar";
 import MobileNav from "../../components/dashboard/MobileNav";
@@ -17,14 +18,18 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Fetch user profile
+  // Read cached role from cookie (set by proxy) — avoids an extra DB round-trip
+  const cookieStore = await cookies();
+  const cachedRole = cookieStore.get("x-user-role")?.value;
+
+  // Only query profile for full_name (role comes from cookie when available)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("*")
+    .select("full_name, role")
     .eq("id", user.id)
     .single();
 
-  const userRole = profile?.role || "warga";
+  const userRole = cachedRole || profile?.role || "warga";
   const isAdmin = userRole === "admin";
   const isWarga = userRole === "warga";
   const isPetani = userRole === "petani";

@@ -11,6 +11,12 @@ const ROLE_ROUTES: Record<string, string[]> = {
 // Routes accessible by all authenticated users
 const SHARED_AUTH_ROUTES = ["/dashboard"];
 
+// Routes that need role-based protection
+const ALL_ROLE_ROUTES = Object.values(ROLE_ROUTES).flat();
+
+// Cookie name for cached user role (lightweight, avoids DB hit)
+const ROLE_COOKIE = "x-user-role";
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -49,6 +55,11 @@ export async function updateSession(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
+  // If user logged out, clear the cached role cookie
+  if (!user) {
+    supabaseResponse.cookies.delete(ROLE_COOKIE);
+  }
+
   // Protected routes: redirect unauthenticated users
   if (
     !user &&
@@ -81,19 +92,33 @@ export async function updateSession(request: NextRequest) {
   }
 
   // Role-based route protection for authenticated users
-  if (user && !SHARED_AUTH_ROUTES.some((r) => pathname.startsWith(r))) {
-    // Check if the route needs role protection
-    const needsRoleCheck = Object.values(ROLE_ROUTES).flat().some((r) => pathname.startsWith(r));
-    
-    if (needsRoleCheck) {
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+  if (user) {
+    const needsRoleCheck = ALL_ROLE_ROUTES.some((r) => pathname.startsWith(r));
 
-      const userRole = profile?.role || "warga";
-      const allowedRoutes = ROLE_ROUTES[userRole] || [];
+    if (needsRoleCheck) {
+      // Try to read cached role from cookie first (avoids DB hit)
+      let userRole = request.cookies.get(ROLE_COOKIE)?.value;
+
+      if (!userRole) {
+        // Cache miss — fetch from DB once, then cache
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+
+        userRole = profile?.role || "warga";
+
+        // Cache the role in a cookie (expires in 1 hour, httpOnly)
+        supabaseResponse.cookies.set(ROLE_COOKIE, userRole as string, {
+          path: "/",
+          maxAge: 3600,
+          httpOnly: true,
+          sameSite: "lax",
+        });
+      }
+
+      const allowedRoutes = ROLE_ROUTES[userRole as string] || [];
       const hasAccess = allowedRoutes.some((r) => pathname.startsWith(r));
 
       if (!hasAccess) {
@@ -101,6 +126,24 @@ export async function updateSession(request: NextRequest) {
         url.pathname = "/dashboard";
         return NextResponse.redirect(url);
       }
+    }
+
+    // If user is authenticated and we don't have a cached role yet, cache it
+    // This ensures the cookie is set on the first dashboard visit too
+    if (!request.cookies.get(ROLE_COOKIE)?.value) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      const userRole = profile?.role || "warga";
+      supabaseResponse.cookies.set(ROLE_COOKIE, userRole, {
+        path: "/",
+        maxAge: 3600,
+        httpOnly: true,
+        sameSite: "lax",
+      });
     }
   }
 
