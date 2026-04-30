@@ -30,13 +30,13 @@
 
 ## 📌 Ringkasan Proyek
 
-**WasteWise** adalah platform web terintegrasi yang dirancang untuk memberdayakan Badan Usaha Milik Desa (BUMDes) dalam mengelola sampah desa secara berkelanjutan. Dengan mengombinasikan pemantauan komposter cerdas (*IoT BioBin*), sistem penghargaan (*reward*) berbasis poin, dan *marketplace* produk sirkular, WasteWise menutup siklus ekonomi sirkular (*closing the loop*) — dari sampah organik rumah tangga menjadi produk bernilai ekonomi.
+**WasteWise** adalah platform web terintegrasi yang dirancang untuk memberdayakan Badan Usaha Milik Desa (BUMDes) dalam mengelola sampah desa secara berkelanjutan. Dengan mengombinasikan pemantauan komposter cerdas (*IoT BioCompose*), sistem penghargaan (*reward*) berbasis poin, dan *marketplace* produk sirkular, WasteWise menutup siklus ekonomi sirkular (*closing the loop*) — dari sampah organik rumah tangga menjadi produk bernilai ekonomi.
 
 ### 🌱 Masalah yang Diselesaikan
 
 | Masalah | Solusi WasteWise |
 |---------|-----------------|
-| Sampah organik desa hanya berakhir di TPA | Sistem setoran terverifikasi + pengomposan via BioBin |
+| Sampah organik desa hanya berakhir di TPA | Sistem setoran terverifikasi + pengomposan via BioCompose |
 | Warga tidak termotivasi memilah sampah | Insentif poin → voucer LPG 3 kg |
 | BUMDes sulit memantau proses pengomposan | Dasbor sensor IoT (suhu, kelembapan, metana) waktu nyata |
 | Hasil kompos tidak terdistribusi | *Marketplace* e-commerce terintegrasi |
@@ -50,7 +50,7 @@
 
 | Peran | Email | Kata Sandi | Akses |
 |-------|-------|------------|-------|
-| 🛡️ **Admin** (BUMDes) | `pradipta@gmail.com` | `admin123` | Dasbor operasional, verifikasi setoran, kelola produk, pesanan masuk, penukaran voucer, pemantauan BioBin |
+| 🛡️ **Admin** (BUMDes) | `pradipta@gmail.com` | `admin123` | Dasbor operasional, verifikasi setoran, kelola produk, pesanan masuk, penukaran voucer, pemantauan BioCompose |
 | 👤 **Warga** | `rafif@gmail.com` | `warga123` | Setor sampah, lihat poin & voucer, belanja marketplace, riwayat pesanan |
 | 🌾 **Petani** | `sahal@gmail.com` | `pembeli123` | Belanja marketplace, riwayat pesanan |
 
@@ -90,7 +90,7 @@
 </details>
 
 <details>
-<summary><strong>Skenario 4 — Pemantauan BioBin & Prediksi Panen (Admin)</strong></summary>
+<summary><strong>Skenario 4 — Pemantauan BioCompose & Prediksi Panen (Admin)</strong></summary>
 
 1. Masuk sebagai **Admin** (`dipta@gmail.com`)
 2. Buka menu **BioCompose** → lihat data sensor waktu nyata
@@ -203,7 +203,7 @@ src/
 
 ```
   ┌─────────┐        ┌──────────┐        ┌──────────┐
-  │  WARGA  │──(1)──▶│  BUMDes  │──(3)──▶│  BioBin  │
+  │  WARGA  │──(1)──▶│  BUMDes  │──(3)──▶│BioCompose│
   │ Memilah │ Setor  │ Verifi-  │ Proses │ Fermenta-│
   │ Sampah  │ Sampah │ kasi QR  │ Kompos │ si 21+hr │
   └────┬────┘        └────┬─────┘        └────┬─────┘
