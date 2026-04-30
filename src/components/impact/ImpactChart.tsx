@@ -28,7 +28,7 @@ export default function ImpactChart({ data }: ImpactChartProps) {
     <div className="bg-white/60 border border-stone-border rounded-3xl p-5 sm:p-8 shadow-sm">
       <div className="mb-6">
         <h3 className="text-lg sm:text-xl font-semibold text-foreground">
-          📈 Tren Pengumpulan Sampah
+          Tren Pengumpulan Sampah
         </h3>
         <p className="text-sm text-muted mt-1">
           Data 30 hari terakhir (kg)

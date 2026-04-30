@@ -171,13 +171,13 @@ export default async function ImpactPage() {
           />
           <ImpactCounter
             end={data.activeUsers}
-            label="Warga Berpartisipasi"
+            label="Warga Aktif Berkontribusi"
             icon="👥"
             color="bg-yellow-bg border-yellow-border"
           />
           <ImpactCounter
             end={data.totalPetani}
-            label="Jumlah Petani"
+            label="Petani Terbantu"
             icon="🚜"
             color="bg-blue-bg border-blue-border"
           />
@@ -188,8 +188,8 @@ export default async function ImpactPage() {
       <section className="w-full max-w-[1152px] mx-auto px-6 pb-32">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Progress Card */}
-          <div className="lg:col-span-1 glass-card rounded-3xl p-8 border border-stone-border shadow-sm flex flex-col justify-center">
-            <div className="mb-8">
+          <div className="lg:col-span-1 h-full glass-card rounded-3xl p-8 border border-stone-border shadow-sm flex flex-col justify-center items-center text-center">
+            <div className="mb-6 w-full text-left">
               <h3 className="text-xl font-semibold text-foreground mb-2">
                 Target Sampah Terkumpul
               </h3>
@@ -230,7 +230,7 @@ export default async function ImpactPage() {
               </div>
             </div>
 
-            <div className="text-center">
+            <div className="mt-auto w-full text-center">
               <p className="text-sm font-medium text-foreground">
                 {data.currentMonthWeight} kg / {data.monthlyTarget} kg
               </p>
