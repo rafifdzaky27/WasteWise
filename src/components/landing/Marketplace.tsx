@@ -1,54 +1,45 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import Image, { type StaticImageData } from "next/image";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import productCompost from "../../assets/images/product-compost.png";
 import productLiquid from "../../assets/images/product-liquid.png";
 import productSeeds from "../../assets/images/product-seeds.png";
 import productBriquettes from "../../assets/images/product-briquettes.png";
 
-interface DisplayProduct {
+interface Product {
+  id: string;
   name: string;
-  price: string;
   description: string;
-  image: StaticImageData;
-  badge: string | null;
+  image_url: string;
+  price_rp: number;
+  category: string;
+  stock_qty: number;
+  is_active: boolean;
 }
 
-const displayProducts: DisplayProduct[] = [
-  {
-    name: "Kompos Premium Eco-Zip 2kg",
-    price: "Rp 15.000",
-    description: "Nutrisi organik kaya untuk kebun rumah Anda.",
-    image: productCompost,
-    badge: "TERLARIS",
-  },
-  {
-    name: "Campuran Nutrisi Cair",
-    price: "Rp 25.000",
-    description: "Penguat tanaman terkonsentrasi untuk tanaman pot.",
-    image: productLiquid,
-    badge: null,
-  },
-  {
-    name: "Paket Benih Unggul",
-    price: "Rp 45.000",
-    description: "Paket lengkap benih unggulan musiman.",
-    image: productSeeds,
-    badge: null,
-  },
-  {
-    name: "Briket Sampah",
-    price: "Rp 10.000",
-    description: "Bahan bakar masak ramah lingkungan dari limbah daur ulang.",
-    image: productBriquettes,
-    badge: null,
-  },
-];
+const categoryImages: Record<string, any> = {
+  compost: productCompost,
+  liquid: productLiquid,
+  seeds: productSeeds,
+  briquettes: productBriquettes,
+};
 
 export default function Marketplace() {
   const sectionRef = useRef<HTMLElement>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  // Fetch real products from API
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d) && d.length > 0) setProducts(d.slice(0, 4));
+      })
+      .finally(() => setLoaded(true));
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -62,7 +53,7 @@ export default function Marketplace() {
     const reveals = sectionRef.current?.querySelectorAll(".reveal");
     reveals?.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [loaded]);
 
   return (
     <section
@@ -83,37 +74,65 @@ export default function Marketplace() {
 
       {/* Product Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-10">
-        {displayProducts.map((product, i) => (
-          <div
-            key={product.name}
-            className={`reveal animate-delay-${(i + 1) * 100} bg-white/60 border border-stone-border rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300`}
-          >
-            <div className="relative aspect-square bg-stone-light overflow-hidden">
-              <Image
-                src={product.image}
-                alt={product.name}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              {product.badge && (
-                <span className="absolute top-3 left-3 bg-primary text-white text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
-                  {product.badge}
-                </span>
-              )}
-            </div>
-            <div className="p-4">
-              <p className="text-sm font-semibold text-foreground line-clamp-1">
-                {product.name}
-              </p>
-              <p className="text-[11px] text-muted mt-1 line-clamp-2 leading-relaxed">
-                {product.description}
-              </p>
-              <p className="text-sm font-bold text-primary mt-3">
-                {product.price}
-              </p>
-            </div>
-          </div>
-        ))}
+        {products.length > 0
+          ? products.map((product, i) => {
+              const imgSrc = product.image_url || categoryImages[product.category];
+              return (
+                <div
+                  key={product.id}
+                  className={`reveal animate-delay-${(i + 1) * 100} bg-white/60 border border-stone-border rounded-2xl overflow-hidden group hover:shadow-lg transition-all duration-300`}
+                >
+                  <div className="relative aspect-square bg-stone-light overflow-hidden">
+                    {imgSrc ? (
+                      <Image
+                        src={imgSrc}
+                        alt={product.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        unoptimized={!!product.image_url}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d6d3d1" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
+                      </div>
+                    )}
+                    {product.stock_qty <= 3 && product.stock_qty > 0 && (
+                      <span className="absolute top-3 left-3 bg-primary text-white text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
+                        TERLARIS
+                      </span>
+                    )}
+                    {product.stock_qty === 0 && (
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center"><span className="text-white font-bold">Habis</span></div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <p className="text-sm font-semibold text-foreground line-clamp-1">
+                      {product.name}
+                    </p>
+                    <p className="text-[11px] text-muted mt-1 line-clamp-2 leading-relaxed">
+                      {product.description}
+                    </p>
+                    <p className="text-sm font-bold text-primary mt-3">
+                      Rp {product.price_rp.toLocaleString("id-ID")}
+                    </p>
+                  </div>
+                </div>
+              );
+            })
+          : /* Skeleton loading */
+            [1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className={`reveal animate-delay-${i * 100} bg-white/60 border border-stone-border rounded-2xl overflow-hidden`}
+              >
+                <div className="aspect-square bg-stone-light animate-pulse" />
+                <div className="p-4 space-y-2">
+                  <div className="h-4 bg-stone-light rounded w-3/4 animate-pulse" />
+                  <div className="h-3 bg-stone-light rounded w-full animate-pulse" />
+                  <div className="h-4 bg-stone-light rounded w-1/2 animate-pulse mt-2" />
+                </div>
+              </div>
+            ))}
       </div>
 
       {/* CTA */}

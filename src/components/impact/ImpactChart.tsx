@@ -103,7 +103,7 @@ export default function ImpactChart({ data }: ImpactChartProps) {
       </div>
       <div className="mt-6 pt-4 border-t border-stone-border/50 text-xs text-center text-muted flex items-center justify-center gap-2">
         <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        Data disinkronisasi otomatis dari setoran warga dan BioBin IoT
+        Data disinkronisasi otomatis dari setoran warga dan BioCompose IoT
       </div>
     </div>
   );

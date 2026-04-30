@@ -33,7 +33,7 @@ export async function PATCH(request: NextRequest) {
     return Response.json({ error: "order_id dan status wajib diisi" }, { status: 400 });
   }
 
-  const validStatuses = ["confirmed", "shipped", "completed"];
+  const validStatuses = ["confirmed", "shipped", "completed", "rejected"];
   if (!validStatuses.includes(status)) {
     return Response.json({ error: "Status tidak valid" }, { status: 400 });
   }
@@ -49,13 +49,13 @@ export async function PATCH(request: NextRequest) {
     return Response.json({ error: "Pesanan tidak ditemukan" }, { status: 404 });
   }
 
-  const transitions: Record<string, string> = {
-    pending: "confirmed",
-    confirmed: "shipped",
-    shipped: "completed",
+  const transitions: Record<string, string[]> = {
+    pending: ["confirmed", "rejected"],
+    confirmed: ["shipped"],
+    shipped: ["completed"],
   };
 
-  if (transitions[order.status] !== status) {
+  if (!transitions[order.status]?.includes(status)) {
     return Response.json({
       error: `Tidak bisa mengubah dari "${order.status}" ke "${status}"`,
     }, { status: 400 });
@@ -70,6 +70,39 @@ export async function PATCH(request: NextRequest) {
 
   if (error) {
     return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  // If rejected, restore product stock
+  if (status === "rejected") {
+    // Fetch order items to restore stock
+    const { data: orderItems } = await supabase
+      .from("order_items")
+      .select("product_id, quantity")
+      .eq("order_id", order_id);
+
+    if (orderItems) {
+      for (const item of orderItems) {
+        // Try RPC first, fallback to direct increment
+        const { error: rpcError } = await supabase.rpc('increment_stock', {
+          p_product_id: item.product_id,
+          p_quantity: item.quantity,
+        });
+        if (rpcError) {
+          // Fallback: direct update
+          const { data: product } = await supabase
+            .from("products")
+            .select("stock_qty")
+            .eq("id", item.product_id)
+            .single();
+          if (product) {
+            await supabase
+              .from("products")
+              .update({ stock_qty: product.stock_qty + item.quantity })
+              .eq("id", item.product_id);
+          }
+        }
+      }
+    }
   }
 
   return Response.json(updated);

@@ -159,21 +159,7 @@ export default async function ImpactPage() {
             decimals={1}
             label="Sampah Terkelola"
             icon="♻️"
-            color="bg-white"
-          />
-          <ImpactCounter
-            end={data.compostProduced}
-            suffix=" kg"
-            decimals={1}
-            label="Kompos Dihasilkan"
-            icon="🌱"
-            color="bg-accent-green border-accent-green-border"
-          />
-          <ImpactCounter
-            end={data.activeUsers}
-            label="Warga Aktif Berkontribusi"
-            icon="👥"
-            color="bg-yellow-bg border-yellow-border"
+            color="bg-white/60 border-stone-border"
           />
           <ImpactCounter
             end={data.co2Avoided}
@@ -181,7 +167,21 @@ export default async function ImpactPage() {
             decimals={1}
             label="Emisi CO2 Terhindar"
             icon="☁️"
-            color="bg-blue-bg border-blue-border"
+            color="bg-white/60 border-stone-border"
+          />
+          <ImpactCounter
+            end={data.compostProduced}
+            suffix=" kg"
+            decimals={1}
+            label="Kompos Dihasilkan"
+            icon="🌱"
+            color="bg-white/60 border-stone-border"
+          />
+          <ImpactCounter
+            end={data.activeUsers}
+            label="Warga Aktif Berkontribusi"
+            icon="👥"
+            color="bg-white/60 border-stone-border"
           />
         </div>
       </section>
@@ -238,14 +238,14 @@ export default async function ImpactPage() {
                 <div>
                   <p className="text-xs font-semibold text-stone-dark">Dampak Nyata</p>
                   <p className="text-xs text-muted mt-1 leading-relaxed">
-                    Setiap sampah yang kamu setor ke BioBin secara langsung mengurangi tumpukan sampah di TPA desa dan diolah menjadi pupuk bagi petani lokal.
+                    Setiap sampah yang kamu setor ke BioCompose secara langsung mengurangi tumpukan sampah di TPA desa dan diolah menjadi pupuk bagi petani lokal.
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="mt-auto w-full pt-6 border-t border-stone-border/50 text-center">
-              <p className="text-sm font-medium text-foreground flex items-center justify-center gap-2">
+              <p className="text-xs text-center text-muted flex items-center justify-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                 {data.currentMonthWeight} kg / {data.monthlyTarget} kg Terkumpul
               </p>

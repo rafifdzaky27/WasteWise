@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "../../lib/store/cart";
@@ -29,6 +29,8 @@ const categoryImages: Record<string, any> = {
   briquettes: productBriquettes,
 };
 
+const SHIPPING_COST = 5000;
+
 export default function MarketplaceClient({ initialProducts }: MarketplaceClientProps) {
   const [products] = useState<Product[]>(initialProducts);
   const [checkingOut, setCheckingOut] = useState(false);
@@ -37,9 +39,39 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState("pickup");
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [transferProofUrl, setTransferProofUrl] = useState("");
+  const [transferProofPreview, setTransferProofPreview] = useState<string | null>(null);
+  const [uploadingProof, setUploadingProof] = useState(false);
+  const proofInputRef = useRef<HTMLInputElement>(null);
 
   const cart = useCartStore();
   const router = useRouter();
+
+  const shippingCost = deliveryMethod === "delivery" ? SHIPPING_COST : 0;
+  const grandTotal = cart.totalPrice() + shippingCost;
+
+  async function handleProofUpload(file: File) {
+    const reader = new FileReader();
+    reader.onload = (e) => setTransferProofPreview(e.target?.result as string);
+    reader.readAsDataURL(file);
+    setUploadingProof(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (res.ok) {
+        setTransferProofUrl(data.url);
+      } else {
+        setMessage({ type: "error", text: data.error || "Gagal mengunggah bukti" });
+        setTransferProofPreview(null);
+      }
+    } catch {
+      setMessage({ type: "error", text: "Gagal mengunggah bukti transfer" });
+      setTransferProofPreview(null);
+    }
+    setUploadingProof(false);
+  }
 
   async function handleConfirmCheckout() {
     if (cart.items.length === 0) return;
@@ -57,6 +89,8 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
           })),
           delivery_method: deliveryMethod,
           payment_method: paymentMethod,
+          shipping_cost: shippingCost,
+          payment_proof_url: transferProofUrl || undefined,
         }),
       });
 
@@ -281,9 +315,15 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
                     <span className="font-medium">Rp {(item.price_rp * item.quantity).toLocaleString("id-ID")}</span>
                   </div>
                 ))}
+                {shippingCost > 0 && (
+                  <div className="flex justify-between text-sm text-muted">
+                    <span>Ongkos Kirim</span>
+                    <span className="font-medium text-foreground">Rp {shippingCost.toLocaleString("id-ID")}</span>
+                  </div>
+                )}
                 <div className="border-t border-stone-border pt-2 mt-2 flex justify-between font-bold text-base">
-                  <span>Total</span>
-                  <span className="text-primary">Rp {cart.totalPrice().toLocaleString("id-ID")}</span>
+                  <span>Total Pembayaran</span>
+                  <span className="text-primary">Rp {grandTotal.toLocaleString("id-ID")}</span>
                 </div>
               </div>
 
@@ -298,19 +338,71 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
               </div>
 
               <p className="text-[10px] font-bold text-muted uppercase tracking-[2px] mb-3">Pembayaran</p>
-              <div className="grid grid-cols-2 gap-3">
-                {[{v:"cod", l:"Bayar di Tempat", d:"Tunai saat diambil"}, {v:"transfer", l:"Transfer Bank", d:"BCA / Mandiri / BNI"}].map(m => (
-                  <button key={m.v} onClick={() => setPaymentMethod(m.v)} className={`p-3 rounded-xl border text-left transition-all ${paymentMethod === m.v ? "border-primary bg-primary/5" : "border-stone-border hover:bg-stone-50"}`}>
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {[{v:"cod", l:"Bayar di Tempat", d:"Tunai saat diambil"}, {v:"transfer", l:"Transfer Bank", d:"BCA / Mandiri"}].map(m => (
+                  <button key={m.v} onClick={() => { setPaymentMethod(m.v); if (m.v === "cod") { setTransferProofUrl(""); setTransferProofPreview(null); } }} className={`p-3 rounded-xl border text-left transition-all ${paymentMethod === m.v ? "border-primary bg-primary/5" : "border-stone-border hover:bg-stone-50"}`}>
                     <p className="font-medium text-sm text-foreground mb-1">{m.l}</p>
                     <p className="text-xs text-muted">{m.d}</p>
                   </button>
                 ))}
               </div>
+
+              {/* Bank Info + Proof Upload (only for transfer) */}
+              {paymentMethod === "transfer" && (
+                <div className="mt-4 space-y-4">
+                  <div className="bg-blue-bg border border-blue-border rounded-xl p-4">
+                    <p className="text-xs font-bold text-foreground mb-2">Informasi Rekening BUMDes</p>
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted">Bank</span>
+                        <span className="font-medium text-foreground">BCA</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted">No. Rekening</span>
+                        <span className="font-mono font-bold text-foreground">7840 2931 56</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted">Atas Nama</span>
+                        <span className="font-medium text-foreground">BUMDes Desa Telkom</span>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-muted mt-3">Transfer sebesar <span className="font-bold text-foreground">Rp {grandTotal.toLocaleString("id-ID")}</span> ke rekening di atas.</p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-bold text-foreground mb-2">Bukti Transfer</p>
+                    <input ref={proofInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) handleProofUpload(f); }} />
+                    {transferProofPreview ? (
+                      <div className="relative group">
+                        <img src={transferProofPreview} alt="Bukti transfer" className="w-full h-40 object-cover rounded-xl border border-stone-border" />
+                        {uploadingProof && (
+                          <div className="absolute inset-0 bg-white/80 rounded-xl flex items-center justify-center">
+                            <div className="flex items-center gap-2 text-sm text-muted"><span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />Mengunggah...</div>
+                          </div>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => { setTransferProofPreview(null); setTransferProofUrl(""); if (proofInputRef.current) proofInputRef.current.value = ""; }}
+                          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 border border-stone-border text-muted hover:text-red-500 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                        >✕</button>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => proofInputRef.current?.click()}
+                        className="w-full h-28 border-2 border-dashed border-stone-border rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                      >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <p className="text-xs text-muted">Unggah bukti transfer</p>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="p-6 border-t border-stone-border">
-              <button onClick={handleConfirmCheckout} disabled={checkingOut} className="w-full bg-primary-dark text-white py-3.5 rounded-xl font-medium text-sm hover:bg-primary-darker transition-colors disabled:opacity-50 flex justify-center items-center gap-2">
-                {checkingOut ? (<><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />Memproses...</>) : "Konfirmasi & Bayar Sekarang"}
+              <button onClick={handleConfirmCheckout} disabled={checkingOut || (paymentMethod === "transfer" && !transferProofUrl)} className="w-full bg-primary-dark text-white py-3.5 rounded-xl font-medium text-sm hover:bg-primary-darker transition-colors disabled:opacity-50 flex justify-center items-center gap-2">
+                {checkingOut ? (<><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />Memproses...</>) : `Konfirmasi & Bayar — Rp ${grandTotal.toLocaleString("id-ID")}`}
               </button>
             </div>
           </div>

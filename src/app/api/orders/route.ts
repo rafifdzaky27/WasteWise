@@ -25,7 +25,7 @@ export async function GET() {
   // Try with joins first, fallback to plain if FK not configured
   let query = supabase
     .from("orders")
-    .select("*, order_items(*, products(name, category))")
+    .select("*, order_items(*, products(name, category)), profiles(full_name, email)")
     .order("created_at", { ascending: false });
 
   if (profile?.role !== "admin") {
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { items } = body;
+  const { items, delivery_method, payment_method, shipping_cost, payment_proof_url } = body;
 
   if (!items || !Array.isArray(items) || items.length === 0) {
     return Response.json({ error: "Keranjang kosong" }, { status: 400 });
@@ -125,6 +125,10 @@ export async function POST(request: NextRequest) {
     };
   });
 
+  // Add shipping cost to total
+  const finalShippingCost = Number(shipping_cost) || 0;
+  totalPrice += finalShippingCost;
+
   // Create order
   const { data: order, error: orderError } = await supabase
     .from("orders")
@@ -132,6 +136,10 @@ export async function POST(request: NextRequest) {
       buyer_id: user.id,
       total_price_rp: totalPrice,
       status: "pending",
+      delivery_method: delivery_method || "pickup",
+      payment_method: payment_method || "cod",
+      shipping_cost: finalShippingCost,
+      payment_proof_url: payment_proof_url || "",
     })
     .select()
     .single();
