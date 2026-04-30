@@ -1,6 +1,6 @@
 import ImpactCounter from "../../../components/impact/ImpactCounter";
 import ImpactChart from "../../../components/impact/ImpactChart";
-import { createClient } from "../../../lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -21,7 +21,10 @@ interface ImpactData {
 }
 
 async function getImpactData(): Promise<ImpactData> {
-  const supabase = await createClient();
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
   // Fetch all verified deposits
   const { data: deposits } = await supabase
@@ -76,7 +79,7 @@ async function getImpactData(): Promise<ImpactData> {
   });
   let currentMonthWeight = currentMonthDeposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
 
-  if (totalWaste < 10) {
+  if (totalWaste === 0) {
     totalWaste = 856.5;
     organicWaste = 540.2;
     recyclableWaste = 316.3;
@@ -88,8 +91,8 @@ async function getImpactData(): Promise<ImpactData> {
       const date = new Date();
       date.setDate(date.getDate() - (29 - i));
       const key = date.toISOString().split("T")[0];
-      const org = Math.floor(Math.random() * 15) + 5;
-      const rec = Math.floor(Math.random() * 10) + 2;
+      const org = (i % 3 === 0) ? 12 : ((i % 2 === 0) ? 8 : 15);
+      const rec = (i % 3 === 0) ? 5 : ((i % 2 === 0) ? 3 : 8);
       if (dailyMap[key]) {
         dailyMap[key].organic = org;
         dailyMap[key].recyclable = rec;

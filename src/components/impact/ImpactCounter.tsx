@@ -67,8 +67,8 @@ export default function ImpactCounter({
     >
       <div>
         <div className="text-3xl mb-3">{icon}</div>
-        <p className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight flex items-baseline gap-1">
-          {prefix}{displayValue}<span className="text-lg font-medium text-muted">{suffix}</span>
+        <p className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight flex items-baseline gap-1 whitespace-nowrap truncate">
+          {prefix}{displayValue}{suffix && <span className="text-lg font-medium text-muted">{suffix.trim()}</span>}
         </p>
       </div>
       <p className="text-[10px] sm:text-xs font-bold text-muted uppercase tracking-[2px] mt-4 leading-relaxed">
