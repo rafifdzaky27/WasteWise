@@ -15,10 +15,8 @@ interface Product {
 }
 
 const categories = [
-  { value: "compost", label: "Kompos" },
+  { value: "compost", label: "Kompos Padat" },
   { value: "liquid", label: "Nutrisi Cair" },
-  { value: "seeds", label: "Benih" },
-  { value: "briquettes", label: "Briket" },
 ];
 
 const emptyForm = { name: "", description: "", price_rp: "", stock_qty: "", category: "compost", image_url: "" };

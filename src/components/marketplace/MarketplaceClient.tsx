@@ -12,21 +12,15 @@ interface MarketplaceClientProps {
 
 import productCompost from "../../assets/images/product-compost.png";
 import productLiquid from "../../assets/images/product-liquid.png";
-import productSeeds from "../../assets/images/product-seeds.png";
-import productBriquettes from "../../assets/images/product-briquettes.png";
 
 const categoryLabels: Record<string, string> = {
-  compost: "Restorasi Tanah",
-  liquid: "Nutrisi Tanaman",
-  seeds: "Pertanian Urban",
-  briquettes: "Energi Hijau",
+  compost: "Kompos Padat",
+  liquid: "Nutrisi Cair",
 };
 
 const categoryImages: Record<string, any> = {
   compost: productCompost,
   liquid: productLiquid,
-  seeds: productSeeds,
-  briquettes: productBriquettes,
 };
 
 const SHIPPING_COST = 5000;

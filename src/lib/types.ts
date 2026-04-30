@@ -88,7 +88,7 @@ export interface HarvestEvent {
 
 /* ─── Products & Marketplace (FR-11 → FR-13) ─────────────────── */
 
-export type ProductCategory = "compost" | "liquid" | "seeds" | "briquettes";
+export type ProductCategory = "compost" | "liquid";
 
 export interface Product {
   id: string;

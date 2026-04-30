@@ -29,8 +29,6 @@ const statusMap: Record<string, { label: string; icon: string; color: string }> 
 const categoryLabels: Record<string, string> = {
   compost: "Marketplace",
   liquid: "Marketplace",
-  seeds: "Resource",
-  briquettes: "Reward",
 };
 
 export default async function OrdersPage({

@@ -1,5 +1,10 @@
 import About from "../../../components/landing/About";
 
+import Image from "next/image";
+import pradiptaImg from "../../../assets/images/pradipta.jpg";
+import rafifImg from "../../../assets/images/rafif.jpg";
+import sahalImg from "../../../assets/images/sahal.jpg";
+
 export default function AboutPage() {
   return (
     <div className="animate-fade-in pt-16">
@@ -20,29 +25,32 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Pradipta Muhtadin */}
           <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/20 mx-auto mb-4 overflow-hidden relative flex items-center justify-center">
-              <span className="text-3xl font-bold text-primary/60">PM</span>
+            <div className="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden relative border-4 border-stone-light shadow-sm group-hover:scale-105 transition-transform duration-300">
+              <Image src={pradiptaImg} alt="Pradipta Muhtadin" fill className="object-cover" />
             </div>
             <h3 className="text-xl font-semibold text-foreground">Pradipta Muhtadin</h3>
-            <p className="text-sm text-primary font-medium mt-1">1202220327</p>
+            <p className="text-sm text-primary font-medium mt-1">Project Manager</p>
+            <p className="text-xs text-muted mt-0.5">1202220327</p>
           </div>
 
           {/* Rafif Dzaky Daniswara */}
           <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/20 mx-auto mb-4 overflow-hidden relative flex items-center justify-center">
-              <span className="text-3xl font-bold text-primary/60">RD</span>
+            <div className="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden relative border-4 border-stone-light shadow-sm group-hover:scale-105 transition-transform duration-300">
+              <Image src={rafifImg} alt="Rafif Dzaky Daniswara" fill className="object-cover" />
             </div>
             <h3 className="text-xl font-semibold text-foreground">Rafif Dzaky Daniswara</h3>
-            <p className="text-sm text-primary font-medium mt-1">1202223211</p>
+            <p className="text-sm text-primary font-medium mt-1">Frontend Developer</p>
+            <p className="text-xs text-muted mt-0.5">1202223211</p>
           </div>
 
           {/* Sahal Fajri */}
           <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 border-2 border-primary/20 mx-auto mb-4 overflow-hidden relative flex items-center justify-center">
-              <span className="text-3xl font-bold text-primary/60">SF</span>
+            <div className="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden relative border-4 border-stone-light shadow-sm group-hover:scale-105 transition-transform duration-300">
+              <Image src={sahalImg} alt="Sahal Fajri" fill className="object-cover object-top" />
             </div>
             <h3 className="text-xl font-semibold text-foreground">Sahal Fajri</h3>
-            <p className="text-sm text-primary font-medium mt-1">1202223364</p>
+            <p className="text-sm text-primary font-medium mt-1">Backend Developer</p>
+            <p className="text-xs text-muted mt-0.5">1202223364</p>
           </div>
         </div>
       </section>

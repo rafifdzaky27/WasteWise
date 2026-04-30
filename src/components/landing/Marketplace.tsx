@@ -5,8 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import productCompost from "../../assets/images/product-compost.png";
 import productLiquid from "../../assets/images/product-liquid.png";
-import productSeeds from "../../assets/images/product-seeds.png";
-import productBriquettes from "../../assets/images/product-briquettes.png";
 
 interface Product {
   id: string;
@@ -22,8 +20,6 @@ interface Product {
 const categoryImages: Record<string, any> = {
   compost: productCompost,
   liquid: productLiquid,
-  seeds: productSeeds,
-  briquettes: productBriquettes,
 };
 
 export default function Marketplace() {

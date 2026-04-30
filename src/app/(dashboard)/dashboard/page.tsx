@@ -4,16 +4,12 @@ import Link from "next/link";
 import Image from "next/image";
 import productCompost from "@/assets/images/product-compost.png";
 import productLiquid from "@/assets/images/product-liquid.png";
-import productSeeds from "@/assets/images/product-seeds.png";
-import productBriquettes from "@/assets/images/product-briquettes.png";
 
 export const revalidate = 0;
 
 const categoryImages: Record<string, any> = {
   compost: productCompost,
   liquid: productLiquid,
-  seeds: productSeeds,
-  briquettes: productBriquettes,
 };
 
 export default async function DashboardPage() {
