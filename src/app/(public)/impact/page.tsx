@@ -176,9 +176,11 @@ export default async function ImpactPage() {
             color="bg-yellow-bg border-yellow-border"
           />
           <ImpactCounter
-            end={data.totalPetani}
-            label="Petani Terbantu"
-            icon="🚜"
+            end={data.co2Avoided}
+            suffix=" kg"
+            decimals={1}
+            label="Emisi CO2 Terhindar"
+            icon="☁️"
             color="bg-blue-bg border-blue-border"
           />
         </div>
@@ -230,9 +232,22 @@ export default async function ImpactPage() {
               </div>
             </div>
 
-            <div className="mt-auto w-full text-center">
-              <p className="text-sm font-medium text-foreground">
-                {data.currentMonthWeight} kg / {data.monthlyTarget} kg
+            <div className="mt-8 mb-auto w-full bg-stone-light/50 rounded-2xl p-4 border border-stone-border text-left">
+              <div className="flex items-start gap-3">
+                <span className="text-xl">💡</span>
+                <div>
+                  <p className="text-xs font-semibold text-stone-dark">Dampak Nyata</p>
+                  <p className="text-xs text-muted mt-1 leading-relaxed">
+                    Setiap sampah yang kamu setor ke BioBin secara langsung mengurangi tumpukan sampah di TPA desa dan diolah menjadi pupuk bagi petani lokal.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-auto w-full pt-6 border-t border-stone-border/50 text-center">
+              <p className="text-sm font-medium text-foreground flex items-center justify-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                {data.currentMonthWeight} kg / {data.monthlyTarget} kg Terkumpul
               </p>
             </div>
           </div>

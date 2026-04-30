@@ -25,7 +25,7 @@ interface ImpactChartProps {
 
 export default function ImpactChart({ data }: ImpactChartProps) {
   return (
-    <div className="bg-white/60 border border-stone-border rounded-3xl p-5 sm:p-8 shadow-sm">
+    <div className="h-full flex flex-col bg-white/60 border border-stone-border rounded-3xl p-5 sm:p-8 shadow-sm">
       <div className="mb-6">
         <h3 className="text-lg sm:text-xl font-semibold text-foreground">
           Tren Pengumpulan Sampah
@@ -34,7 +34,7 @@ export default function ImpactChart({ data }: ImpactChartProps) {
           Data 30 hari terakhir (kg)
         </p>
       </div>
-      <div className="w-full h-[300px] sm:h-[350px]">
+      <div className="w-full flex-1 min-h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 5, right: 5, bottom: 5, left: -10 }}>
             <defs>
@@ -100,6 +100,10 @@ export default function ImpactChart({ data }: ImpactChartProps) {
             />
           </AreaChart>
         </ResponsiveContainer>
+      </div>
+      <div className="mt-6 pt-4 border-t border-stone-border/50 text-xs text-center text-muted flex items-center justify-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+        Data disinkronisasi otomatis dari setoran warga dan BioBin IoT
       </div>
     </div>
   );
