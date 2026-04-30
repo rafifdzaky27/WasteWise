@@ -23,16 +23,6 @@ export default function AboutPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Pradipta Muhtadin */}
-          <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
-            <div className="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden relative border-4 border-stone-light shadow-sm group-hover:scale-105 transition-transform duration-300">
-              <Image src={pradiptaImg} alt="Pradipta Muhtadin" fill className="object-cover" />
-            </div>
-            <h3 className="text-xl font-semibold text-foreground">Pradipta Muhtadin</h3>
-            <p className="text-sm text-primary font-medium mt-1">Project Manager</p>
-            <p className="text-xs text-muted mt-0.5">1202220327</p>
-          </div>
-
           {/* Rafif Dzaky Daniswara */}
           <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
             <div className="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden relative border-4 border-stone-light shadow-sm group-hover:scale-105 transition-transform duration-300">
@@ -43,10 +33,22 @@ export default function AboutPage() {
             <p className="text-xs text-muted mt-0.5">1202223211</p>
           </div>
 
+          {/* Pradipta Muhtadin (Tengah) */}
+          <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
+            <div className="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden relative border-4 border-stone-light shadow-sm group-hover:scale-105 transition-transform duration-300">
+              {/* pradipta and sahal images were swapped */}
+              <Image src={sahalImg} alt="Pradipta Muhtadin" fill className="object-cover object-top" />
+            </div>
+            <h3 className="text-xl font-semibold text-foreground">Pradipta Muhtadin</h3>
+            <p className="text-sm text-primary font-medium mt-1">Project Manager</p>
+            <p className="text-xs text-muted mt-0.5">1202220327</p>
+          </div>
+
           {/* Sahal Fajri */}
           <div className="bg-white border border-stone-border rounded-3xl p-6 text-center shadow-sm hover:shadow-md transition-all duration-300 group">
             <div className="w-28 h-28 rounded-full mx-auto mb-4 overflow-hidden relative border-4 border-stone-light shadow-sm group-hover:scale-105 transition-transform duration-300">
-              <Image src={sahalImg} alt="Sahal Fajri" fill className="object-cover object-top" />
+              {/* pradipta and sahal images were swapped */}
+              <Image src={pradiptaImg} alt="Sahal Fajri" fill className="object-cover" />
             </div>
             <h3 className="text-xl font-semibold text-foreground">Sahal Fajri</h3>
             <p className="text-sm text-primary font-medium mt-1">Backend Developer</p>
