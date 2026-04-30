@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Product {
   id: string;
@@ -39,12 +39,66 @@ export default function AdminProductsPage() {
   // Delete state
   const [deleting, setDeleting] = useState<string | null>(null);
 
-  const loadRef = (node: HTMLDivElement | null) => {
-    if (node && !loaded) {
-      setLoaded(true);
-      fetch("/api/products").then((r) => r.json()).then((d) => { if (Array.isArray(d)) setProducts(d); });
+  // Image upload state
+  const [uploading, setUploading] = useState(false);
+  const [uploadPreview, setUploadPreview] = useState<string | null>(null);
+  const [editUploading, setEditUploading] = useState(false);
+  const [editUploadPreview, setEditUploadPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch products immediately on mount
+  useEffect(() => {
+    fetch("/api/products")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d)) setProducts(d); })
+      .finally(() => setLoaded(true));
+  }, []);
+
+  async function handleImageUpload(file: File, mode: "add" | "edit") {
+    const setUploadingState = mode === "add" ? setUploading : setEditUploading;
+    const setPreviewState = mode === "add" ? setUploadPreview : setEditUploadPreview;
+    
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onload = (e) => setPreviewState(e.target?.result as string);
+    reader.readAsDataURL(file);
+
+    setUploadingState(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      
+      if (!res.ok) {
+        setMsg({ type: "error", text: data.error || "Gagal mengunggah gambar" });
+        setPreviewState(null);
+      } else {
+        // Set the URL in the form
+        if (mode === "add") {
+          setForm((prev) => ({ ...prev, image_url: data.url }));
+        } else {
+          setEditForm((prev) => ({ ...prev, image_url: data.url }));
+        }
+      }
+    } catch {
+      setMsg({ type: "error", text: "Gagal mengunggah gambar" });
+      setPreviewState(null);
     }
-  };
+    setUploadingState(false);
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>, mode: "add" | "edit") {
+    const file = e.target.files?.[0];
+    if (file) handleImageUpload(file, mode);
+  }
+
+  function handleDrop(e: React.DragEvent, mode: "add" | "edit") {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file && file.type.startsWith("image/")) handleImageUpload(file, mode);
+  }
 
   async function handleAdd() {
     setSaving(true);
@@ -60,6 +114,7 @@ export default function AdminProductsPage() {
       else {
         setProducts((p) => [data, ...p]);
         setForm(emptyForm);
+        setUploadPreview(null);
         setShowForm(false);
         setMsg({ type: "success", text: "Produk berhasil ditambahkan!" });
       }
@@ -93,6 +148,7 @@ export default function AdminProductsPage() {
 
   function openEdit(product: Product) {
     setEditProduct(product);
+    setEditUploadPreview(null); // Reset preview for fresh edit
     setEditForm({
       name: product.name,
       description: product.description || "",
@@ -163,7 +219,7 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div ref={loadRef} className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
@@ -211,8 +267,34 @@ export default function AdminProductsPage() {
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} className="w-full px-3 py-2.5 rounded-xl border border-stone-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" placeholder="Pupuk kompos organik berkualitas tinggi..." />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-foreground mb-1">URL Gambar (opsional)</label>
-            <input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-stone-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" placeholder="https://..." />
+            <label className="block text-sm font-medium text-foreground mb-1">Gambar Produk</label>
+            <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => handleFileChange(e, "add")} />
+            {uploadPreview || form.image_url ? (
+              <div className="relative group">
+                <img src={uploadPreview || form.image_url} alt="Preview" className="w-full h-40 object-cover rounded-xl border border-stone-border" />
+                {uploading && (
+                  <div className="absolute inset-0 bg-white/80 rounded-xl flex items-center justify-center">
+                    <div className="flex items-center gap-2 text-sm text-muted"><span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />Mengunggah...</div>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => { setUploadPreview(null); setForm((prev) => ({ ...prev, image_url: "" })); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                  className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 border border-stone-border text-muted hover:text-red-500 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                >✕</button>
+              </div>
+            ) : (
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleDrop(e, "add")}
+                className="w-full h-32 border-2 border-dashed border-stone-border rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <p className="text-xs text-muted">Klik atau seret gambar ke sini</p>
+                <p className="text-[10px] text-muted">PNG, JPG, WebP · Maks. 2MB</p>
+              </div>
+            )}
           </div>
           <button onClick={handleAdd} disabled={saving || !form.name || !form.price_rp} className="bg-primary-dark text-white px-6 py-2.5 rounded-xl font-medium text-sm hover:bg-primary-darker transition-colors disabled:opacity-50">
             {saving ? "Menyimpan..." : "Simpan Produk"}
@@ -258,8 +340,43 @@ export default function AdminProductsPage() {
               <textarea value={editForm.description} onChange={(e) => setEditForm({ ...editForm, description: e.target.value })} rows={2} className="w-full px-3 py-2.5 rounded-xl border border-stone-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
             </div>
             <div className="mb-6">
-              <label className="block text-sm font-medium text-foreground mb-1">URL Gambar</label>
-              <input value={editForm.image_url} onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-stone-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              <label className="block text-sm font-medium text-foreground mb-1">Gambar Produk</label>
+              <input ref={editFileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => handleFileChange(e, "edit")} />
+              {editUploadPreview || editForm.image_url ? (
+                <div className="relative group">
+                  <img src={editUploadPreview || editForm.image_url} alt="Preview" className="w-full h-40 object-cover rounded-xl border border-stone-border" />
+                  {editUploading && (
+                    <div className="absolute inset-0 bg-white/80 rounded-xl flex items-center justify-center">
+                      <div className="flex items-center gap-2 text-sm text-muted"><span className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />Mengunggah...</div>
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      type="button"
+                      onClick={() => editFileInputRef.current?.click()}
+                      className="w-7 h-7 rounded-full bg-white/90 border border-stone-border text-muted hover:text-primary flex items-center justify-center text-xs"
+                      title="Ganti gambar"
+                    >↺</button>
+                    <button
+                      type="button"
+                      onClick={() => { setEditUploadPreview(null); setEditForm((prev) => ({ ...prev, image_url: "" })); if (editFileInputRef.current) editFileInputRef.current.value = ""; }}
+                      className="w-7 h-7 rounded-full bg-white/90 border border-stone-border text-muted hover:text-red-500 flex items-center justify-center text-xs"
+                      title="Hapus gambar"
+                    >✕</button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  onClick={() => editFileInputRef.current?.click()}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => handleDrop(e, "edit")}
+                  className="w-full h-32 border-2 border-dashed border-stone-border rounded-xl flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a8a29e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <p className="text-xs text-muted">Klik atau seret gambar ke sini</p>
+                  <p className="text-[10px] text-muted">PNG, JPG, WebP · Maks. 2MB</p>
+                </div>
+              )}
             </div>
             <div className="flex gap-3">
               <button

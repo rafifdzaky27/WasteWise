@@ -191,8 +191,11 @@ export default async function ImpactPage() {
           <div className="lg:col-span-1 glass-card rounded-3xl p-8 border border-stone-border shadow-sm flex flex-col justify-center">
             <div className="mb-8">
               <h3 className="text-xl font-semibold text-foreground mb-2">
-                Sampah Terkumpul Bulan Ini
+                Target Sampah Terkumpul
               </h3>
+              <p className="text-sm text-muted">
+                Sampah yang terkumpul di bulan ini.
+              </p>
             </div>
 
             <div className="relative w-48 h-48 mx-auto mb-6">
@@ -230,9 +233,6 @@ export default async function ImpactPage() {
             <div className="text-center">
               <p className="text-sm font-medium text-foreground">
                 {data.currentMonthWeight} kg / {data.monthlyTarget} kg
-              </p>
-              <p className="text-xs text-muted mt-1">
-                Terkumpul di bulan ini
               </p>
             </div>
           </div>

@@ -177,8 +177,8 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
           {featured && (
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-6 bg-white border border-stone-border rounded-2xl overflow-hidden">
               <div className="sm:col-span-3 relative aspect-[4/3] sm:aspect-auto bg-stone-light overflow-hidden">
-                {categoryImages[featured.category] || featured.image_url ? (
-                  <Image src={categoryImages[featured.category] || featured.image_url} alt={featured.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 60vw" />
+                {featured.image_url || categoryImages[featured.category] ? (
+                  <Image src={featured.image_url || categoryImages[featured.category]} alt={featured.name} fill className="object-cover" sizes="(max-width: 640px) 100vw, 60vw" unoptimized={!!featured.image_url} />
                 ) : (
                   <div className="w-full h-full min-h-[240px] flex items-center justify-center bg-stone-light">
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#d6d3d1" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
@@ -216,8 +216,8 @@ export default function MarketplaceClient({ initialProducts }: MarketplaceClient
               {regularProducts.map((product) => (
                 <div key={product.id} className="bg-white border border-stone-border rounded-2xl overflow-hidden hover:shadow-md transition-all duration-300 group">
                   <div className="relative aspect-[4/3] bg-stone-light overflow-hidden">
-                    {categoryImages[product.category] || product.image_url ? (
-                      <Image src={categoryImages[product.category] || product.image_url} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" />
+                    {product.image_url || categoryImages[product.category] ? (
+                      <Image src={product.image_url || categoryImages[product.category]} alt={product.name} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" unoptimized={!!product.image_url} />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d6d3d1" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="M21 15l-5-5L5 21" /></svg>
