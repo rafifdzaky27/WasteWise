@@ -30,7 +30,7 @@ export default function About() {
       className="w-full max-w-[1152px] mx-auto px-6 pt-32 pb-16"
     >
       <div className="text-center mb-16 reveal">
-        <h2 className="text-4xl sm:text-5xl font-medium tracking-tight text-foreground">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-foreground">
           Tentang{" "}
           <span className="font-serif italic text-primary">WasteWise</span>
         </h2>

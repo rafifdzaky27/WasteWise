@@ -8,7 +8,7 @@ export default function AboutPage() {
       {/* Profil Tim Section */}
       <section className="w-full max-w-[1152px] mx-auto px-6 py-16 mb-16">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-foreground">
             Tim{" "}
             <span className="font-serif italic text-primary">ImpactCrafters</span>
           </h2>

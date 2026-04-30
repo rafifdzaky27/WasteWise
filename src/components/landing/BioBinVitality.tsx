@@ -69,9 +69,9 @@ export default function BioBinVitality() {
       <div className="bg-white/40 border border-white/40 rounded-[48px] shadow-md overflow-hidden p-8 sm:p-12 reveal">
         {/* Header */}
         <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-foreground">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-foreground">
             BioCompose{" "}
-            <span className="font-serif italic text-[#096]">Vitality</span>
+            <span className="font-serif italic text-primary">Vitality</span>
           </h2>
           <p className="mt-4 text-base text-muted max-w-md mx-auto">
             Memantau kesehatan sistem pencernaan organik desa kita

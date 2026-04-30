@@ -55,11 +55,10 @@ export default function Navbar() {
       <nav
         role="navigation"
         aria-label="Menu utama"
-        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between w-[min(1024px,calc(100%-2rem))] h-[66px] px-4 sm:px-6 rounded-full border border-white/20 shadow-md transition-all duration-500 ${
-          scrolled
+        className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between w-[min(1024px,calc(100%-2rem))] h-[66px] px-4 sm:px-6 rounded-full border border-white/20 shadow-md transition-all duration-500 ${scrolled
             ? "bg-white/80 backdrop-blur-2xl shadow-lg"
             : "glass"
-        }`}
+          }`}
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
@@ -117,14 +116,12 @@ export default function Navbar() {
           className="sm:hidden flex flex-col items-center justify-center w-10 h-10 rounded-xl hover:bg-white/30 transition-colors"
         >
           <span
-            className={`block w-5 h-0.5 bg-foreground rounded-full transition-all duration-300 ${
-              menuOpen ? "rotate-45 translate-y-[3px]" : ""
-            }`}
+            className={`block w-5 h-0.5 bg-foreground rounded-full transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[3px]" : ""
+              }`}
           />
           <span
-            className={`block w-5 h-0.5 bg-foreground rounded-full mt-1.5 transition-all duration-300 ${
-              menuOpen ? "-rotate-45 -translate-y-[3px]" : ""
-            }`}
+            className={`block w-5 h-0.5 bg-foreground rounded-full mt-1.5 transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[3px]" : ""
+              }`}
           />
         </button>
       </nav>
@@ -139,9 +136,8 @@ export default function Navbar() {
 
       {/* Mobile Menu Drawer */}
       <div
-        className={`fixed top-0 right-0 z-[45] w-[280px] h-full bg-white shadow-2xl sm:hidden flex flex-col transition-transform duration-300 ease-out ${
-          menuOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 z-[55] w-[280px] h-full bg-white shadow-2xl sm:hidden flex flex-col transition-transform duration-300 ease-out ${menuOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         {/* Drawer Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-stone-border">

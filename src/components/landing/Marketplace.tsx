@@ -72,7 +72,7 @@ export default function Marketplace() {
     >
       {/* Header */}
       <div className="text-center mb-12 reveal">
-        <h2 className="text-3xl sm:text-4xl font-medium tracking-tight text-foreground">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium tracking-tight text-foreground">
           Pasar{" "}
           <span className="font-serif italic text-primary">Berkelanjutan</span>
         </h2>

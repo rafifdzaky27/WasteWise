@@ -1,7 +1,20 @@
 import { createClient } from "../../../lib/supabase/server";
 import Link from "next/link";
 
+import Image from "next/image";
+import productCompost from "@/assets/images/product-compost.png";
+import productLiquid from "@/assets/images/product-liquid.png";
+import productSeeds from "@/assets/images/product-seeds.png";
+import productBriquettes from "@/assets/images/product-briquettes.png";
+
 export const revalidate = 0;
+
+const categoryImages: Record<string, any> = {
+  compost: productCompost,
+  liquid: productLiquid,
+  seeds: productSeeds,
+  briquettes: productBriquettes,
+};
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -24,6 +37,7 @@ export default async function DashboardPage() {
   let depositsQuery = supabase.from("waste_deposits").select("weight_kg, waste_type, created_at, points_earned");
   let vouchersQuery = supabase.from("voucher_redemptions").select("id", { count: "exact" });
   let ordersQuery = supabase.from("orders").select("id, total_price_rp, status, created_at", { count: "exact" });
+  let productsQuery = supabase.from("products").select("*").eq("is_active", true).order("created_at", { ascending: false }).limit(3);
 
   if (!isAdmin) {
     depositsQuery = depositsQuery.eq("user_id", user?.id);
@@ -34,15 +48,16 @@ export default async function DashboardPage() {
   const { data: deposits } = await depositsQuery.order("created_at", { ascending: false });
   const { count: voucherCount } = await vouchersQuery;
   const { data: orders, count: orderCount } = await ordersQuery;
+  const { data: newestProducts } = await productsQuery;
 
   // Global / User Stats
   const totalWeightRaw = deposits?.reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
   const totalWeight = Math.round(totalWeightRaw * 10) / 10;
   const totalDeposits = deposits?.length || 0;
-  
+
   const organicWeight = Math.round((deposits?.filter(d => d.waste_type === "organic").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0) * 10) / 10;
   const recyclableWeight = Math.round((deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0) * 10) / 10;
-  
+
   const totalPoints = deposits?.reduce((sum, d) => sum + Number(d.points_earned), 0) || 0;
   const totalRevenue = orders?.reduce((sum, o) => sum + Number(o.total_price_rp), 0) || 0;
 
@@ -86,7 +101,7 @@ export default async function DashboardPage() {
                 </h2>
               )}
             </div>
-            
+
             <div className="mt-8 pt-8 border-t border-stone-border/50 grid grid-cols-2 gap-4">
               {!isPetani && (
                 <>
@@ -119,7 +134,7 @@ export default async function DashboardPage() {
           {!isPetani && (
             <div className="bg-white border border-stone-border rounded-3xl p-8">
               <h3 className="text-lg font-medium text-foreground mb-6">Komposisi Sampah</h3>
-              
+
               {/* Visual Bar — only 2 categories */}
               <div className="w-full h-8 flex rounded-full overflow-hidden mb-6 bg-stone-light">
                 <div style={{ width: `${orgPct}%` }} className="h-full bg-accent-green transition-all duration-1000 ease-out" />
@@ -198,10 +213,47 @@ export default async function DashboardPage() {
           {(isAdmin || isWarga) && (
             <div className="bg-white border border-stone-border rounded-3xl p-8">
               <div className="w-12 h-12 bg-yellow-bg border border-yellow-border text-yellow-700 rounded-full flex items-center justify-center mb-4">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>
               </div>
               <p className="text-xs font-bold text-muted uppercase tracking-[2px] mb-1">Tukar Poin</p>
               <p className="text-2xl font-medium text-foreground">{voucherCount || 0} <span className="text-sm font-normal text-muted">Voucher</span></p>
+            </div>
+          )}
+
+          {/* Newest Products (Petani) or Secondary Stats */}
+          {isPetani && (
+            <div className="bg-white border border-stone-border rounded-3xl p-8">
+              <h3 className="text-lg font-medium text-foreground mb-6">Produk Terbaru</h3>
+              <div className="space-y-4">
+                {newestProducts && newestProducts.length > 0 ? (
+                  newestProducts.map((product) => (
+                    <div key={product.id} className="flex items-center gap-4 group">
+                      <div className="w-12 h-12 bg-stone-light rounded-xl overflow-hidden flex-shrink-0">
+                        {categoryImages[product.category] || product.image_url ? (
+                          <Image src={categoryImages[product.category] || product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-xs text-muted-light">
+                            📦
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                          {product.name}
+                        </p>
+                        <p className="text-[11px] text-muted truncate">
+                          {product.category || "General"} • Rp {Number(product.price_rp).toLocaleString("id-ID")}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted">Belum ada produk.</p>
+                )}
+                <Link href="/marketplace" className="block text-center text-xs font-bold text-primary uppercase tracking-widest pt-4 hover:opacity-70 transition-opacity">
+                  Lihat Semua Produk
+                </Link>
+              </div>
             </div>
           )}
 
@@ -216,7 +268,7 @@ export default async function DashboardPage() {
                   <p className="text-xs text-muted mt-1">Lanjutkan aktivitas Anda</p>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-white border border-stone-border flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                 </div>
               </div>
             </Link>
@@ -231,7 +283,7 @@ export default async function DashboardPage() {
                   <p className="text-xs text-muted mt-1">Lanjutkan aktivitas Anda</p>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-white border border-stone-border flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                 </div>
               </div>
             </Link>
@@ -246,7 +298,7 @@ export default async function DashboardPage() {
                   <p className="text-xs text-muted mt-1">Lanjutkan aktivitas Anda</p>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-white border border-stone-border flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                 </div>
               </div>
             </Link>
