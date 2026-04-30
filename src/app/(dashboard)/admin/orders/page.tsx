@@ -156,7 +156,7 @@ export default function AdminOrdersPage() {
                         {s.label}
                       </span>
                     </div>
-                    <p className="text-xs text-muted truncate">{itemNames}</p>
+                    <p className="text-xs text-muted truncate">{order.profiles?.full_name ? `👤 ${order.profiles.full_name} · ` : ""}{itemNames}</p>
                   </div>
                   <p className="text-sm font-bold text-primary whitespace-nowrap">
                     Rp {order.total_price_rp.toLocaleString("id-ID")}

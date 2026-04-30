@@ -1,9 +1,12 @@
-import { createClient } from "../../../lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const supabase = await createClient();
+    const supabase = createSupabaseClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
 
     // Fetch all verified deposits with dates
     const { data: deposits, error: depositsError } = await supabase
@@ -69,13 +72,13 @@ export async function GET() {
       totalDeposits = 124;
       currentMonthWeight = 580;
       
-      // Inject some fake trend data for the last 14 days
+      // Inject some fake trend data for the last 14 days (STATIC to prevent shifting)
       for (let i = 15; i < 30; i++) {
         const date = new Date();
         date.setDate(date.getDate() - (29 - i));
         const key = date.toISOString().split("T")[0];
-        const org = Math.floor(Math.random() * 15) + 5;
-        const rec = Math.floor(Math.random() * 10) + 2;
+        const org = (i % 3 === 0) ? 12 : ((i % 2 === 0) ? 8 : 15);
+        const rec = (i % 3 === 0) ? 5 : ((i % 2 === 0) ? 3 : 8);
         if (dailyMap[key]) {
           dailyMap[key].organic = org;
           dailyMap[key].recyclable = rec;

@@ -73,10 +73,10 @@ export default function CommunityImpact() {
       <div className="relative glass-card rounded-[48px] border border-white/40 shadow-md overflow-hidden min-h-[630px] flex flex-col lg:flex-row items-center">
         {/* Left Content */}
         <div className="flex-1 p-6 sm:p-10 md:p-16 reveal">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium text-foreground tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-foreground tracking-tight leading-tight">
             Menjaga
           </h2>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif italic text-primary tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif italic text-primary tracking-tight leading-tight">
             Jejak Komunitas Kita
           </h2>
 

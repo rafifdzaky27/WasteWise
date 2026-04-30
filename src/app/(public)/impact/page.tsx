@@ -1,6 +1,6 @@
 import ImpactCounter from "../../../components/impact/ImpactCounter";
 import ImpactChart from "../../../components/impact/ImpactChart";
-import { createClient } from "../../../lib/supabase/server";
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -12,6 +12,7 @@ interface ImpactData {
   co2Avoided: number;
   compostProduced: number;
   activeUsers: number;
+  totalPetani: number;
   totalDeposits: number;
   landfillReduction: number;
   currentMonthWeight: number;
@@ -20,8 +21,12 @@ interface ImpactData {
 }
 
 async function getImpactData(): Promise<ImpactData> {
-  const supabase = await createClient();
+  const supabase = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
+  // Fetch all verified deposits
   const { data: deposits } = await supabase
     .from("waste_deposits")
     .select("weight_kg, waste_type, created_at, verified_by")
@@ -33,11 +38,18 @@ async function getImpactData(): Promise<ImpactData> {
   let recyclableWaste = deposits?.filter(d => d.waste_type === "recyclable").reduce((sum, d) => sum + Number(d.weight_kg), 0) || 0;
 
   let activeUsers = 0;
-  const { count } = await supabase
+  const { count: wargaCount } = await supabase
     .from("profiles")
     .select("*", { count: "exact", head: true })
     .eq("role", "warga");
-  if (count !== null) activeUsers = count;
+  if (wargaCount !== null) activeUsers = wargaCount;
+
+  let totalPetani = 0;
+  const { count: petaniCount } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact", head: true })
+    .eq("role", "petani");
+  if (petaniCount !== null) totalPetani = petaniCount;
 
   let totalDeposits = deposits?.length || 0;
 
@@ -72,14 +84,15 @@ async function getImpactData(): Promise<ImpactData> {
     organicWaste = 540.2;
     recyclableWaste = 316.3;
     activeUsers = activeUsers || 42;
+    totalPetani = totalPetani || 12;
     totalDeposits = 124;
     currentMonthWeight = 580;
     for (let i = 15; i < 30; i++) {
       const date = new Date();
       date.setDate(date.getDate() - (29 - i));
       const key = date.toISOString().split("T")[0];
-      const org = Math.floor(Math.random() * 15) + 5;
-      const rec = Math.floor(Math.random() * 10) + 2;
+      const org = (i % 3 === 0) ? 12 : ((i % 2 === 0) ? 8 : 15);
+      const rec = (i % 3 === 0) ? 5 : ((i % 2 === 0) ? 3 : 8);
       if (dailyMap[key]) {
         dailyMap[key].organic = org;
         dailyMap[key].recyclable = rec;
@@ -105,6 +118,7 @@ async function getImpactData(): Promise<ImpactData> {
     co2Avoided: Math.round(co2Avoided * 10) / 10,
     compostProduced: Math.round(compostProduced * 10) / 10,
     activeUsers,
+    totalPetani,
     totalDeposits,
     landfillReduction: Math.round(landfillReduction),
     currentMonthWeight: Math.round(currentMonthWeight * 10) / 10,
@@ -147,24 +161,23 @@ export default async function ImpactPage() {
             color="bg-white"
           />
           <ImpactCounter
-            end={data.totalDeposits}
-            suffix=""
-            label="Total Setoran Terverifikasi"
-            icon="📋"
-            color="bg-accent-green border-accent-green-border"
-          />
-          <ImpactCounter
             end={data.compostProduced}
             suffix=" kg"
             decimals={1}
             label="Kompos Dihasilkan"
             icon="🌱"
-            color="bg-yellow-bg border-yellow-border"
+            color="bg-accent-green border-accent-green-border"
           />
           <ImpactCounter
             end={data.activeUsers}
             label="Warga Berpartisipasi"
             icon="👥"
+            color="bg-yellow-bg border-yellow-border"
+          />
+          <ImpactCounter
+            end={data.totalPetani}
+            label="Jumlah Petani"
+            icon="🚜"
             color="bg-blue-bg border-blue-border"
           />
         </div>

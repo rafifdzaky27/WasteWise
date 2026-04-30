@@ -68,12 +68,16 @@ export default async function DashboardLayout({
       />
 
       {/* Page Content — pushed to right on desktop */}
-      <main className="flex-1 w-full max-w-[1152px] mx-auto px-5 sm:px-8 pt-10 pb-24 md:pb-16 md:ml-[260px] lg:ml-[280px]">
+      <main className="flex-1 w-full max-w-[1152px] mx-auto px-5 sm:px-8 pt-20 md:pt-10 pb-8 md:pb-16 md:ml-[260px] lg:ml-[280px]">
         {children}
       </main>
 
-      {/* Mobile Bottom Nav — only on mobile for thumb-friendly UX */}
-      <MobileNav role={userRole} />
+      {/* Mobile Nav — header bar + drawer */}
+      <MobileNav
+        navItems={navItems}
+        fullName={profile?.full_name || ""}
+        role={userRole}
+      />
     </div>
   );
 }
